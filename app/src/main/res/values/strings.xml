@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Stundenplan</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
+    <string name="fragment_home">Home</string>
+    <string name="fragment_timetable">Stundenplan</string>
+    <string name="fragment_grade">Prüfung</string>
+    <string name="fragment_grades">Prüfungen</string>
+    <string name="fragment_task">Aufgabe</string>
+    <string name="fragment_tasks">Aufgaben</string>
+    <string name="fragment_subject">Fach</string>
+    <string name="fragment_subjects">Fächer</string>
+    <string name="fragment_teacher">Lehrer</string>
+    <string name="fragment_teachers">Lehrer</string>
+    <string name="fragment_room">Raum</string>
+    <string name="fragment_rooms">Räume</string>
+    <string name="fragment_year">Klasse</string>
+    <string name="fragment_years">Klassen</string>
+    <string name="fragment_examtype">Prüfungsart</string>
+    <string name="fragment_examtypes">Prüfungsarten</string>
+    <string name="fragment_info">Info</string>
+    <string name="fragment_settings">Einstellungen</string>
+
+    <string name="menu_verwalten">Verwalten</string>
+    <string name="menu_einstellungen">Einstellungen</string>
+
+
+</resources>

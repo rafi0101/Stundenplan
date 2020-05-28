@@ -1,0 +1,115 @@
+package com.ebner.stundenplan
+
+import android.os.Bundle
+import android.os.Handler
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import com.ebner.stundenplan.fragments.main.FragmentGrade
+import com.ebner.stundenplan.fragments.main.FragmentHome
+import com.ebner.stundenplan.fragments.main.FragmentTask
+import com.ebner.stundenplan.fragments.main.FragmentTimetable
+import com.ebner.stundenplan.fragments.manage.*
+import com.ebner.stundenplan.fragments.settings.FragmentInfo
+import com.ebner.stundenplan.fragments.settings.FragmentSettings
+import com.google.android.material.navigation.NavigationView
+import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.LibsBuilder
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+
+    var toolbar: Toolbar? = null
+    var drawerLayout: DrawerLayout? = null
+    var doubleBackToExitPressedOnce = false
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        /*---------------------Items--------------------------*/
+        toolbar = findViewById(R.id.toolbar)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        val actionBarDrawerToggle: ActionBarDrawerToggle
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+
+
+        /*---------------------Tool Bar--------------------------*/
+        setSupportActionBar(toolbar)
+
+
+        /*---------------------Navigation Drawer Menu--------------------------*/
+        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+      //  drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+        navigationView.bringToFront()
+        navigationView.setNavigationItemSelectedListener(this)
+
+
+        /*---------------------Select first Item in NavDrawer--------------------------*/
+        val menu = navigationView.menu
+        val menuItem = menu.getItem(0)
+        menuItem.isChecked = true
+
+
+        /*---------------------Define Default Fragment--------------------------*/
+        changeFragment(FragmentHome())
+    }
+
+    private fun changeFragment(fragment: Fragment) {
+        val transaction: FragmentTransaction
+        transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment, fragment)
+        //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
+        transaction.commit()
+    }
+
+    /*---------------------TO DO when item in navigation drawer pressed--------------------------*/
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_home -> changeFragment(FragmentHome())
+            R.id.nav_timetable -> changeFragment(FragmentTimetable())
+            R.id.nav_grade -> changeFragment(FragmentGrade())
+            R.id.nav_task -> changeFragment(FragmentTask())
+            R.id.nav_subject -> changeFragment(FragmentSubject())
+            R.id.nav_teacher -> changeFragment(FragmentTeacher())
+            R.id.nav_room -> changeFragment(FragmentRoom())
+            R.id.nav_year -> changeFragment(FragmentYear())
+            R.id.nav_examtype -> changeFragment(FragmentExamtype())
+            R.id.nav_settings -> changeFragment(FragmentSettings())
+            R.id.nav_info -> {
+                val fragment = LibsBuilder()
+                        .withFields(R.string::class.java.fields) // in some cases it may be needed to provide the R class, if it can not be automatically resolved
+                        .withAboutDescription("for more information check out my github project\nCreated by Raphael Ebner")
+                        .withActivityTitle(getString(R.string.app_name))
+                        .supportFragment()
+                changeFragment(fragment)
+            }
+            else -> {}
+        }
+        drawerLayout!!.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    /*---------------------first close navigation drawer, then on 2 times pressed back, leave app--------------------------*/
+    override fun onBackPressed() {
+        if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout!!.closeDrawer(GravityCompat.START)
+        }
+        //You leave the App if you press Back 2 times within 2 Seconds
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed()
+            return
+        }
+        doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
+        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+    }
+}

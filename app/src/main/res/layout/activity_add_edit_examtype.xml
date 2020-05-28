@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:weightSum="10"
+    tools:context=".fragments.manage.ActivityAddEditExamtype">
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_examtype_etname"
+        app:errorEnabled="true"
+        android:layout_weight="4"
+        android:paddingEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_examtype_etname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Prüfungsart"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_examtype_etweight"
+        app:errorEnabled="true"
+        android:layout_weight="6"
+        android:paddingStart="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_examtype_etweight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Gewichtung"
+            android:inputType="numberDecimal" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
