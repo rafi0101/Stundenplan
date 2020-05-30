@@ -74,7 +74,7 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("Sporthalle"))
                                     getInstance(context).teacherDao().insert(Teacher("Ebner1"))
                                     getInstance(context).teacherDao().insert(Teacher("Ebner2"))
-                                    getInstance(context).subjectDao().insert(Subject("Mahte", "M", -10522569, "", false, 1, 1))
+                                    getInstance(context).subjectDao().insert(Subject("Mathe", "M", -10522569, "", false, 1, 1))
                                     getInstance(context).subjectDao().insert(Subject("Deutsch", "D", -7504187, "Deutschnotiz", false, 1, 2))
                                     getInstance(context).subjectDao().insert(Subject("Englisch", "E", -182399, "", true, 2, 1))
                                     getInstance(context).subjectDao().insert(Subject("Sport", "Sp", -11473188, "Sportnotiz", false, 2, 3))

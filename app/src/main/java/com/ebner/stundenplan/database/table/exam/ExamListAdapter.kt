@@ -15,7 +15,7 @@ import com.ebner.stundenplan.database.table.mergedEntities.ExamSubjectYearExamty
  * Created by raphael on 29.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.exam
  */
-class ExamListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<ExamSubjectYearExamtype, ExamListAdapter.ExamViewHolder>(TaskDiffCallback()) {
+class ExamListAdapter(val itemClickListener: onItemClickListener, val itemLongClickListener: onItemLongClickListener) : ListAdapter<ExamSubjectYearExamtype, ExamListAdapter.ExamViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -28,7 +28,7 @@ class ExamListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<
 
     /*---------------------Bind the data with the View--------------------------*/
     override fun onBindViewHolder(holder: ExamViewHolder, position: Int) {
-        holder.bind(getItem(position), itemClickListener)
+        holder.bind(getItem(position), itemClickListener, itemLongClickListener)
     }
 
     /*---------------------Transform Exam infos to position number--------------------------*/
@@ -43,10 +43,16 @@ class ExamListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<
         fun onItemClicked(examSubjectYearExamtype: ExamSubjectYearExamtype)
     }
 
+    /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
+    interface onItemLongClickListener {
+
+        fun onItemLongClicked(examSubjectYearExamtype: ExamSubjectYearExamtype)
+    }
+
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class ExamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: ExamSubjectYearExamtype, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: ExamSubjectYearExamtype, itemclickListener: onItemClickListener, itemLongClickListener: onItemLongClickListener) = with(itemView) {
             //Bind the data with View
             val tv_exam_subject_name: TextView = itemView.findViewById(R.id.tv_exam_subject_name)
             val tv_exam_examtype: TextView = itemView.findViewById(R.id.tv_exam_examtype)
@@ -58,6 +64,11 @@ class ExamListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)
+            }
+
+            itemView.setOnLongClickListener {
+                itemLongClickListener.onItemLongClicked(item)
+                return@setOnLongClickListener true
             }
         }
     }
