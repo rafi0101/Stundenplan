@@ -39,5 +39,7 @@ class ExamtypeViewModel(application: Application) : AndroidViewModel(application
         examtypeRepository.delete(examtype)
     }
 
-
+    suspend fun allExamtypeList(): List<Examtype> {
+        return examtypeRepository.getAllExamtypeList()
+    }
 }

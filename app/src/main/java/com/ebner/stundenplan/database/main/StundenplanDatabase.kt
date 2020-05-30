@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.ebner.stundenplan.database.table.exam.Exam
+import com.ebner.stundenplan.database.table.exam.ExamDao
 import com.ebner.stundenplan.database.table.examtype.Examtype
 import com.ebner.stundenplan.database.table.examtype.ExamtypeDao
 import com.ebner.stundenplan.database.table.room.RoomDao
@@ -29,7 +31,8 @@ import java.util.concurrent.Executors
         Subject::class,
         Year::class,
         Examtype::class,
-        Settings::class
+        Settings::class,
+        Exam::class
 //DO NOT FORGET TO INCREASE THE VERSION NUMBER
 ), version = 1, exportSchema = false)
 abstract class StundenplanDatabase : RoomDatabase() {
@@ -41,6 +44,7 @@ abstract class StundenplanDatabase : RoomDatabase() {
     abstract fun yearDao(): YearDao
     abstract fun examtypeDao(): ExamtypeDao
     abstract fun settingsDao(): SettingsDao
+    abstract fun examDao(): ExamDao
 
 
     companion object {
@@ -67,17 +71,22 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                 ioThread {
                                     getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("123"))
                                     getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("456"))
+                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("Sporthalle"))
                                     getInstance(context).teacherDao().insert(Teacher("Ebner1"))
                                     getInstance(context).teacherDao().insert(Teacher("Ebner2"))
-                                    getInstance(context).subjectDao().insert(Subject("test1_1_1", "1_1_1", -10522569, "testnote", false, 1, 1))
-                                    getInstance(context).subjectDao().insert(Subject("test1_1_2", "1_1_2", -7504187, "testnote", false, 1, 2))
-                                    getInstance(context).subjectDao().insert(Subject("test1_2_1", "1_2_1", -182399, "testnote", false, 2, 1))
-                                    getInstance(context).subjectDao().insert(Subject("test1_2_2", "1_2_2", -11473188, "testnote", true, 2, 2))
+                                    getInstance(context).subjectDao().insert(Subject("Mahte", "M", -10522569, "", false, 1, 1))
+                                    getInstance(context).subjectDao().insert(Subject("Deutsch", "D", -7504187, "Deutschnotiz", false, 1, 2))
+                                    getInstance(context).subjectDao().insert(Subject("Englisch", "E", -182399, "", true, 2, 1))
+                                    getInstance(context).subjectDao().insert(Subject("Sport", "Sp", -11473188, "Sportnotiz", false, 2, 3))
+                                    //Is needed for productive
                                     getInstance(context).yearDao().insert(Year("2019"))
                                     getInstance(context).yearDao().insert(Year("2020"))
                                     getInstance(context).examtypeDao().insert(Examtype("Schulaufgabe", 2.0))
                                     getInstance(context).examtypeDao().insert(Examtype("Ex", 1.0))
+                                    //Is needed for productive
                                     getInstance(context).settingsDao().insert(Settings(1))
+                                    getInstance(context).examDao().insert(Exam(1, 1, 1, 1, 2020, 5, 7))
+                                    getInstance(context).examDao().insert(Exam(2, 2, 2, 2, 2021, 7, 24))
 
                                 }
                             }

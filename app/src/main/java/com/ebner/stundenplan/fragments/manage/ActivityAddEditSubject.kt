@@ -176,7 +176,7 @@ class ActivityAddEditSubject : AppCompatActivity() {
          * For setting the item to the spinner:
          *  1. the *_*id Adapter is compared with the given id, and returns the position where the id is located
          *  2. this position is set to the spinner, so i get the correct name
-         * For getting the selected it, it is vice versa
+         * For getting the selected id, it is vice versa
          */
         val room_rname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
         val room_rid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)

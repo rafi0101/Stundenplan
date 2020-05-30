@@ -41,6 +41,8 @@ class SubjectViewModel(application: Application) : AndroidViewModel(application)
         subjectRepository.delete(subject)
     }
 
-
+    suspend fun allSubjectList(): List<Subject> {
+        return subjectRepository.getAllSubjectList()
+    }
 
 }

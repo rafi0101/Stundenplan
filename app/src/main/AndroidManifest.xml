@@ -26,9 +26,10 @@
             android:launchMode="singleTop" />
         <activity android:name=".fragments.manage.ActivityAddEditRoom" />
         <activity android:name=".fragments.manage.ActivityAddEditTeacher" />
-        <activity android:name=".fragments.manage.ActivityAddEditSubject"/>
+        <activity android:name=".fragments.manage.ActivityAddEditSubject" />
         <activity android:name=".fragments.manage.ActivityAddEditYear" />
         <activity android:name=".fragments.manage.ActivityAddEditExamtype" />
+        <activity android:name=".fragments.main.ActivityAddEditExam" />
     </application>
 
 </manifest>

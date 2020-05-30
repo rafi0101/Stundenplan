@@ -11,15 +11,16 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.ebner.stundenplan.fragments.main.FragmentGrade
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.ebner.stundenplan.database.table.subject.SubjectViewModel
+import com.ebner.stundenplan.fragments.main.FragmentExam
 import com.ebner.stundenplan.fragments.main.FragmentHome
 import com.ebner.stundenplan.fragments.main.FragmentTask
 import com.ebner.stundenplan.fragments.main.FragmentTimetable
 import com.ebner.stundenplan.fragments.manage.*
-import com.ebner.stundenplan.fragments.settings.FragmentInfo
 import com.ebner.stundenplan.fragments.settings.FragmentSettings
 import com.google.android.material.navigation.NavigationView
-import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.LibsBuilder
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -61,6 +62,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         /*---------------------Define Default Fragment--------------------------*/
         changeFragment(FragmentHome())
+
+        /*---------------------Create the Database, if not already exist--------------------------*/
+        val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
+        subjectViewModel.allSubject.observe(this, Observer {
+            //Nothing to do here, because just for initializing
+        })
     }
 
     private fun changeFragment(fragment: Fragment) {
@@ -76,7 +83,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_home -> changeFragment(FragmentHome())
             R.id.nav_timetable -> changeFragment(FragmentTimetable())
-            R.id.nav_grade -> changeFragment(FragmentGrade())
+            R.id.nav_exam -> changeFragment(FragmentExam())
             R.id.nav_task -> changeFragment(FragmentTask())
             R.id.nav_subject -> changeFragment(FragmentSubject())
             R.id.nav_teacher -> changeFragment(FragmentTeacher())

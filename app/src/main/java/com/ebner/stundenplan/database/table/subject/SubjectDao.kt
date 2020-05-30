@@ -19,5 +19,7 @@ interface SubjectDao : BaseDao<Subject> {
     fun getAllSubject(): LiveData<List<SubjectTeacherRoom>>
 
 
+    @Query("SELECT * FROM subject ORDER BY sname ASC")
+    suspend fun getAllSubjectList(): List<Subject>
 
 }

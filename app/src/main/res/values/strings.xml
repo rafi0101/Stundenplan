@@ -8,8 +8,8 @@
 
     <string name="fragment_home">Home</string>
     <string name="fragment_timetable">Stundenplan</string>
-    <string name="fragment_grade">Prüfung</string>
-    <string name="fragment_grades">Prüfungen</string>
+    <string name="fragment_exam">Prüfung</string>
+    <string name="fragment_exams">Prüfungen</string>
     <string name="fragment_task">Aufgabe</string>
     <string name="fragment_tasks">Aufgaben</string>
     <string name="fragment_subject">Fach</string>

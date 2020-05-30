@@ -17,4 +17,5 @@ class ExamtypeRepository(
     //Live data view
     val getAllExamtype: LiveData<List<Examtype>> = examtypeDao.getAllExamtype()
 
+    suspend fun getAllExamtypeList(): List<Examtype> = examtypeDao.getAllExamtypeList()
 }

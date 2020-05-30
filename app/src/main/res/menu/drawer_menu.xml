@@ -14,9 +14,9 @@
             android:icon="@drawable/ic_schedule"
             android:title="@string/fragment_timetable" />
         <item
-            android:id="@+id/nav_grade"
+            android:id="@+id/nav_exam"
             android:icon="@drawable/ic_grade"
-            android:title="@string/fragment_grades" />
+            android:title="@string/fragment_exams" />
         <item
             android:id="@+id/nav_task"
             android:icon="@drawable/ic_work"
