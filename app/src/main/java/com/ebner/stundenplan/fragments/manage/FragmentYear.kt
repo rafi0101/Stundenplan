@@ -7,12 +7,14 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -33,6 +35,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
+import kotlin.math.roundToInt
 
 /**
  * A simple [Fragment] subclass.
@@ -60,6 +63,15 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
 
         activity?.title = getString(R.string.fragment_years)
 
+
+        /*---------------------Set correct layout margin to main FrameLaout--------------------------*/
+        val all: Int = convertDpToPixel(16F, root.context).roundToInt()
+        val fragmentmain: FrameLayout? = activity?.findViewById(R.id.fragment)
+        val params: ViewGroup.MarginLayoutParams = fragmentmain?.layoutParams as ViewGroup.MarginLayoutParams
+        params.setMargins(all, all, all, all)
+        fragmentmain.layoutParams = params
+
+        /*---------------------Link items to Layout--------------------------*/
         cl_year = root.findViewById(R.id.cl_year)
         sp_activeyear = root.findViewById(R.id.sp_activeyear)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_year)
@@ -283,4 +295,15 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
 
     }
 
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    fun convertDpToPixel(dp: Float, context: Context): Float {
+        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
 }
