@@ -41,6 +41,7 @@ class ExamViewModel(application: Application) : AndroidViewModel(application) {
 
     fun allExam(yid: Int): LiveData<List<ExamSubjectYearExamtype>> = examRepository.getAllExam(yid)
     fun pendingExams(yid: Int): LiveData<List<ExamSubjectYearExamtype>> = examRepository.getPendingExams(yid)
+    fun subjectExams(yid: Int, sid: Int): LiveData<List<ExamSubjectYearExamtype>> = examRepository.getSubjectExams(yid, sid)
 
 
 }

@@ -35,7 +35,7 @@ class FragmentExam : Fragment() {
         params.setMargins(sites, 0, sites, bottom)
         fragmentmain.layoutParams = params
 
-
+        /*---------------------Initialize the TabLayout--------------------------*/
         val viewPager: ViewPager2 = root.findViewById(R.id.vp_exam)
         val tabLayout: TabLayout = root.findViewById(R.id.tl_exam)
 

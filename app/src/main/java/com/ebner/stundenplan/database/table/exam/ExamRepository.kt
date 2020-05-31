@@ -18,5 +18,6 @@ class ExamRepository(
     //Live data view
     fun getAllExam(yid: Int): LiveData<List<ExamSubjectYearExamtype>> = examDao.getAllExam(yid)
     fun getPendingExams(yid: Int): LiveData<List<ExamSubjectYearExamtype>> = examDao.getPendingExams(yid)
+    fun getSubjectExams(yid: Int, sid: Int): LiveData<List<ExamSubjectYearExamtype>> = examDao.getSubjectExams(yid, sid)
 
 }
