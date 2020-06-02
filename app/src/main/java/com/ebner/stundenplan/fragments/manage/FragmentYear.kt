@@ -217,7 +217,7 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
 
 
             // Define some Properties
-            sp_activeyear.setLabel("Aktives Jahr")
+            sp_activeyear.setLabel("Aktive Klasse")
 
             // Set layout to use when the list of choices appear
             year_yid.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -240,7 +240,7 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
                         settingsViewModel.update(Settings(activeYearID))
                         val snackbar: Snackbar
                         snackbar = Snackbar
-                                .make(cl_year, "Aktives Jahr geändert zu: ${year_yname.getItem(position)}", Snackbar.LENGTH_LONG)
+                                .make(cl_year, "Aktive Klasse geändert zu: ${year_yname.getItem(position)}", Snackbar.LENGTH_LONG)
                         snackbar.show()
                     }
 

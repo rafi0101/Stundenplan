@@ -44,15 +44,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:weightSum="10">
+            android:weightSum="10"
+            android:baselineAligned="false">
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_exam_grade"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="5">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -65,16 +66,39 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <Button
-                android:id="@+id/btn_exam_date"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Datum"
-                android:textAllCaps="false"
-                android:layout_gravity="center"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_weight="5" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="5">
+
+                <Button
+                    android:id="@+id/btn_exam_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Datum"
+                    android:textAllCaps="false"
+                    android:layout_gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp" />
+
+
+                <Button
+                    android:id="@+id/btn_exam_date_today"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="= Heute"
+                    android:textAllCaps="false"
+                    android:layout_gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>

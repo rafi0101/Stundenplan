@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -57,11 +59,19 @@ class ExamListAdapter(val itemClickListener: onItemClickListener, val itemLongCl
             val tv_exam_subject_name: TextView = itemView.findViewById(R.id.tv_exam_subject_name)
             val tv_exam_examtype: TextView = itemView.findViewById(R.id.tv_exam_examtype)
             val tv_exam_date: TextView = itemView.findViewById(R.id.tv_exam_date)
+            val tv_exam_grade: TextView = itemView.findViewById(R.id.tv_exam_grade)
+            val ll_exam: LinearLayout = itemView.findViewById(R.id.ll_exam)
+            val cv_exam: CardView = itemView.findViewById(R.id.cv_exam)
 
             tv_exam_subject_name.text = item.subject.sname
             tv_exam_examtype.text = item.examtype.etname
             tv_exam_date.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
-
+            if (item.exam.egrade != -1) {
+                tv_exam_grade.text = item.exam.egrade.toString()
+            } else {
+                tv_exam_grade.text = ""
+            }
+            tv_exam_grade.setBackgroundColor(item.subject.scolor)
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)
             }

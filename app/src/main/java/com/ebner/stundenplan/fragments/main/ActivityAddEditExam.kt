@@ -48,6 +48,7 @@ class ActivityAddEditExam : AppCompatActivity() {
     private lateinit var tiet_grade: TextInputEditText
     private lateinit var til_grade: TextInputLayout
     private lateinit var btn_date: Button
+    private lateinit var btn_date_today: Button
     private lateinit var pb_exam: ProgressBar
 
 
@@ -70,6 +71,7 @@ class ActivityAddEditExam : AppCompatActivity() {
         tiet_grade = findViewById(R.id.tiet_exam_grade)
         til_grade = findViewById(R.id.til_exam_grade)
         btn_date = findViewById(R.id.btn_exam_date)
+        btn_date_today = findViewById(R.id.btn_exam_date_today)
         pb_exam = findViewById(R.id.pb_exam)
 
 
@@ -128,6 +130,15 @@ class ActivityAddEditExam : AppCompatActivity() {
             }
             dpd.show()
 
+        }
+
+        //easy way to set date to today
+        btn_date_today.setOnClickListener {
+
+            selectedYear = year
+            selectedMonth = month + 1
+            selectedDay = day
+            btn_date.text = "$selectedDay.$selectedMonth.$selectedYear"
         }
 
 
