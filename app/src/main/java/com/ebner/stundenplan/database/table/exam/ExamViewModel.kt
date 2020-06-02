@@ -43,5 +43,6 @@ class ExamViewModel(application: Application) : AndroidViewModel(application) {
     fun pendingExams(yid: Int): LiveData<List<ExamSubjectYearExamtype>> = examRepository.getPendingExams(yid)
     fun subjectExams(yid: Int, sid: Int): LiveData<List<ExamSubjectYearExamtype>> = examRepository.getSubjectExams(yid, sid)
 
+    suspend fun subjectExamsSuspend(yid: Int, sid: Int): List<ExamSubjectYearExamtype> = examRepository.getSubjectExamsSuspend(yid, sid)
 
 }

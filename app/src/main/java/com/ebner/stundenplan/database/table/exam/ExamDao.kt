@@ -26,4 +26,8 @@ interface ExamDao : BaseDao<Exam> {
     @Query("SELECT * FROM exam INNER JOIN subject ON subject.sid = exam.e_sid INNER JOIN year ON year.yid = exam.e_yid INNER JOIN examtype ON examtype.etid = exam.e_etid WHERE e_yid=:yid AND e_sid=:sid ORDER BY edateyear ASC, edatemonth ASC, edateday ASC")
     fun getSubjectExams(yid: Int, sid: Int): LiveData<List<ExamSubjectYearExamtype>>
 
+    @Transaction
+    @Query("SELECT * FROM exam INNER JOIN subject ON subject.sid = exam.e_sid INNER JOIN year ON year.yid = exam.e_yid INNER JOIN examtype ON examtype.etid = exam.e_etid WHERE e_yid=:yid AND e_sid=:sid ORDER BY edateyear ASC, edatemonth ASC, edateday ASC")
+    suspend fun getSubjectExamsSuspend(yid: Int, sid: Int): List<ExamSubjectYearExamtype>
+
 }

@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.R
-import com.ebner.stundenplan.database.table.mergedEntities.SubjectTeacherRoom
+import com.ebner.stundenplan.database.table.mergedEntities.SubjectGrade
 
 /**
  * Created by raphael on 31.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.customAdapter
  */
-class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<SubjectTeacherRoom, ExamOverviewListAdapter.ExamViewHolder>(TaskDiffCallback()) {
+class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<SubjectGrade, ExamOverviewListAdapter.ExamViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -36,13 +36,13 @@ class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : List
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
     interface onItemClickListener {
 
-        fun onItemClicked(subjectTeacherRoom: SubjectTeacherRoom)
+        fun onItemClicked(subjectGrade: SubjectGrade)
     }
 
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class ExamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: SubjectTeacherRoom, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: SubjectGrade, itemclickListener: onItemClickListener) = with(itemView) {
             //Bind the data with View
             val tv_exam_overview_subject: TextView = itemView.findViewById(R.id.tv_exam_overview_subject)
             val tv_exam_overview_grade: TextView = itemView.findViewById(R.id.tv_exam_overview_grade)
@@ -50,7 +50,7 @@ class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : List
 
 
             tv_exam_overview_subject.text = item.subject.sname
-            tv_exam_overview_grade.text = "WIP"
+            if (item.grade > 0.0) tv_exam_overview_grade.text = item.grade.toString() else tv_exam_overview_grade.text = "-"
             cl_exam_overview.setBackgroundColor(item.subject.scolor)
 
 
@@ -63,12 +63,12 @@ class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : List
 }
 
 /*---------------------Makes the Animation to the recyclerview, when item is changed, added or deleted--------------------------*/
-class TaskDiffCallback : DiffUtil.ItemCallback<SubjectTeacherRoom>() {
-    override fun areItemsTheSame(oldItem: SubjectTeacherRoom, newItem: SubjectTeacherRoom): Boolean {
+class TaskDiffCallback : DiffUtil.ItemCallback<SubjectGrade>() {
+    override fun areItemsTheSame(oldItem: SubjectGrade, newItem: SubjectGrade): Boolean {
         return oldItem.subject.sid == newItem.subject.sid
     }
 
-    override fun areContentsTheSame(oldItem: SubjectTeacherRoom, newItem: SubjectTeacherRoom): Boolean {
+    override fun areContentsTheSame(oldItem: SubjectGrade, newItem: SubjectGrade): Boolean {
         //Compare all items, so if there is a new field, add it with &&
         return false
     }
