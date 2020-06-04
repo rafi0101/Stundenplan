@@ -4,6 +4,8 @@
     <color name="colorPrimary">#525d60</color>
     <color name="colorPrimaryDark">#293436</color>
     <color name="colorAccent">#c8e6c9</color>
+    <color name="colorAccentDark">#97b498</color>
+    <color name="colorIcon">#FFAB91</color>
 
 
     <!-- https://material.io/resources/color/#!/?view.left=0&view.right=0&secondary.color=FFD54F&primary.color=795548 -->

@@ -8,16 +8,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.ebner.stundenplan.BuildConfig
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.fragments.manage.FragmentSubject
+import com.ebner.stundenplan.fragments.manage.FragmentYear
+import com.google.android.material.navigation.NavigationView
 import kotlin.math.roundToInt
+
 
 /**
  * A simple [Fragment] subclass.
  */
 class FragmentHome : Fragment() {
+
+    private val TAG = "debug_FragmentHome"
+
+
+    private lateinit var ibtn_timetable: ImageButton
+    private lateinit var ibtn_subject: ImageButton
+    private lateinit var ibtn_task: ImageButton
+    private lateinit var ibtn_year: ImageButton
+    private lateinit var ibtn_exam: ImageButton
+
+
     @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -35,8 +52,60 @@ class FragmentHome : Fragment() {
         params.setMargins(all, all, all, all)
         fragmentmain.layoutParams = params
 
+        /*---------------------Link items to Layout--------------------------*/
+        ibtn_timetable = root.findViewById(R.id.ibtn_timetable)
+        ibtn_subject = root.findViewById(R.id.ibtn_subject)
+        ibtn_task = root.findViewById(R.id.ibtn_task)
+        ibtn_year = root.findViewById(R.id.ibtn_year)
+        ibtn_exam = root.findViewById(R.id.ibtn_exam)
+
+        ibtn_timetable.setOnClickListener {
+            changeFragment(FragmentTimetable())
+        }
+
+        ibtn_subject.setOnClickListener {
+            changeFragment(FragmentSubject())
+        }
+
+        ibtn_task.setOnClickListener {
+            changeFragment(FragmentTask())
+        }
+
+        ibtn_year.setOnClickListener {
+            changeFragment(FragmentYear())
+        }
+
+        ibtn_exam.setOnClickListener {
+            changeFragment(FragmentExam())
+        }
+
+
+
+
+
 
         return root
+    }
+
+    private fun changeFragment(fragment: Fragment) {
+        val transaction: FragmentTransaction
+        transaction = activity!!.supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment, fragment)
+        //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
+        transaction.commit()
+
+        val navigationView = activity!!.findViewById<View>(R.id.nav_view) as NavigationView
+        navigationView.setCheckedItem(R.id.nav_home)
+        when (fragment) {
+            is FragmentTimetable -> navigationView.setCheckedItem(R.id.nav_timetable)
+            is FragmentSubject -> navigationView.setCheckedItem(R.id.nav_subject)
+            is FragmentTask -> navigationView.setCheckedItem(R.id.nav_task)
+            is FragmentYear -> navigationView.setCheckedItem(R.id.nav_year)
+            is FragmentExam -> navigationView.setCheckedItem(R.id.nav_exam)
+            else -> {
+            }
+        }
+
     }
 
     /**

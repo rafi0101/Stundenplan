@@ -1,9 +1,7 @@
 package com.ebner.stundenplan
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -26,9 +24,9 @@ import com.mikepenz.aboutlibraries.LibsBuilder
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
 
-    var toolbar: Toolbar? = null
-    var drawerLayout: DrawerLayout? = null
-    var doubleBackToExitPressedOnce = false
+    private lateinit var toolbar: Toolbar
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +37,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toolbar = findViewById(R.id.toolbar)
         drawerLayout = findViewById(R.id.drawer_layout)
         val actionBarDrawerToggle: ActionBarDrawerToggle
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView = findViewById(R.id.nav_view)
 
 
         /*---------------------Tool Bar--------------------------*/
@@ -99,24 +97,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         .supportFragment()
                 changeFragment(fragment)
             }
-            else -> {}
+            else -> {
+            }
         }
-        drawerLayout!!.closeDrawer(GravityCompat.START)
+        drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
     /*---------------------first close navigation drawer, then on 2 times pressed back, leave app--------------------------*/
     override fun onBackPressed() {
-        if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout!!.closeDrawer(GravityCompat.START)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            val currentFragment = supportFragmentManager.fragments.last()
+            if (currentFragment is FragmentHome) {
+                super.onBackPressed()
+            } else {
+                changeFragment(FragmentHome())
+                navigationView.setCheckedItem(R.id.nav_home)
+            }
         }
-        //You leave the App if you press Back 2 times within 2 Seconds
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed()
-            return
-        }
-        doubleBackToExitPressedOnce = true
-        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
-        Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+
     }
 }
