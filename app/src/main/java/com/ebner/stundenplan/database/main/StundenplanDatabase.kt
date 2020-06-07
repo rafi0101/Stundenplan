@@ -9,7 +9,11 @@ import com.ebner.stundenplan.database.table.exam.Exam
 import com.ebner.stundenplan.database.table.exam.ExamDao
 import com.ebner.stundenplan.database.table.examtype.Examtype
 import com.ebner.stundenplan.database.table.examtype.ExamtypeDao
+import com.ebner.stundenplan.database.table.lesson.Lesson
+import com.ebner.stundenplan.database.table.lesson.LessonDao
 import com.ebner.stundenplan.database.table.room.RoomDao
+import com.ebner.stundenplan.database.table.schoolLesson.SchoolLesson
+import com.ebner.stundenplan.database.table.schoolLesson.SchoolLessonDao
 import com.ebner.stundenplan.database.table.settings.Settings
 import com.ebner.stundenplan.database.table.settings.SettingsDao
 import com.ebner.stundenplan.database.table.subject.Subject
@@ -32,7 +36,9 @@ import java.util.concurrent.Executors
         Year::class,
         Examtype::class,
         Settings::class,
-        Exam::class
+        Exam::class,
+        Lesson::class,
+        SchoolLesson::class
 //DO NOT FORGET TO INCREASE THE VERSION NUMBER
 ), version = 1, exportSchema = false)
 abstract class StundenplanDatabase : RoomDatabase() {
@@ -45,6 +51,8 @@ abstract class StundenplanDatabase : RoomDatabase() {
     abstract fun examtypeDao(): ExamtypeDao
     abstract fun settingsDao(): SettingsDao
     abstract fun examDao(): ExamDao
+    abstract fun lessonDao(): LessonDao
+    abstract fun schoolLessonDao(): SchoolLessonDao
 
 
     companion object {
@@ -104,6 +112,9 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).examDao().insert(Exam(4, 1, 1, 4, 2020, 10, 25))
                                     getInstance(context).examDao().insert(Exam(5, 2, 2, 2, 2020, 11, 24))
                                     getInstance(context).examDao().insert(Exam(6, 3, 2, -1, 2020, 12, 21))
+                                    getInstance(context).schoolLessonDao().insert(SchoolLesson(1, 8, 15, 9, 0))
+                                    getInstance(context).schoolLessonDao().insert(SchoolLesson(2, 9, 0, 9, 45))
+                                    getInstance(context).schoolLessonDao().insert(SchoolLesson(3, 9, 45, 10, 30))
 
 
                                 }

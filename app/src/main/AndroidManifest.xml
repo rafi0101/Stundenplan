@@ -29,6 +29,7 @@
         <activity android:name=".fragments.manage.ActivityAddEditSubject" />
         <activity android:name=".fragments.manage.ActivityAddEditYear" />
         <activity android:name=".fragments.manage.ActivityAddEditExamtype" />
+        <activity android:name=".fragments.manage.ActivityAddEditSchoolLesson" />
         <activity android:name=".fragments.main.ActivityAddEditExam" />
         <activity android:name=".SubjectExamsActivity" />
     </application>

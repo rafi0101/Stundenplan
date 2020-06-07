@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+
+        <TextView
+            android:id="@+id/tv_schoollesson_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Number"
+            android:layout_gravity="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp">
+
+
+            <TextView
+                android:id="@+id/tv_schoollesson_time_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time_Start"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+            <TextView
+                android:id="@+id/tv_schoollesson_time_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time_End"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

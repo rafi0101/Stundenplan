@@ -22,6 +22,8 @@
     <string name="fragment_years">Klassen</string>
     <string name="fragment_examtype">Prüfungsart</string>
     <string name="fragment_examtypes">Prüfungsarten</string>
+    <string name="fragment_schoollesson">Schulstunde</string>
+    <string name="fragment_schoollessons">Schulstunden</string>
     <string name="fragment_info">Info</string>
     <string name="fragment_settings">Einstellungen</string>
 

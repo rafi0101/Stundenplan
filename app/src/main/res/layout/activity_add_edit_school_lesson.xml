@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    tools:context=".fragments.manage.ActivityAddEditSchoolLesson">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_schoollesson_number"
+            app:errorEnabled="true"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="15">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiet_schoollesson_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Stunde"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/btn_schoollesson_start"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="20"
+            android:text="Beginn"
+            android:layout_gravity="center"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="16dp"
+            android:text="-"
+            android:layout_gravity="center"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+        <Button
+            android:id="@+id/btn_schoollesson_end"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="20"
+            android:layout_marginLeft="16dp"
+            android:text="Ende"
+            android:layout_gravity="center"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+</LinearLayout>

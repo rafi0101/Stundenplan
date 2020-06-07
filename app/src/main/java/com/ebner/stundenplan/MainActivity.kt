@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_room -> changeFragment(FragmentRoom())
             R.id.nav_year -> changeFragment(FragmentYear())
             R.id.nav_examtype -> changeFragment(FragmentExamtype())
+            R.id.nav_schoollesson -> changeFragment(FragmentSchoolLesson())
             R.id.nav_settings -> changeFragment(FragmentSettings())
             R.id.nav_info -> {
                 val fragment = LibsBuilder()
