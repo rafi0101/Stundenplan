@@ -1,14 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.main.FragmentTimetable">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <com.alamkanak.weekview.WeekView
+        android:id="@+id/weekView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="timetable" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:adaptiveEventTextSize="true"
+        app:allDayEventTextSize="13sp"
+        app:columnGap="1dp"
+        app:eventCornerRadius="4dp"
+        app:eventPaddingHorizontal="6dp"
+        app:eventPaddingVertical="2dp"
+        app:eventTextColor="@android:color/white"
+        app:firstDayOfWeek="monday"
+        app:headerRowBottomLineColor="@color/grey_400"
+        app:headerRowPadding="12dp"
+        app:hourHeight="60dp"
+        app:minHour="6"
+        app:horizontalScrollingEnabled="false"
+        app:showDistinctPastFutureColor="true"
+        app:showDistinctWeekendColor="true"
+        app:futureBackgroundColor="@color/white"
+        app:pastBackgroundColor="@color/grey_300"
+        app:futureWeekendBackgroundColor="@color/grey_200"
+        app:nowLineColor="@color/blue_500"
+        app:nowLineDotColor="@color/blue_500"
+        app:nowLineDotRadius="5dp"
+        app:nowLineStrokeWidth="1dp"
+        app:numberOfVisibleDays="7"
+        app:overlappingEventGap="1dp"
+        app:showFirstDayOfWeekFirst="true"
+        app:showHeaderRowBottomLine="true"
+        app:showNowLine="true"
+        app:showNowLineDot="true"
+        app:showTimeColumnSeparator="true"
+        app:singleDayHorizontalMargin="8dp"
+        app:timeColumnBackgroundColor="#ffffffff"
+        app:timeColumnPadding="8dp"
+        app:timeColumnSeparatorColor="@color/grey_500"
+        app:timeColumnSeparatorStrokeWidth="1dp"
+        app:timeColumnTextColor="@color/hint_text_color"
+        app:timeColumnTextSize="12sp"
+        app:todayHeaderTextColor="@color/blue_600" />
 
-</FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -115,6 +115,12 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).schoolLessonDao().insert(SchoolLesson(1, 8, 15, 9, 0))
                                     getInstance(context).schoolLessonDao().insert(SchoolLesson(2, 9, 0, 9, 45))
                                     getInstance(context).schoolLessonDao().insert(SchoolLesson(3, 9, 45, 10, 30))
+                                    getInstance(context).lessonDao().insert(Lesson(1, 1, 1, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(1, 2, 4, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(1, 3, 5, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(2, 1, 6, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(2, 2, 2, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(3, 3, 3, 1))
 
 
                                 }
