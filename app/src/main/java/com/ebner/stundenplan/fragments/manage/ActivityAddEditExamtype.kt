@@ -15,15 +15,15 @@ import com.google.android.material.textfield.TextInputLayout
 class ActivityAddEditExamtype : AppCompatActivity() {
 
     companion object {
-        val EXTRA_ETID = "com.ebner.stundenplan.fragments.manage.EXTRA_ETID"
-        val EXTRA_ETNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_ETNAME"
-        val EXTRA_ETWEIGHT = "com.ebner.stundenplan.fragments.manage.EXTRA_ETWEIGHT"
+        const val EXTRA_ETID = "com.ebner.stundenplan.fragments.manage.EXTRA_ETID"
+        const val EXTRA_ETNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_ETNAME"
+        const val EXTRA_ETWEIGHT = "com.ebner.stundenplan.fragments.manage.EXTRA_ETWEIGHT"
     }
 
-    private lateinit var tiet_etname: TextInputEditText
-    private lateinit var til_etname: TextInputLayout
-    private lateinit var tiet_etweight: TextInputEditText
-    private lateinit var til_etweight: TextInputLayout
+    private lateinit var tietEtname: TextInputEditText
+    private lateinit var tilEtname: TextInputLayout
+    private lateinit var tietEtweight: TextInputEditText
+    private lateinit var tilEtweight: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,26 +38,26 @@ class ActivityAddEditExamtype : AppCompatActivity() {
         }
 
         /*---------------------Link items to Layout--------------------------*/
-        tiet_etname = findViewById(R.id.tiet_examtype_etname)
-        til_etname = findViewById(R.id.til_examtype_etname)
-        tiet_etweight = findViewById(R.id.tiet_examtype_etweight)
-        til_etweight = findViewById(R.id.til_examtype_etweight)
+        tietEtname = findViewById(R.id.tiet_examtype_etname)
+        tilEtname = findViewById(R.id.til_examtype_etname)
+        tietEtweight = findViewById(R.id.tiet_examtype_etweight)
+        tilEtweight = findViewById(R.id.til_examtype_etweight)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
         if (intent.hasExtra(EXTRA_ETID)) {
             title = getString(R.string.fragment_examtype) + " bearbeiten"
-            tiet_etname.setText(intent.getStringExtra(EXTRA_ETNAME))
-            tiet_etweight.setText(intent.getDoubleExtra(EXTRA_ETWEIGHT, -1.0).toString())
+            tietEtname.setText(intent.getStringExtra(EXTRA_ETNAME))
+            tietEtweight.setText(intent.getDoubleExtra(EXTRA_ETWEIGHT, -1.0).toString())
         } else {
             title = "Neue " + getString(R.string.fragment_examtype)
         }
         //Remove the error message, if user starts typing
-        tiet_etname.addTextChangedListener {
-            til_etname.error = ""
+        tietEtname.addTextChangedListener {
+            tilEtname.error = ""
         }
-        tiet_etweight.addTextChangedListener {
-            til_etweight.error = ""
+        tietEtweight.addTextChangedListener {
+            tilEtweight.error = ""
         }
 
 
@@ -68,19 +68,19 @@ class ActivityAddEditExamtype : AppCompatActivity() {
         var error = false
 
         /*---------------------If EditText has invalid value--------------------------*/
-        if (TextUtils.isEmpty(tiet_etname.text.toString()) || TextUtils.getTrimmedLength(tiet_etname.text.toString()) == 0) {
-            til_etname.error = "Gib einen Namen ein!"
+        if (TextUtils.isEmpty(tietEtname.text.toString()) || TextUtils.getTrimmedLength(tietEtname.text.toString()) == 0) {
+            tilEtname.error = "Gib einen Namen ein!"
             error = true
         }
-        if (TextUtils.isEmpty(tiet_etweight.text.toString()) || tiet_etweight.text.toString().toDoubleOrNull() == null) {
-            til_etweight.error = "Gib eine korrekte Gewichtung ein!"
+        if (TextUtils.isEmpty(tietEtweight.text.toString()) || tietEtweight.text.toString().toDoubleOrNull() == null) {
+            tilEtweight.error = "Gib eine korrekte Gewichtung ein!"
             error = true
         }
         if (error) return
 
 
-        val etname = tiet_etname.text.toString()
-        val etweight = tiet_etweight.text.toString().toDouble()
+        val etname = tietEtname.text.toString()
+        val etweight = tietEtweight.text.toString().toDouble()
 
 
         val data = Intent()

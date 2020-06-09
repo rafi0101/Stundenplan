@@ -11,16 +11,16 @@ import com.ebner.stundenplan.database.table.year.Year
  */
 @Entity(
         tableName = "lesson",
-        foreignKeys = arrayOf(
-                ForeignKey(entity = SchoolLesson::class, parentColumns = arrayOf("slid"), childColumns = arrayOf("l_slid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
-                ForeignKey(entity = Subject::class, parentColumns = arrayOf("sid"), childColumns = arrayOf("l_sid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
-                ForeignKey(entity = Year::class, parentColumns = arrayOf("yid"), childColumns = arrayOf("l_yid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT)
-        ),
-        indices = arrayOf(
-                Index("l_slid"),
-                Index("l_sid"),
-                Index("l_yid")
-        )
+        foreignKeys = [
+            ForeignKey(entity = SchoolLesson::class, parentColumns = ["slid"], childColumns = ["l_slid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
+            ForeignKey(entity = Subject::class, parentColumns = ["sid"], childColumns = ["l_sid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
+            ForeignKey(entity = Year::class, parentColumns = ["yid"], childColumns = ["l_yid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT)
+        ],
+        indices = [
+            Index("l_slid"),
+            Index("l_sid"),
+            Index("l_yid")
+        ]
 )
 data class Lesson(
 

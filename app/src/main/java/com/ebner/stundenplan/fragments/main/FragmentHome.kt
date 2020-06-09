@@ -11,7 +11,6 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.ebner.stundenplan.BuildConfig
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.fragments.manage.FragmentSubject
@@ -25,14 +24,12 @@ import kotlin.math.roundToInt
  */
 class FragmentHome : Fragment() {
 
-    private val TAG = "debug_FragmentHome"
 
-
-    private lateinit var ibtn_timetable: ImageButton
-    private lateinit var ibtn_subject: ImageButton
-    private lateinit var ibtn_task: ImageButton
-    private lateinit var ibtn_year: ImageButton
-    private lateinit var ibtn_exam: ImageButton
+    private lateinit var ibtnTimetable: ImageButton
+    private lateinit var ibtnSubject: ImageButton
+    private lateinit var ibtnTask: ImageButton
+    private lateinit var ibtnYear: ImageButton
+    private lateinit var ibtnExam: ImageButton
 
 
     @SuppressLint("SetTextI18n")
@@ -41,8 +38,8 @@ class FragmentHome : Fragment() {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val versionName = BuildConfig.VERSION_NAME
-        val tv_version_number = root.findViewById<TextView>(R.id.tv_version_number)
-        tv_version_number.text = versionName
+        val tvVersionNumber = root.findViewById<TextView>(R.id.tv_version_number)
+        tvVersionNumber.text = versionName
 
 
         /*---------------------Set correct layout margin to main FrameLaout--------------------------*/
@@ -53,29 +50,29 @@ class FragmentHome : Fragment() {
         fragmentmain.layoutParams = params
 
         /*---------------------Link items to Layout--------------------------*/
-        ibtn_timetable = root.findViewById(R.id.ibtn_timetable)
-        ibtn_subject = root.findViewById(R.id.ibtn_subject)
-        ibtn_task = root.findViewById(R.id.ibtn_task)
-        ibtn_year = root.findViewById(R.id.ibtn_year)
-        ibtn_exam = root.findViewById(R.id.ibtn_exam)
+        ibtnTimetable = root.findViewById(R.id.ibtn_timetable)
+        ibtnSubject = root.findViewById(R.id.ibtn_subject)
+        ibtnTask = root.findViewById(R.id.ibtn_task)
+        ibtnYear = root.findViewById(R.id.ibtn_year)
+        ibtnExam = root.findViewById(R.id.ibtn_exam)
 
-        ibtn_timetable.setOnClickListener {
+        ibtnTimetable.setOnClickListener {
             changeFragment(FragmentTimetable())
         }
 
-        ibtn_subject.setOnClickListener {
+        ibtnSubject.setOnClickListener {
             changeFragment(FragmentSubject())
         }
 
-        ibtn_task.setOnClickListener {
+        ibtnTask.setOnClickListener {
             changeFragment(FragmentTask())
         }
 
-        ibtn_year.setOnClickListener {
+        ibtnYear.setOnClickListener {
             changeFragment(FragmentYear())
         }
 
-        ibtn_exam.setOnClickListener {
+        ibtnExam.setOnClickListener {
             changeFragment(FragmentExam())
         }
 
@@ -88,8 +85,7 @@ class FragmentHome : Fragment() {
     }
 
     private fun changeFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction
-        transaction = activity!!.supportFragmentManager.beginTransaction()
+        val transaction = activity!!.supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment, fragment)
         //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
         transaction.commit()
@@ -116,6 +112,6 @@ class FragmentHome : Fragment() {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }

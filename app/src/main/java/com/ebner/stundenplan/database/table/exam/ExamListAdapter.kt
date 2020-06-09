@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +15,7 @@ import com.ebner.stundenplan.database.table.mergedEntities.ExamSubjectYearExamty
  * Created by raphael on 29.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.exam
  */
-class ExamListAdapter(val itemClickListener: onItemClickListener, val itemLongClickListener: onItemLongClickListener) : ListAdapter<ExamSubjectYearExamtype, ExamListAdapter.ExamViewHolder>(TaskDiffCallback()) {
+class ExamListAdapter(private val itemClickListener: OnItemClickListener, private val itemLongClickListener: OnItemLongClickListener) : ListAdapter<ExamSubjectYearExamtype, ExamListAdapter.ExamViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -40,13 +38,13 @@ class ExamListAdapter(val itemClickListener: onItemClickListener, val itemLongCl
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(examSubjectYearExamtype: ExamSubjectYearExamtype)
     }
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemLongClickListener {
+    interface OnItemLongClickListener {
 
         fun onItemLongClicked(examSubjectYearExamtype: ExamSubjectYearExamtype)
     }
@@ -54,24 +52,22 @@ class ExamListAdapter(val itemClickListener: onItemClickListener, val itemLongCl
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class ExamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: ExamSubjectYearExamtype, itemclickListener: onItemClickListener, itemLongClickListener: onItemLongClickListener) = with(itemView) {
+        fun bind(item: ExamSubjectYearExamtype, itemclickListener: OnItemClickListener, itemLongClickListener: OnItemLongClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_exam_subject_name: TextView = itemView.findViewById(R.id.tv_exam_subject_name)
-            val tv_exam_examtype: TextView = itemView.findViewById(R.id.tv_exam_examtype)
-            val tv_exam_date: TextView = itemView.findViewById(R.id.tv_exam_date)
-            val tv_exam_grade: TextView = itemView.findViewById(R.id.tv_exam_grade)
-            val ll_exam: LinearLayout = itemView.findViewById(R.id.ll_exam)
-            val cv_exam: CardView = itemView.findViewById(R.id.cv_exam)
+            val tvExamSubjectName: TextView = itemView.findViewById(R.id.tv_exam_subject_name)
+            val tvExamExamtype: TextView = itemView.findViewById(R.id.tv_exam_examtype)
+            val tvExamDate: TextView = itemView.findViewById(R.id.tv_exam_date)
+            val tvExamGrade: TextView = itemView.findViewById(R.id.tv_exam_grade)
 
-            tv_exam_subject_name.text = item.subject.sname
-            tv_exam_examtype.text = item.examtype.etname
-            tv_exam_date.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
+            tvExamSubjectName.text = item.subject.sname
+            tvExamExamtype.text = item.examtype.etname
+            tvExamDate.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
             if (item.exam.egrade != -1) {
-                tv_exam_grade.text = item.exam.egrade.toString()
+                tvExamGrade.text = item.exam.egrade.toString()
             } else {
-                tv_exam_grade.text = ""
+                tvExamGrade.text = ""
             }
-            tv_exam_grade.setBackgroundColor(item.subject.scolor)
+            tvExamGrade.setBackgroundColor(item.subject.scolor)
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)
             }

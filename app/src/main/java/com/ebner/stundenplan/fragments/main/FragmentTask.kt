@@ -42,6 +42,6 @@ class FragmentTask : Fragment() {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }

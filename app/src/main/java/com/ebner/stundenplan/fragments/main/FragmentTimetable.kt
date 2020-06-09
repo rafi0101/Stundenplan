@@ -75,7 +75,7 @@ class FragmentTimetable : Fragment() {
                     //Add Each lesson to the list
                     lessons.forEach {
 
-                        val calendar = Calendar.getInstance();
+                        val calendar = Calendar.getInstance()
                         val currentYear = calendar.get(Calendar.YEAR)
                         val currentMonth = calendar.get(Calendar.MONTH)
 
@@ -111,8 +111,8 @@ class FragmentTimetable : Fragment() {
                             lastEventTime = it.schoolLesson.slendhour + 2
                         }
 
-                        Log.d(TAG, "endhour: ${it.schoolLesson.slendhour}");
-                        Log.d(TAG, "lastEventTime: $lastEventTime");
+                        Log.d(TAG, "endhour: ${it.schoolLesson.slendhour}")
+                        Log.d(TAG, "lastEventTime: $lastEventTime")
 
                         lessonEvent.add(LessonEvent(id, title, startTime, endTime, location, color, false, isCanceled))
 
@@ -141,6 +141,6 @@ class FragmentTimetable : Fragment() {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }

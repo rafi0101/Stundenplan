@@ -15,7 +15,7 @@ import com.ebner.stundenplan.R
  * Created by raphael on 07.06.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.schoolLesson
  */
-class SchoolLessonListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<SchoolLesson, SchoolLessonListAdapter.SchoolLessonViewHolder>(TaskDiffCallback()) {
+class SchoolLessonListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<SchoolLesson, SchoolLessonListAdapter.SchoolLessonViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -38,7 +38,7 @@ class SchoolLessonListAdapter(val itemClickListener: onItemClickListener) : List
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(schoolLesson: SchoolLesson)
     }
@@ -46,22 +46,20 @@ class SchoolLessonListAdapter(val itemClickListener: onItemClickListener) : List
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class SchoolLessonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n", "SimpleDateFormat")
-        fun bind(item: SchoolLesson, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: SchoolLesson, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_schoollesson_number: TextView = itemView.findViewById(R.id.tv_schoollesson_number)
-            val tv_schoollesson_time_start: TextView = itemView.findViewById(R.id.tv_schoollesson_time_start)
-            val tv_schoollesson_time_end: TextView = itemView.findViewById(R.id.tv_schoollesson_time_end)
+            val tvSchoollessonNumber: TextView = itemView.findViewById(R.id.tv_schoollesson_number)
+            val tvSchoollessonTimeStart: TextView = itemView.findViewById(R.id.tv_schoollesson_time_start)
+            val tvSchoollessonTimeEnd: TextView = itemView.findViewById(R.id.tv_schoollesson_time_end)
 
-            tv_schoollesson_number.text = item.slnumber.toString()
+            tvSchoollessonNumber.text = item.slnumber.toString()
 
             //IF minute is less then 10, add a 0 in front of it (just for the view)
-            var returnStartMinute = ""
-            var returnEndMinute = ""
-            if (item.slstartminute < 10) returnStartMinute = "0${item.slstartminute}" else returnStartMinute = "${item.slstartminute}"
-            if (item.slendminute < 10) returnEndMinute = "0${item.slendminute}" else returnEndMinute = "${item.slendminute}"
+            val returnStartMinute = if (item.slstartminute < 10) "0${item.slstartminute}" else "${item.slstartminute}"
+            val returnEndMinute = if (item.slendminute < 10) "0${item.slendminute}" else "${item.slendminute}"
 
-            tv_schoollesson_time_start.text = "${item.slstarthour}:$returnStartMinute"
-            tv_schoollesson_time_end.text = "${item.slendhour}:$returnEndMinute"
+            tvSchoollessonTimeStart.text = "${item.slstarthour}:$returnStartMinute"
+            tvSchoollessonTimeEnd.text = "${item.slendhour}:$returnEndMinute"
 
 
             itemView.setOnClickListener {

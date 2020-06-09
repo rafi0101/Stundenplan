@@ -2,7 +2,6 @@ package com.ebner.stundenplan.fragments.manage
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -38,12 +37,11 @@ import kotlin.math.roundToInt
  * A simple [Fragment] subclass.
  */
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
+class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
 
-    private val TAG = "debug_FragmentSubject"
 
     private lateinit var subjectViewModel: SubjectViewModel
-    private lateinit var cl_subject: CoordinatorLayout
+    private lateinit var clSubject: CoordinatorLayout
 
     companion object {
         private const val ADD_SUBJECT_REQUEST = 1
@@ -68,7 +66,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
 
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_subject = root.findViewById(R.id.cl_subject)
+        clSubject = root.findViewById(R.id.cl_subject)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_subject)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_subject_addSubject)
 
@@ -111,17 +109,17 @@ class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
                         .setTitle("Achtung")
                         .setMessage("Es wird das Fach ${subject.sname} und alle zugehörigen Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!\n" +
                                 "Empfehlung: setze das Fach auf inaktiv")
-                        .setPositiveButton("Löschen") { dialog, which ->
+                        .setPositiveButton("Löschen") { _, _ ->
                             subjectViewModel.delete(subject)
                             // showing snack bar with Undo option
                             val snackbar = Snackbar
-                                    .make(cl_subject, "Fach ${subject.sname} erfolgreich gelöscht!", 5000) //ms --> 8sec
+                                    .make(clSubject, "Fach ${subject.sname} erfolgreich gelöscht!", 5000) //ms --> 8sec
                             snackbar.show()
                         }
-                        .setNegativeButton("Abbrechen") { dialog, which ->
+                        .setNegativeButton("Abbrechen") { _, _ ->
                             adapter.notifyItemChanged(position)
                         }
-                        .setNeutralButton("Inaktiv") { dialog, which ->
+                        .setNeutralButton("Inaktiv") { _, _ ->
                             adapter.notifyItemChanged(position)
                             CoroutineScope(Dispatchers.IO).launch {
                                 delay(500)
@@ -130,7 +128,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
                             }
 
                         }
-                        .setOnCancelListener { dialog: DialogInterface? ->
+                        .setOnCancelListener {
                             adapter.notifyItemChanged(position)
                         }
                         .show()
@@ -187,10 +185,9 @@ class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
             /*---------------------If the Request was a ADD subject request--------------------------*/
             if (requestCode == ADD_SUBJECT_REQUEST) {
 
-                if (rid.equals(-1) || tid.equals(-1)) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_subject, "Failed to add Subject", Snackbar.LENGTH_LONG)
+                if (rid == -1 || tid == -1) {
+                    val snackbar = Snackbar
+                            .make(clSubject, "Failed to add Subject", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -203,10 +200,9 @@ class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
             } else if (requestCode == EDIT_SUBJECT_REQUEST) {
                 val id = data.getIntExtra(ActivityAddEditSubject.EXTRA_SID, -1)
 
-                if (rid.equals(-1) || tid.equals(-1) || id.equals(-1)) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_subject, "Failed to update Subject!", Snackbar.LENGTH_LONG)
+                if (rid == -1 || tid == -1 || id == -1) {
+                    val snackbar = Snackbar
+                            .make(clSubject, "Failed to update Subject!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -242,6 +238,6 @@ class FragmentSubject : Fragment(), SubjectListAdapter.onItemClickListener {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }

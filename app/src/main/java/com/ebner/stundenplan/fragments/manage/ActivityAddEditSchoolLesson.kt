@@ -20,23 +20,23 @@ import java.util.*
 class ActivityAddEditSchoolLesson : AppCompatActivity() {
 
     companion object {
-        val EXTRA_SLID = "com.ebner.stundenplan.fragments.manage.EXTRA_SLID"
-        val EXTRA_SLNUMBER = "com.ebner.stundenplan.fragments.manage.EXTRA_SLNUMBER"
-        val EXTRA_SLSTARTHOUR = "com.ebner.stundenplan.fragments.manage.EXTRA_SLSTARTHOUR"
-        val EXTRA_SLSTARTMINUTE = "com.ebner.stundenplan.fragments.manage.EXTRA_SLSTARTMINUTE"
-        val EXTRA_SLENDHOUR = "com.ebner.stundenplan.fragments.manage.EXTRA_SLENDHOUR"
-        val EXTRA_SLENDMINUTE = "com.ebner.stundenplan.fragments.manage.EXTRA_SLENDMINUTE"
+        const val EXTRA_SLID = "com.ebner.stundenplan.fragments.manage.EXTRA_SLID"
+        const val EXTRA_SLNUMBER = "com.ebner.stundenplan.fragments.manage.EXTRA_SLNUMBER"
+        const val EXTRA_SLSTARTHOUR = "com.ebner.stundenplan.fragments.manage.EXTRA_SLSTARTHOUR"
+        const val EXTRA_SLSTARTMINUTE = "com.ebner.stundenplan.fragments.manage.EXTRA_SLSTARTMINUTE"
+        const val EXTRA_SLENDHOUR = "com.ebner.stundenplan.fragments.manage.EXTRA_SLENDHOUR"
+        const val EXTRA_SLENDMINUTE = "com.ebner.stundenplan.fragments.manage.EXTRA_SLENDMINUTE"
     }
 
-    var selectedStartHour = -1
-    var selectedStartMinute = -1
-    var selectedEndHour = -1
-    var selectedEndMinute = -1
+    private var selectedStartHour = -1
+    private var selectedStartMinute = -1
+    private var selectedEndHour = -1
+    private var selectedEndMinute = -1
 
-    private lateinit var tiet_number: TextInputEditText
-    private lateinit var til_number: TextInputLayout
-    private lateinit var btn_start: Button
-    private lateinit var btn_end: Button
+    private lateinit var tietNumber: TextInputEditText
+    private lateinit var tilNumber: TextInputLayout
+    private lateinit var btnStart: Button
+    private lateinit var btnEnd: Button
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,10 +51,10 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
         }
 
         /*---------------------Link items to Layout--------------------------*/
-        tiet_number = findViewById(R.id.tiet_schoollesson_number)
-        til_number = findViewById(R.id.til_schoollesson_number)
-        btn_start = findViewById(R.id.btn_schoollesson_start)
-        btn_end = findViewById(R.id.btn_schoollesson_end)
+        tietNumber = findViewById(R.id.tiet_schoollesson_number)
+        tilNumber = findViewById(R.id.til_schoollesson_number)
+        btnStart = findViewById(R.id.btn_schoollesson_start)
+        btnEnd = findViewById(R.id.btn_schoollesson_end)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
@@ -71,9 +71,9 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
             selectedEndHour = slendhour
             selectedEndMinute = slendminute
 
-            btn_start.text = "$selectedStartHour:$selectedStartMinute"
-            btn_end.text = "$selectedEndHour:$selectedEndMinute"
-            tiet_number.setText(slnumber.toString())
+            btnStart.text = "$selectedStartHour:$selectedStartMinute"
+            btnEnd.text = "$selectedEndHour:$selectedEndMinute"
+            tietNumber.setText(slnumber.toString())
         } else {
             title = "Neue " + getString(R.string.fragment_schoollesson)
         }
@@ -83,26 +83,17 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
         val calMinute = cal.get(Calendar.MINUTE)
 
         //On Button click opens a TimePickerDialog, to select easy lesson time
-        btn_start.setOnClickListener {
-            val tpd = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+        btnStart.setOnClickListener {
+            val tpd = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 cal.set(Calendar.MINUTE, minute)
 
                 selectedStartHour = hourOfDay
                 selectedStartMinute = minute
 
-                var returnStartMinute = ""
+                val returnStartMinute = if (selectedStartMinute < 10) "0$selectedStartMinute" else "$selectedStartMinute"
 
-                if (selectedStartMinute < 10) {
-                    returnStartMinute = "0${selectedStartMinute}"
-                } else {
-                    returnStartMinute = "${selectedStartMinute}"
-                }
-
-
-
-
-                btn_start.text = "$selectedStartHour:$returnStartMinute"
+                btnStart.text = "$selectedStartHour:$returnStartMinute"
 
                 //Add 45 Minutes to Start Time, and detects if minute >= 60 and hour >=24
                 selectedEndMinute = selectedStartMinute + 45
@@ -116,11 +107,10 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
                 }
 
                 //IF minute is less then 10, add a 0 in front of it (just for the view)
-                var returnEndMinute = ""
-                if (selectedEndMinute < 10) returnEndMinute = "0${selectedEndMinute}" else returnEndMinute = "${selectedEndMinute}"
+                val returnEndMinute = if (selectedEndMinute < 10) "0$selectedEndMinute" else "$selectedEndMinute"
 
                 //Set calculated time to end button
-                btn_end.text = "$selectedEndHour:$returnEndMinute"
+                btnEnd.text = "$selectedEndHour:$returnEndMinute"
 
             }, calHourOfDay, calMinute, true)
 
@@ -134,8 +124,8 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
         }
 
         //On Button click opens a TimePickerDialog, to select easy lesson time
-        btn_end.setOnClickListener {
-            val tpd = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+        btnEnd.setOnClickListener {
+            val tpd = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 cal.set(Calendar.MINUTE, minute)
 
@@ -143,9 +133,8 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
                 selectedEndMinute = minute
 
                 //IF minute is less then 10, add a 0 in front of it (just for the view)
-                var returnEndMinute = ""
-                if (selectedEndMinute < 10) returnEndMinute = "0${selectedEndMinute}" else returnEndMinute = "$selectedEndMinute"
-                btn_end.text = "$selectedEndHour:$returnEndMinute"
+                val returnEndMinute = if (selectedEndMinute < 10) "0$selectedEndMinute" else "$selectedEndMinute"
+                btnEnd.text = "$selectedEndHour:$returnEndMinute"
 
             }, calHourOfDay, calMinute, true)
 
@@ -158,8 +147,8 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
         }
 
         //Remove the error message, if user starts typing
-        tiet_number.addTextChangedListener {
-            til_number.error = ""
+        tietNumber.addTextChangedListener {
+            tilNumber.error = ""
         }
 
     }
@@ -169,8 +158,8 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
         var error = false
 
         /*---------------------If EditText is empty--------------------------*/
-        if (TextUtils.isEmpty(tiet_number.text.toString()) || TextUtils.getTrimmedLength(tiet_number.text.toString()) == 0 || tiet_number.text.toString().toIntOrNull() == null) {
-            til_number.error = "Gib eine Stunde ein!"
+        if (TextUtils.isEmpty(tietNumber.text.toString()) || TextUtils.getTrimmedLength(tietNumber.text.toString()) == 0 || tietNumber.text.toString().toIntOrNull() == null) {
+            tilNumber.error = "Gib eine Stunde ein!"
             error = true
         }
         if (selectedStartHour == -1 || selectedStartMinute == -1 || selectedEndHour == -1 || selectedEndMinute == -1) {
@@ -179,7 +168,7 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
         }
         if (error) return
 
-        val number = tiet_number.text.toString().toInt()
+        val number = tietNumber.text.toString().toInt()
 
         val data = Intent()
         data.putExtra(EXTRA_SLNUMBER, number)

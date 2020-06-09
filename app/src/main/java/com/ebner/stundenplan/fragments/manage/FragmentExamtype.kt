@@ -3,7 +3,6 @@ package com.ebner.stundenplan.fragments.manage
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -32,11 +31,11 @@ import kotlin.math.roundToInt
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentExamtype : Fragment(), ExamtypeListAdapter.onItemClickListener {
+class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
 
 
     private lateinit var examtypeViewModel: ExamtypeViewModel
-    private lateinit var cl_examtype: CoordinatorLayout
+    private lateinit var clExamtype: CoordinatorLayout
 
     companion object {
         private const val ADD_EXAMTYPE_REQUEST = 1
@@ -60,7 +59,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.onItemClickListener {
 
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_examtype = root.findViewById(R.id.cl_examtype)
+        clExamtype = root.findViewById(R.id.cl_examtype)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_examtype)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_examtype_addExam)
 
@@ -100,17 +99,17 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.onItemClickListener {
                 MaterialAlertDialogBuilder(context)
                         .setTitle("Achtung")
                         .setMessage("Es wird die Prüfungsart ${examtypeitem?.etname} und alle zugehörigen Fächer, Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
-                        .setPositiveButton("Löschen") { dialog, which ->
+                        .setPositiveButton("Löschen") { _, _ ->
                             examtypeitem?.let { examtypeViewModel.delete(it) }
                             // showing snack bar with Undo option
                             val snackbar = Snackbar
-                                    .make(cl_examtype, "Prüfungsart ${examtypeitem?.etname} erfolgreich gelöscht!", 8000) //ms --> 8sec
+                                    .make(clExamtype, "Prüfungsart ${examtypeitem?.etname} erfolgreich gelöscht!", 8000) //ms --> 8sec
                             snackbar.show()
                         }
-                        .setNegativeButton("Abbrechen") { dialog, which ->
+                        .setNegativeButton("Abbrechen") { _, _ ->
                             adapter.notifyItemChanged(position)
                         }
-                        .setOnCancelListener { dialog: DialogInterface? ->
+                        .setOnCancelListener {
                             adapter.notifyItemChanged(position)
                         }
                         .show()
@@ -168,9 +167,8 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.onItemClickListener {
                 val id = data.getIntExtra(ActivityAddEditExamtype.EXTRA_ETID, -1)
 
                 if (id == -1) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_examtype, "Failed to update Examtype!", Snackbar.LENGTH_LONG)
+                    val snackbar = Snackbar
+                            .make(clExamtype, "Failed to update Examtype!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -201,7 +199,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.onItemClickListener {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 
 }

@@ -13,7 +13,7 @@ import com.ebner.stundenplan.R
  * Created by raphael on 25.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.year
  */
-class YearListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<Year, YearListAdapter.YearViewHolder>(TaskDiffCallback()) {
+class YearListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<Year, YearListAdapter.YearViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -36,18 +36,18 @@ class YearListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(year: Year)
     }
 
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class YearViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: Year, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: Year, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_year_name: TextView = itemView.findViewById(R.id.tv_year_name)
+            val tvYearName: TextView = itemView.findViewById(R.id.tv_year_name)
 
-            tv_year_name.text = item.yname
+            tvYearName.text = item.yname
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)

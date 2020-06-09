@@ -14,7 +14,7 @@ import com.ebner.stundenplan.R
  * Stundenplan Created in com.ebner.stundenplan.database.table.room
  */
 
-class RoomListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<Room, RoomListAdapter.RoomViewHolder>(TaskDiffCallback()) {
+class RoomListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<Room, RoomListAdapter.RoomViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -37,18 +37,18 @@ class RoomListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(room: Room)
     }
 
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class RoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: Room, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: Room, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_room_number: TextView = itemView.findViewById(R.id.tv_room_number)
+            val tvRoomNumber: TextView = itemView.findViewById(R.id.tv_room_number)
 
-            tv_room_number.text = item.rname.toString()
+            tvRoomNumber.text = item.rname
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)

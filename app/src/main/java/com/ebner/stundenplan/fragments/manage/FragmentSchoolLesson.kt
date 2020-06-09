@@ -3,7 +3,6 @@ package com.ebner.stundenplan.fragments.manage
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -33,11 +32,11 @@ import kotlin.math.roundToInt
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.onItemClickListener {
+class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickListener {
 
 
     private lateinit var schoolLessonViewModel: SchoolLessonViewModel
-    private lateinit var cl_schoollesson: CoordinatorLayout
+    private lateinit var clSchoollesson: CoordinatorLayout
 
     companion object {
         private const val ADD_SCHOOLLESSON_REQUEST = 1
@@ -60,7 +59,7 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.onItemClickList
         fragmentmain.layoutParams = params
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_schoollesson = root.findViewById(R.id.cl_schoollesson)
+        clSchoollesson = root.findViewById(R.id.cl_schoollesson)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_schoollesson)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_schoollesson_addSchoollesson)
 
@@ -98,17 +97,17 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.onItemClickList
                 MaterialAlertDialogBuilder(context)
                         .setTitle("Achtung")
                         .setMessage("Es wird die Schulstunde ${schoolLessonItem.slnumber} und alle zugehörigen Stunden im Stundenplan gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
-                        .setPositiveButton("Löschen") { dialog, which ->
+                        .setPositiveButton("Löschen") { _, _ ->
                             schoolLessonViewModel.delete(schoolLessonItem)
                             // showing snack bar with Undo option
                             val snackbar = Snackbar
-                                    .make(cl_schoollesson, "Schulstunde  ${schoolLessonItem.slnumber} erfolgreich gelöscht!", 8000) //ms --> 8sec
+                                    .make(clSchoollesson, "Schulstunde  ${schoolLessonItem.slnumber} erfolgreich gelöscht!", 8000) //ms --> 8sec
                             snackbar.show()
                         }
-                        .setNegativeButton("Abbrechen") { dialog, which ->
+                        .setNegativeButton("Abbrechen") { _, _ ->
                             adapter.notifyItemChanged(position)
                         }
-                        .setOnCancelListener { dialog: DialogInterface? ->
+                        .setOnCancelListener {
                             adapter.notifyItemChanged(position)
                         }
                         .show()
@@ -169,9 +168,8 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.onItemClickList
                 val id = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLID, -1)
 
                 if (id == -1) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_schoollesson, "Failed to update SchoolLesson!", Snackbar.LENGTH_LONG)
+                    val snackbar = Snackbar
+                            .make(clSchoollesson, "Failed to update SchoolLesson!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }

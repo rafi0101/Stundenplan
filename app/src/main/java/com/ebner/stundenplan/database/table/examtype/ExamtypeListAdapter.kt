@@ -14,7 +14,7 @@ import com.ebner.stundenplan.R
  * Created by raphael on 25.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.examtype
  */
-class ExamtypeListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<Examtype, ExamtypeListAdapter.ExamtypeViewHolder>(TaskDiffCallback()) {
+class ExamtypeListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<Examtype, ExamtypeListAdapter.ExamtypeViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -37,7 +37,7 @@ class ExamtypeListAdapter(val itemClickListener: onItemClickListener) : ListAdap
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(examtype: Examtype)
     }
@@ -45,13 +45,13 @@ class ExamtypeListAdapter(val itemClickListener: onItemClickListener) : ListAdap
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class ExamtypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: Examtype, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: Examtype, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_examtype_name: TextView = itemView.findViewById(R.id.tv_examtype_name)
-            val tv_examtype_weight: TextView = itemView.findViewById(R.id.tv_examtype_weight)
+            val tvExamtypeName: TextView = itemView.findViewById(R.id.tv_examtype_name)
+            val tvExamtypeWeight: TextView = itemView.findViewById(R.id.tv_examtype_weight)
 
-            tv_examtype_name.text = item.etname
-            tv_examtype_weight.text = "x " + item.etweight.toString()
+            tvExamtypeName.text = item.etname
+            tvExamtypeWeight.text = "x " + item.etweight.toString()
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)

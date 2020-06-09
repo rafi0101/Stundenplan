@@ -13,7 +13,7 @@ import com.ebner.stundenplan.R
  * Created by raphael on 21.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.teacher
  */
-class TeacherListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<Teacher, TeacherListAdapter.TeacherViewHolder>(TaskDiffCallback()){
+class TeacherListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<Teacher, TeacherListAdapter.TeacherViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -36,18 +36,18 @@ class TeacherListAdapter(val itemClickListener: onItemClickListener) : ListAdapt
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(teacher: Teacher)
     }
 
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class TeacherViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: Teacher, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: Teacher, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_teacher_name: TextView = itemView.findViewById(R.id.tv_teacher_name)
+            val tvTeacherName: TextView = itemView.findViewById(R.id.tv_teacher_name)
 
-            tv_teacher_name.text = item.tname.toString()
+            tvTeacherName.text = item.tname
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)

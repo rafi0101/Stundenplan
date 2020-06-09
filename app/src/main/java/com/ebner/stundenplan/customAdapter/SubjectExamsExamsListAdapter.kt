@@ -36,15 +36,15 @@ class SubjectExamsExamsListAdapter : ListAdapter<ExamSubjectYearExamtype, Subjec
         @SuppressLint("SetTextI18n")
         fun bind(item: ExamSubjectYearExamtype) = with(itemView) {
             //Bind the data with View
-            val tv_subjectexams_examtype: TextView = itemView.findViewById(R.id.tv_subjectexams_examtype)
-            val tv_subjectexams_grade: TextView = itemView.findViewById(R.id.tv_subjectexams_grade)
-            val tv_subjectexams_weight: TextView = itemView.findViewById(R.id.tv_subjectexams_weight)
-            val tv_subjectexams_date: TextView = itemView.findViewById(R.id.tv_subjectexams_date)
+            val tvSubjectexamsExamtype: TextView = itemView.findViewById(R.id.tv_subjectexams_examtype)
+            val tvSubjectexamsGrade: TextView = itemView.findViewById(R.id.tv_subjectexams_grade)
+            val tvSubjectexamsWeight: TextView = itemView.findViewById(R.id.tv_subjectexams_weight)
+            val tvSubjectexamsDate: TextView = itemView.findViewById(R.id.tv_subjectexams_date)
 
-            tv_subjectexams_examtype.text = item.examtype.etname
-            if (item.exam.egrade == -1) tv_subjectexams_grade.text = "-" else tv_subjectexams_grade.text = item.exam.egrade.toString()
-            tv_subjectexams_weight.text = "x${item.examtype.etweight}"
-            tv_subjectexams_date.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
+            tvSubjectexamsExamtype.text = item.examtype.etname
+            if (item.exam.egrade == -1) tvSubjectexamsGrade.text = "-" else tvSubjectexamsGrade.text = item.exam.egrade.toString()
+            tvSubjectexamsWeight.text = "x${item.examtype.etweight}"
+            tvSubjectexamsDate.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
 
 
         }

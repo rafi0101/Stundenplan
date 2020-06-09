@@ -14,12 +14,12 @@ import com.google.android.material.textfield.TextInputLayout
 class ActivityAddEditYear : AppCompatActivity() {
 
     companion object {
-        val EXTRA_YID = "com.ebner.stundenplan.fragments.manage.EXTRA_YID"
-        val EXTRA_YNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_YNAME"
+        const val EXTRA_YID = "com.ebner.stundenplan.fragments.manage.EXTRA_YID"
+        const val EXTRA_YNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_YNAME"
     }
 
-    private lateinit var tiet_yname: TextInputEditText
-    private lateinit var til_yname: TextInputLayout
+    private lateinit var tietYname: TextInputEditText
+    private lateinit var tilYname: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +34,14 @@ class ActivityAddEditYear : AppCompatActivity() {
         }
 
         /*---------------------Link items to Layout--------------------------*/
-        tiet_yname = findViewById(R.id.tiet_year_yname)
-        til_yname = findViewById(R.id.til_year_yname)
+        tietYname = findViewById(R.id.tiet_year_yname)
+        tilYname = findViewById(R.id.til_year_yname)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
         if (intent.hasExtra(EXTRA_YID)) {
             title = getString(R.string.fragment_year) + " bearbeiten"
-            tiet_yname.setText(intent.getStringExtra(EXTRA_YNAME))
+            tietYname.setText(intent.getStringExtra(EXTRA_YNAME))
         } else {
             title = "Neue " + getString(R.string.fragment_year)
         }
@@ -53,12 +53,12 @@ class ActivityAddEditYear : AppCompatActivity() {
     private fun saveYear() {
 
         /*---------------------If EditText is empty--------------------------*/
-        if (TextUtils.isEmpty(tiet_yname.text.toString())) {
-            til_yname.error = "Gib einen Namen ein!"
+        if (TextUtils.isEmpty(tietYname.text.toString())) {
+            tilYname.error = "Gib einen Namen ein!"
             return
         }
 
-        val yname = tiet_yname.text.toString()
+        val yname = tietYname.text.toString()
 
         val data = Intent()
         data.putExtra(EXTRA_YNAME, yname)

@@ -11,14 +11,14 @@ import com.ebner.stundenplan.database.table.teacher.Teacher
  */
 @Entity(
         tableName = "subject",
-        foreignKeys = arrayOf(
-                ForeignKey(entity = Teacher::class, parentColumns = arrayOf("tid"), childColumns = arrayOf("s_tid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
-                ForeignKey(entity = Room::class, parentColumns = arrayOf("rid"), childColumns = arrayOf("s_rid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT)
-        ),
-        indices = arrayOf(
-                Index("s_tid"),
-                Index("s_rid")
-        )
+        foreignKeys = [
+            ForeignKey(entity = Teacher::class, parentColumns = ["tid"], childColumns = ["s_tid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
+            ForeignKey(entity = Room::class, parentColumns = ["rid"], childColumns = ["s_rid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT)
+        ],
+        indices = [
+            Index("s_tid"),
+            Index("s_rid")
+        ]
 )
 data class Subject(
 

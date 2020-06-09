@@ -3,7 +3,6 @@ package com.ebner.stundenplan.database.table.teacher
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.ebner.stundenplan.database.table.mergedEntities.SubjectTeacherRoom
 
 /**
  * Created by raphael on 15.05.2020.

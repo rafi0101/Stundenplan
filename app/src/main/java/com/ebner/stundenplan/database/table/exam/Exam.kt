@@ -11,16 +11,16 @@ import com.ebner.stundenplan.database.table.year.Year
  */
 @Entity(
         tableName = "exam",
-        foreignKeys = arrayOf(
-                ForeignKey(entity = Subject::class, parentColumns = arrayOf("sid"), childColumns = arrayOf("e_sid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
-                ForeignKey(entity = Examtype::class, parentColumns = arrayOf("etid"), childColumns = arrayOf("e_etid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
-                ForeignKey(entity = Year::class, parentColumns = arrayOf("yid"), childColumns = arrayOf("e_yid"), onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT)
-        ),
-        indices = arrayOf(
-                Index("e_sid"),
-                Index("e_etid"),
-                Index("e_yid")
-        )
+        foreignKeys = [
+            ForeignKey(entity = Subject::class, parentColumns = ["sid"], childColumns = ["e_sid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
+            ForeignKey(entity = Examtype::class, parentColumns = ["etid"], childColumns = ["e_etid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT),
+            ForeignKey(entity = Year::class, parentColumns = ["yid"], childColumns = ["e_yid"], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.SET_DEFAULT)
+        ],
+        indices = [
+            Index("e_sid"),
+            Index("e_etid"),
+            Index("e_yid")
+        ]
 )
 data class Exam(
 

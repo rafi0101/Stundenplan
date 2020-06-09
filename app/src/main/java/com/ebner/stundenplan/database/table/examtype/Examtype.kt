@@ -21,5 +21,4 @@ data class Examtype(
         @ColumnInfo(name = "etid")
         var etid: Int = 0
 
-) {
-}
+)

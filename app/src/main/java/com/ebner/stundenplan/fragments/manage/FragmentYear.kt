@@ -3,12 +3,10 @@ package com.ebner.stundenplan.fragments.manage
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,14 +38,12 @@ import kotlin.math.roundToInt
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
-
-    private val TAG = "debug_FragmentYear"
+class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
 
     private lateinit var yearViewModel: YearViewModel
     private lateinit var settingsViewModel: SettingsViewModel
-    private lateinit var cl_year: CoordinatorLayout
-    private lateinit var sp_activeyear: MaterialSpinner
+    private lateinit var clYear: CoordinatorLayout
+    private lateinit var spActiveyear: MaterialSpinner
     private var activeYearID: Int = -1
 
     companion object {
@@ -72,8 +68,8 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
         fragmentmain.layoutParams = params
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_year = root.findViewById(R.id.cl_year)
-        sp_activeyear = root.findViewById(R.id.sp_activeyear)
+        clYear = root.findViewById(R.id.cl_year)
+        spActiveyear = root.findViewById(R.id.sp_activeyear)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_year)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_year_addYear)
 
@@ -116,19 +112,16 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
                 //Item from database (yearItem?.rid gives the id)
                 val yearItem = adapter.getYearAt(position)
 
-                Log.d(TAG, "todelete year id: ${yearItem?.yid}")
-                Log.d(TAG, "activeYearID: $activeYearID")
-
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                if (activeYearID.equals(yearItem?.yid)) {
+                if (activeYearID == yearItem?.yid) {
                     MaterialAlertDialogBuilder(context)
                             .setTitle("Achtung!")
                             .setMessage("Diese Klasse kann nicht gelöscht werden, da es die aktuell aktive Klasse ist.\n" +
                                     "Bitte ändere zunächst die aktive Klasse.")
-                            .setPositiveButton("Ok") { dialog, which ->
+                            .setPositiveButton("Ok") { _, _ ->
                                 adapter.notifyItemChanged(position)
                             }
-                            .setOnCancelListener { dialog: DialogInterface? ->
+                            .setOnCancelListener {
                                 adapter.notifyItemChanged(position)
                             }
                             .show()
@@ -137,17 +130,17 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
                     MaterialAlertDialogBuilder(context)
                             .setTitle("Achtung!")
                             .setMessage("Es wird die Klasse ${yearItem?.yname}, der Stundenplan und ALLE verknüpften Prüfungen und Aufgaben gelöscht.\n\nDas Wiederherstellen ist nicht mehr möglich!")
-                            .setPositiveButton("Alles Löschen") { dialog, which ->
+                            .setPositiveButton("Alles Löschen") { _, _ ->
                                 yearItem?.let { yearViewModel.delete(it) }
                                 // showing snack bar with Undo option
                                 val snackbar = Snackbar
-                                        .make(cl_year, "Klasse ${yearItem?.yname} successfully deleted!", 8000) //ms --> 8sec
+                                        .make(clYear, "Klasse ${yearItem?.yname} successfully deleted!", 8000) //ms --> 8sec
                                 snackbar.show()
                             }
-                            .setNegativeButton("Abbrechen") { dialog, which ->
+                            .setNegativeButton("Abbrechen") { _, _ ->
                                 adapter.notifyItemChanged(position)
                             }
-                            .setOnCancelListener { dialog: DialogInterface? ->
+                            .setOnCancelListener {
                                 adapter.notifyItemChanged(position)
                             }
                             .show()
@@ -185,7 +178,7 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
     }
 
 
-    suspend fun setYearsToSpinner(root: Context) {
+    private suspend fun setYearsToSpinner(root: Context) {
         /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
          * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
          * For setting the item to the spinner:
@@ -193,15 +186,15 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
          *  2. this position is set to the spinner, so i get the correct name
          * For getting the selected it, it is vice versa
          */
-        val year_yname = ArrayAdapter<String>(root, android.R.layout.simple_spinner_item)
-        val year_yid = ArrayAdapter<Int>(root, android.R.layout.simple_spinner_item)
+        val yearYname = ArrayAdapter<String>(root, android.R.layout.simple_spinner_item)
+        val yearYid = ArrayAdapter<Int>(root, android.R.layout.simple_spinner_item)
         /*---------------------get the list with all items in room and teacher--------------------------*/
-        val year_all = yearViewModel.allYearList()
+        val yearAll = yearViewModel.allYearList()
 
         /*---------------------add each item to the Arrayadapters--------------------------*/
-        year_all.forEach {
-            year_yname.add(it.yname)
-            year_yid.add(it.yid)
+        yearAll.forEach {
+            yearYname.add(it.yname)
+            yearYid.add(it.yid)
         }
 
         /*---------------------Set list of all years to spinner (back in the Main thread)--------------------------*/
@@ -217,30 +210,29 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
 
 
             // Define some Properties
-            sp_activeyear.setLabel("Aktive Klasse")
+            spActiveyear.setLabel("Aktive Klasse")
 
             // Set layout to use when the list of choices appear
-            year_yid.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            year_yname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            yearYid.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            yearYname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
             // Set Adapter to Spinner
-            sp_activeyear.setAdapter(year_yname)
+            spActiveyear.setAdapter(yearYname)
 
             //Set gived id's to spinner
             //How this works is explained a few lines above
-            val selectedYearPos = year_yid.getPosition(activeYearID)
-            selectedYearPos.let { sp_activeyear.getSpinner().setSelection(it) }
+            val selectedYearPos = yearYid.getPosition(activeYearID)
+            selectedYearPos.let { spActiveyear.getSpinner().setSelection(it) }
 
             //When selected item selected, and is not the same as already selected, then change
-            sp_activeyear.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            spActiveyear.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (activeYearID != year_yid.getItem(position)!!) {
-                        activeYearID = year_yid.getItem(position)!!
+                    if (activeYearID != yearYid.getItem(position)!!) {
+                        activeYearID = yearYid.getItem(position)!!
                         settingsViewModel.update(Settings(activeYearID))
-                        val snackbar: Snackbar
-                        snackbar = Snackbar
-                                .make(cl_year, "Aktive Klasse geändert zu: ${year_yname.getItem(position)}", Snackbar.LENGTH_LONG)
+                        val snackbar = Snackbar
+                                .make(clYear, "Aktive Klasse geändert zu: ${yearYname.getItem(position)}", Snackbar.LENGTH_LONG)
                         snackbar.show()
                     }
 
@@ -272,9 +264,8 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
                 val id = data.getIntExtra(ActivityAddEditYear.EXTRA_YID, -1)
 
                 if (id == -1) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_year, "Failed to update Klasse!", Snackbar.LENGTH_LONG)
+                    val snackbar = Snackbar
+                            .make(clYear, "Failed to update Klasse!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -304,6 +295,6 @@ class FragmentYear : Fragment(), YearListAdapter.onItemClickListener {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }

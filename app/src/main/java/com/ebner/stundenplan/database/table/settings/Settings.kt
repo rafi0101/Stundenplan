@@ -10,12 +10,12 @@ import com.ebner.stundenplan.database.table.year.Year
  */
 @Entity(
         tableName = "settings",
-        foreignKeys = arrayOf(
-                ForeignKey(entity = Year::class, parentColumns = arrayOf("yid"), childColumns = arrayOf("set_yid"), onDelete = ForeignKey.SET_DEFAULT, onUpdate = ForeignKey.SET_DEFAULT)
-        ),
-        indices = arrayOf(
-                Index("set_yid")
-        )
+        foreignKeys = [
+            ForeignKey(entity = Year::class, parentColumns = ["yid"], childColumns = ["set_yid"], onDelete = ForeignKey.SET_DEFAULT, onUpdate = ForeignKey.SET_DEFAULT)
+        ],
+        indices = [
+            Index("set_yid")
+        ]
 )
 data class Settings(
 

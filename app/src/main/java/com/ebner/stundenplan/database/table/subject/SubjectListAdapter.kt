@@ -16,7 +16,7 @@ import com.ebner.stundenplan.database.table.mergedEntities.SubjectTeacherRoom
  * Created by raphael on 21.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.subject
  */
-class SubjectListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<SubjectTeacherRoom, SubjectListAdapter.SubjectViewHolder>(TaskDiffCallback()) {
+class SubjectListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<SubjectTeacherRoom, SubjectListAdapter.SubjectViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -39,7 +39,7 @@ class SubjectListAdapter(val itemClickListener: onItemClickListener) : ListAdapt
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(subjectTeacherRoom: SubjectTeacherRoom)
     }
@@ -47,30 +47,30 @@ class SubjectListAdapter(val itemClickListener: onItemClickListener) : ListAdapt
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class SubjectViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: SubjectTeacherRoom, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: SubjectTeacherRoom, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_subject_name: TextView = itemView.findViewById(R.id.tv_subject_name)
-            val tv_subject_note: TextView = itemView.findViewById(R.id.tv_subject_note)
-            val tv_subject_teacher: TextView = itemView.findViewById(R.id.tv_subject_teacher)
-            val tv_subject_room: TextView = itemView.findViewById(R.id.tv_subject_room)
+            val tvSubjectName: TextView = itemView.findViewById(R.id.tv_subject_name)
+            val tvSubjectNote: TextView = itemView.findViewById(R.id.tv_subject_note)
+            val tvSubjectTeacher: TextView = itemView.findViewById(R.id.tv_subject_teacher)
+            val tvSubjectRoom: TextView = itemView.findViewById(R.id.tv_subject_room)
 
-            tv_subject_name.text = item.subject.sname
-            tv_subject_note.text = item.subject.snote
-            tv_subject_room.text = "Raum: " + item.room.rname
-            tv_subject_teacher.text = "Lehrer: " + item.teacher.tname
+            tvSubjectName.text = item.subject.sname
+            tvSubjectNote.text = item.subject.snote
+            tvSubjectRoom.text = "Raum: " + item.room.rname
+            tvSubjectTeacher.text = "Lehrer: " + item.teacher.tname
 
             if (TextUtils.isEmpty(item.subject.snote) || TextUtils.getTrimmedLength(item.subject.snote) == 0) {
-                tv_subject_note.setVisibility(View.GONE)
+                tvSubjectNote.visibility = View.GONE
             }
             if (item.subject.sinactive) {
-                tv_subject_name.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
-                tv_subject_teacher.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
-                tv_subject_room.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
-                tv_subject_note.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
+                tvSubjectName.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
+                tvSubjectTeacher.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
+                tvSubjectRoom.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
+                tvSubjectNote.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)
 
             }
 
-            tv_subject_name.setTextColor(item.subject.scolor)
+            tvSubjectName.setTextColor(item.subject.scolor)
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)

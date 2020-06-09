@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
@@ -36,7 +35,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         /*---------------------Items--------------------------*/
         toolbar = findViewById(R.id.toolbar)
         drawerLayout = findViewById(R.id.drawer_layout)
-        val actionBarDrawerToggle: ActionBarDrawerToggle
         navigationView = findViewById(R.id.nav_view)
 
 
@@ -45,8 +43,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         /*---------------------Navigation Drawer Menu--------------------------*/
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-      //  drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        val actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        //  drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
         navigationView.bringToFront()
         navigationView.setNavigationItemSelectedListener(this)
@@ -69,8 +67,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun changeFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction
-        transaction = supportFragmentManager.beginTransaction()
+        val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment, fragment)
         //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
         transaction.commit()

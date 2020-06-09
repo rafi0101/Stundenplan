@@ -14,17 +14,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.customAdapter.SubjectExamsExamsListAdapter
 import com.ebner.stundenplan.database.table.exam.ExamViewModel
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class SubjectExamsActivity : AppCompatActivity() {
 
     companion object {
-        val EXTRA_SID = "com.ebner.stundenplan.EXTRA_SID"
-        val EXTRA_SNAME = "com.ebner.stundenplan.EXTRA_SNAME"
-        val EXTRA_SCOLOR = "com.ebner.stundenplan.EXTRA_SCOLOR"
+        const val EXTRA_SID = "com.ebner.stundenplan.EXTRA_SID"
+        const val EXTRA_SNAME = "com.ebner.stundenplan.EXTRA_SNAME"
+        const val EXTRA_SCOLOR = "com.ebner.stundenplan.EXTRA_SCOLOR"
     }
 
-    private lateinit var rv_subjectexams_tasks: RecyclerView
-    private lateinit var rv_subjectexams_exams: RecyclerView
+    private lateinit var rvSubjectexamsTasks: RecyclerView
+    private lateinit var rvSubjectexamsExams: RecyclerView
 
     private lateinit var examViewModel: ExamViewModel
     private lateinit var settingsViewModel: SettingsViewModel
@@ -40,11 +42,11 @@ class SubjectExamsActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         val colorDrawable = ColorDrawable(intent.getIntExtra(EXTRA_SCOLOR, -1))
         supportActionBar!!.setBackgroundDrawable(colorDrawable)
-        window.statusBarColor = manipulateColor(intent.getIntExtra(EXTRA_SCOLOR, -1), 0.8f)
+        window.statusBarColor = manipulateColor(intent.getIntExtra(EXTRA_SCOLOR, -1))
 
         /*---------------------Link items to Layout--------------------------*/
-        rv_subjectexams_tasks = findViewById(R.id.rv_subjectexams_tasks)
-        rv_subjectexams_exams = findViewById(R.id.rv_subjectexams_exams)
+        rvSubjectexamsTasks = findViewById(R.id.rv_subjectexams_tasks)
+        rvSubjectexamsExams = findViewById(R.id.rv_subjectexams_exams)
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
         if (intent.hasExtra(EXTRA_SID)) {
@@ -54,8 +56,8 @@ class SubjectExamsActivity : AppCompatActivity() {
 
 
             val adapter = SubjectExamsExamsListAdapter()
-            rv_subjectexams_exams.adapter = adapter
-            rv_subjectexams_exams.layoutManager = LinearLayoutManager(this)
+            rvSubjectexamsExams.adapter = adapter
+            rvSubjectexamsExams.layoutManager = LinearLayoutManager(this)
 
             examViewModel = ViewModelProvider(this).get(ExamViewModel::class.java)
             settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
@@ -74,7 +76,7 @@ class SubjectExamsActivity : AppCompatActivity() {
 
 
         } else {
-            Toast.makeText(this, "failed to fetch Subject", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "failed to fetch Subject", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -93,14 +95,15 @@ class SubjectExamsActivity : AppCompatActivity() {
         }
     }
 
-    fun manipulateColor(color: Int, factor: Float): Int {
+    private fun manipulateColor(color: Int): Int {
+        val factor = 0.8F
         val a = Color.alpha(color)
-        val r = Math.round(Color.red(color) * factor)
-        val g = Math.round(Color.green(color) * factor)
-        val b = Math.round(Color.blue(color) * factor)
+        val r = (Color.red(color) * factor).roundToInt()
+        val g = (Color.green(color) * factor).roundToInt()
+        val b = (Color.blue(color) * factor).roundToInt()
         return Color.argb(a,
-                Math.min(r, 255),
-                Math.min(g, 255),
-                Math.min(b, 255))
+                min(r, 255),
+                min(g, 255),
+                min(b, 255))
     }
 }

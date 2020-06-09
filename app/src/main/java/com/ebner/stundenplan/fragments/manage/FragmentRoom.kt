@@ -1,9 +1,7 @@
 package com.ebner.stundenplan.fragments.manage
 
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -33,10 +31,10 @@ import kotlin.math.roundToInt
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentRoom : Fragment(), RoomListAdapter.onItemClickListener {
+class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
 
     private lateinit var roomViewModel: RoomViewModel
-    private lateinit var cl_room: CoordinatorLayout
+    private lateinit var clRoom: CoordinatorLayout
 
 
     companion object {
@@ -60,7 +58,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.onItemClickListener {
 
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_room = root.findViewById(R.id.cl_room)
+        clRoom = root.findViewById(R.id.cl_room)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_room)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_room_addRoom)
 
@@ -101,17 +99,17 @@ class FragmentRoom : Fragment(), RoomListAdapter.onItemClickListener {
                 MaterialAlertDialogBuilder(context)
                         .setTitle("Achtung")
                         .setMessage("Es wird der Raum ${roomItem?.rname} und alle zugehörigen Fächer, Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
-                        .setPositiveButton("Löschen") { dialog, which ->
+                        .setPositiveButton("Löschen") { _, _ ->
                             roomItem?.let { roomViewModel.delete(it) }
                             // showing snack bar with Undo option
                             val snackbar = Snackbar
-                                    .make(cl_room, "Raum ${roomItem?.rname} erfolgreich gelöscht!", 8000) //ms --> 8sec
+                                    .make(clRoom, "Raum ${roomItem?.rname} erfolgreich gelöscht!", 8000) //ms --> 8sec
                             snackbar.show()
                         }
-                        .setNegativeButton("Abbrechen") { dialog, which ->
+                        .setNegativeButton("Abbrechen") { _, _ ->
                             adapter.notifyItemChanged(position)
                         }
-                        .setOnCancelListener { dialog: DialogInterface? ->
+                        .setOnCancelListener {
                             adapter.notifyItemChanged(position)
                         }
                         .show()
@@ -153,7 +151,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.onItemClickListener {
         super.onActivityResult(requestCode, resultCode, data)
 
         /*---------------------If the Request was successful--------------------------*/
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             val rname = data!!.getStringExtra(ActivityAddEditRoom.EXTRA_RNAME)
             val room = Room(rname)
 
@@ -167,9 +165,8 @@ class FragmentRoom : Fragment(), RoomListAdapter.onItemClickListener {
                 val id = data.getIntExtra(ActivityAddEditRoom.EXTRA_RID, -1)
 
                 if (id == -1) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_room, "Failed to update Room!", Snackbar.LENGTH_LONG)
+                    val snackbar = Snackbar
+                            .make(clRoom, "Failed to update Room!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -199,7 +196,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.onItemClickListener {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 
 }

@@ -26,7 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentExamAll(val fragType: Int) : Fragment(), ExamListAdapter.onItemClickListener, ExamListAdapter.onItemLongClickListener {
+class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.OnItemClickListener, ExamListAdapter.OnItemLongClickListener {
 
     /**
      * FragTypes:
@@ -36,7 +36,7 @@ class FragmentExamAll(val fragType: Int) : Fragment(), ExamListAdapter.onItemCli
 
     private lateinit var examViewModel: ExamViewModel
     private lateinit var settingsViewModel: SettingsViewModel
-    private lateinit var cl_exam: CoordinatorLayout
+    private lateinit var clExam: CoordinatorLayout
 
     private var activeYearID: Int = -1
 
@@ -51,7 +51,7 @@ class FragmentExamAll(val fragType: Int) : Fragment(), ExamListAdapter.onItemCli
         val root = inflater.inflate(R.layout.fragment_exam_all, container, false)
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_exam = activity?.findViewById(R.id.cl_exam)!!
+        clExam = activity?.findViewById(R.id.cl_exam)!!
         val fab = activity?.findViewById<FloatingActionButton>(R.id.btn_exam_addExam)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_exam_all)
 
@@ -114,10 +114,9 @@ class FragmentExamAll(val fragType: Int) : Fragment(), ExamListAdapter.onItemCli
             /*---------------------If the Request was a ADD subject request--------------------------*/
             if (requestCode == ADD_EXAM_REQUEST) {
 
-                if (sid.equals(-1) || etid.equals(-1)) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_exam, "Failed to add Exam", Snackbar.LENGTH_LONG)
+                if (sid == -1 || etid == -1) {
+                    val snackbar = Snackbar
+                            .make(clExam, "Failed to add Exam", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -130,10 +129,9 @@ class FragmentExamAll(val fragType: Int) : Fragment(), ExamListAdapter.onItemCli
             } else if (requestCode == EDIT_EXAM_REQUEST) {
                 val id = data.getIntExtra(ActivityAddEditExam.EXTRA_EID, -1)
 
-                if (sid.equals(-1) || etid.equals(-1) || id.equals(-1)) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_exam, "Failed to update Exam!", Snackbar.LENGTH_LONG)
+                if (sid == -1 || etid == -1 || id == -1) {
+                    val snackbar = Snackbar
+                            .make(clExam, "Failed to update Exam!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -170,7 +168,7 @@ class FragmentExamAll(val fragType: Int) : Fragment(), ExamListAdapter.onItemCli
         MaterialAlertDialogBuilder(context)
                 .setTitle("Achtung")
                 .setMessage("Es wird gelöscht: ${examSubjectYearExamtype.subject.sname} ${examSubjectYearExamtype.examtype.etname} vom ${exam.edateday}.${exam.edatemonth}.${exam.edateyear}")
-                .setPositiveButton("Löschen") { dialog, which ->
+                .setPositiveButton("Löschen") { _, _ ->
                     examViewModel.delete(exam)
 
                 }

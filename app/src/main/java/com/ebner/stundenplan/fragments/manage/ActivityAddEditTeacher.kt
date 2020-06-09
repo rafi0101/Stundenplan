@@ -15,16 +15,16 @@ import com.google.android.material.textfield.TextInputLayout
 class ActivityAddEditTeacher : AppCompatActivity() {
 
     companion object {
-        val EXTRA_TID = "com.ebner.stundenplan.fragments.manage.EXTRA_TID"
-        val EXTRA_TNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_TNAME"
+        const val EXTRA_TID = "com.ebner.stundenplan.fragments.manage.EXTRA_TID"
+        const val EXTRA_TNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_TNAME"
     }
 
-    private lateinit var tiet_tname: TextInputEditText
-    private lateinit var til_tname: TextInputLayout
+    private lateinit var tietTname: TextInputEditText
+    private lateinit var tilTname: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_teacher)
+        setContentView(R.layout.activity_add_edit_teacher)
 
 
         /*---------------------Add back Button to the toolbar--------------------------*/
@@ -35,21 +35,21 @@ class ActivityAddEditTeacher : AppCompatActivity() {
         }
 
         /*---------------------Link items to Layout--------------------------*/
-        tiet_tname = findViewById(R.id.tiet_teacher_tname)
-        til_tname = findViewById(R.id.til_teacher_tname)
+        tietTname = findViewById(R.id.tiet_teacher_tname)
+        tilTname = findViewById(R.id.til_teacher_tname)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
         if (intent.hasExtra(EXTRA_TID)) {
             title = getString(R.string.fragment_teacher) + " bearbeiten"
-            tiet_tname.setText(intent.getStringExtra(EXTRA_TNAME))
+            tietTname.setText(intent.getStringExtra(EXTRA_TNAME))
         } else {
             title = "Neuer " + getString(R.string.fragment_teacher)
         }
 
         //Remove the error message, if user starts typing
-        tiet_tname.addTextChangedListener {
-            til_tname.error = ""
+        tietTname.addTextChangedListener {
+            tilTname.error = ""
         }
 
     }
@@ -58,12 +58,12 @@ class ActivityAddEditTeacher : AppCompatActivity() {
     private fun saveTeacher() {
 
         /*---------------------If EditText is empty--------------------------*/
-        if (TextUtils.isEmpty(tiet_tname.text.toString()) || TextUtils.getTrimmedLength(tiet_tname.text.toString()) == 0) {
-            til_tname.error = "Gib einen Namen ein!"
+        if (TextUtils.isEmpty(tietTname.text.toString()) || TextUtils.getTrimmedLength(tietTname.text.toString()) == 0) {
+            tilTname.error = "Gib einen Namen ein!"
             return
         }
 
-        val tname = tiet_tname.text.toString()
+        val tname = tietTname.text.toString()
 
         val data = Intent()
         data.putExtra(EXTRA_TNAME, tname)

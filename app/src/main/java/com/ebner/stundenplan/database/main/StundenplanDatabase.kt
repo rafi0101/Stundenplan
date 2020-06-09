@@ -29,18 +29,16 @@ import java.util.concurrent.Executors
  * Stundenplan Created in com.ebner.stundenplan.database.main
  */
 
-@Database(entities = arrayOf(
-        com.ebner.stundenplan.database.table.room.Room::class,
-        Teacher::class,
-        Subject::class,
-        Year::class,
-        Examtype::class,
-        Settings::class,
-        Exam::class,
-        Lesson::class,
-        SchoolLesson::class
-//DO NOT FORGET TO INCREASE THE VERSION NUMBER
-), version = 1, exportSchema = false)
+@Database(entities = [
+    com.ebner.stundenplan.database.table.room.Room::class,
+    Teacher::class,
+    Subject::class,
+    Year::class, Examtype::class,
+    Settings::class,
+    Exam::class,
+    Lesson::class,
+    SchoolLesson::class
+], version = 1, exportSchema = false)
 abstract class StundenplanDatabase : RoomDatabase() {
 
     //Define each Tables DAO (Data Access Object)

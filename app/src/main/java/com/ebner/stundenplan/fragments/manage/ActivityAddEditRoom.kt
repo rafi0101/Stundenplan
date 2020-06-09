@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -15,15 +14,14 @@ import com.google.android.material.textfield.TextInputLayout
 
 
 class ActivityAddEditRoom : AppCompatActivity() {
-    private val TAG = "manuallog_ActivityAddEditRoom"
 
     companion object {
-        val EXTRA_RID = "com.ebner.stundenplan.fragments.manage.EXTRA_RID"
-        val EXTRA_RNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_RNAME"
+        const val EXTRA_RID = "com.ebner.stundenplan.fragments.manage.EXTRA_RID"
+        const val EXTRA_RNAME = "com.ebner.stundenplan.fragments.manage.EXTRA_RNAME"
     }
 
-    private lateinit var tiet_rname: TextInputEditText
-    private lateinit var til_rname: TextInputLayout
+    private lateinit var tietRname: TextInputEditText
+    private lateinit var tilRname: TextInputLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,26 +31,25 @@ class ActivityAddEditRoom : AppCompatActivity() {
         /*---------------------Add back Button to the toolbar--------------------------*/
         val actionBar = supportActionBar
         if (actionBar != null) {
-            Log.d(TAG, "actionbar != null")
             actionBar.setHomeAsUpIndicator(R.drawable.ic_close)
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
         /*---------------------Link items to Layout--------------------------*/
-        tiet_rname = findViewById(R.id.tiet_room_rname)
-        til_rname = findViewById(R.id.til_room_rname)
+        tietRname = findViewById(R.id.tiet_room_rname)
+        tilRname = findViewById(R.id.til_room_rname)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
         if (intent.hasExtra(EXTRA_RID)) {
             title = getString(R.string.fragment_room) + " bearbeiten"
-            tiet_rname.setText(intent.getStringExtra(EXTRA_RNAME))
+            tietRname.setText(intent.getStringExtra(EXTRA_RNAME))
         } else {
             title = "Neuer " + getString(R.string.fragment_room)
         }
 
-        tiet_rname.addTextChangedListener {
-            til_rname.error = ""
+        tietRname.addTextChangedListener {
+            tilRname.error = ""
         }
 
     }
@@ -61,13 +58,13 @@ class ActivityAddEditRoom : AppCompatActivity() {
     private fun saveRoom() {
 
         /*---------------------If EditText is empty--------------------------*/
-        if (TextUtils.isEmpty(tiet_rname.text.toString()) || TextUtils.getTrimmedLength(tiet_rname.text.toString()) == 0) {
-            til_rname.error = "Gib einen Namen ein!"
+        if (TextUtils.isEmpty(tietRname.text.toString()) || TextUtils.getTrimmedLength(tietRname.text.toString()) == 0) {
+            tilRname.error = "Gib einen Namen ein!"
             return
 
         }
 
-        val rname = tiet_rname.text.toString()
+        val rname = tietRname.text.toString()
 
         val data = Intent()
         data.putExtra(EXTRA_RNAME, rname)
@@ -96,7 +93,6 @@ class ActivityAddEditRoom : AppCompatActivity() {
             //Back Button
             android.R.id.home -> {
                 super.onBackPressed()
-                Log.d(TAG, "nav_home")
                 true
 
             }

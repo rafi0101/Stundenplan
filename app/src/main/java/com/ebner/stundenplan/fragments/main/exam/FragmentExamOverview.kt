@@ -19,11 +19,12 @@ import com.ebner.stundenplan.database.table.settings.SettingsViewModel
 import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import kotlinx.coroutines.runBlocking
+import kotlin.math.roundToInt
 
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentExamOverview : Fragment(), ExamOverviewListAdapter.onItemClickListener {
+class FragmentExamOverview : Fragment(), ExamOverviewListAdapter.OnItemClickListener {
 
     private lateinit var examViewModel: ExamViewModel
     private lateinit var settingsViewModel: SettingsViewModel
@@ -41,7 +42,7 @@ class FragmentExamOverview : Fragment(), ExamOverviewListAdapter.onItemClickList
 
         adapter = ExamOverviewListAdapter(this)
         //Disable the Update Animation, because of updating the adapter manual the list flash very often up
-        recyclerView.setItemAnimator(null)
+        recyclerView.itemAnimator = null
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(root.context)
 
@@ -103,7 +104,7 @@ class FragmentExamOverview : Fragment(), ExamOverviewListAdapter.onItemClickList
 
                 if (items != 0.0) {
                     result = allGradesCounted / items
-                    result = Math.round(result * 100.0) / 100.0
+                    result = (result * 100.0).roundToInt() / 100.0
 
                 }
                 subjectGrade.add(SubjectGrade(subject, result))

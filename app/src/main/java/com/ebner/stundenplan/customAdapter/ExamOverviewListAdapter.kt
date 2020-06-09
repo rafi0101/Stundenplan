@@ -16,7 +16,7 @@ import com.ebner.stundenplan.database.table.mergedEntities.SubjectGrade
  * Created by raphael on 31.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.customAdapter
  */
-class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : ListAdapter<SubjectGrade, ExamOverviewListAdapter.ExamViewHolder>(TaskDiffCallback()) {
+class ExamOverviewListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<SubjectGrade, ExamOverviewListAdapter.ExamViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -34,7 +34,7 @@ class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : List
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
-    interface onItemClickListener {
+    interface OnItemClickListener {
 
         fun onItemClicked(subjectGrade: SubjectGrade)
     }
@@ -42,16 +42,16 @@ class ExamOverviewListAdapter(val itemClickListener: onItemClickListener) : List
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class ExamViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: SubjectGrade, itemclickListener: onItemClickListener) = with(itemView) {
+        fun bind(item: SubjectGrade, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
-            val tv_exam_overview_subject: TextView = itemView.findViewById(R.id.tv_exam_overview_subject)
-            val tv_exam_overview_grade: TextView = itemView.findViewById(R.id.tv_exam_overview_grade)
-            val cl_exam_overview: ConstraintLayout = itemView.findViewById(R.id.cl_exam_overview)
+            val tvExamOverviewSubject: TextView = itemView.findViewById(R.id.tv_exam_overview_subject)
+            val tvExamOverviewGrade: TextView = itemView.findViewById(R.id.tv_exam_overview_grade)
+            val clExamOverview: ConstraintLayout = itemView.findViewById(R.id.cl_exam_overview)
 
 
-            tv_exam_overview_subject.text = item.subject.sname
-            if (item.grade > 0.0) tv_exam_overview_grade.text = item.grade.toString() else tv_exam_overview_grade.text = "-"
-            cl_exam_overview.setBackgroundColor(item.subject.scolor)
+            tvExamOverviewSubject.text = item.subject.sname
+            if (item.grade > 0.0) tvExamOverviewGrade.text = item.grade.toString() else tvExamOverviewGrade.text = "-"
+            clExamOverview.setBackgroundColor(item.subject.scolor)
 
 
             itemView.setOnClickListener {

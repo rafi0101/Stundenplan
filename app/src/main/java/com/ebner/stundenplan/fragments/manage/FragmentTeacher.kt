@@ -3,7 +3,6 @@ package com.ebner.stundenplan.fragments.manage
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -32,10 +31,10 @@ import kotlin.math.roundToInt
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentTeacher : Fragment(), TeacherListAdapter.onItemClickListener {
+class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
 
     private lateinit var teacherViewModel: TeacherViewModel
-    private lateinit var cl_teacher: CoordinatorLayout
+    private lateinit var clTeacher: CoordinatorLayout
 
     companion object {
         private const val ADD_TEACHER_REQUEST = 1
@@ -59,7 +58,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.onItemClickListener {
 
 
         /*---------------------Link items to Layout--------------------------*/
-        cl_teacher = root.findViewById(R.id.cl_teacher)
+        clTeacher = root.findViewById(R.id.cl_teacher)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_teacher)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_teacher_addTeacher)
 
@@ -99,17 +98,17 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.onItemClickListener {
                 MaterialAlertDialogBuilder(context)
                         .setTitle("Achtung")
                         .setMessage("Es wird der Lehrer ${teacherItem?.tname} und alle zugehörigen Fächer, Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
-                        .setPositiveButton("Löschen") { dialog, which ->
+                        .setPositiveButton("Löschen") { _, _ ->
                             teacherItem?.let { teacherViewModel.delete(it) }
                             // showing snack bar with Undo option
                             val snackbar = Snackbar
-                                    .make(cl_teacher, "Lehrer ${teacherItem?.tname} erfolgreich gelöscht!", 8000) //ms --> 8sec
+                                    .make(clTeacher, "Lehrer ${teacherItem?.tname} erfolgreich gelöscht!", 8000) //ms --> 8sec
                             snackbar.show()
                         }
-                        .setNegativeButton("Abbrechen") { dialog, which ->
+                        .setNegativeButton("Abbrechen") { _, _ ->
                             adapter.notifyItemChanged(position)
                         }
-                        .setOnCancelListener { dialog: DialogInterface? ->
+                        .setOnCancelListener {
                             adapter.notifyItemChanged(position)
                         }
                         .show()
@@ -166,9 +165,8 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.onItemClickListener {
                 val id = data.getIntExtra(ActivityAddEditTeacher.EXTRA_TID, -1)
 
                 if (id == -1) {
-                    val snackbar: Snackbar
-                    snackbar = Snackbar
-                            .make(cl_teacher, "Failed to update Teacher!", Snackbar.LENGTH_LONG)
+                    val snackbar = Snackbar
+                            .make(clTeacher, "Failed to update Teacher!", Snackbar.LENGTH_LONG)
                     snackbar.show()
                     return
                 }
@@ -196,6 +194,6 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.onItemClickListener {
      * @return A float value to represent px equivalent to dp depending on device density
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.getResources().getDisplayMetrics().densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 }
