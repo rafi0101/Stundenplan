@@ -22,14 +22,20 @@ import com.mikepenz.aboutlibraries.LibsBuilder
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    companion object {
+        const val EXTRA_FRAGMENT_ID = "com.ebner.stundenplan.EXTRA_FRAGMENT_ID"
+    }
+
 
     private lateinit var toolbar: Toolbar
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
 
+    private var currentFragment: Int = R.id.nav_home
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(null)
         setContentView(R.layout.activity_main)
 
         /*---------------------Items--------------------------*/
@@ -57,8 +63,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         /*---------------------Define Default Fragment--------------------------*/
-        changeFragment(FragmentHome())
-
+        if (savedInstanceState != null) {
+            changeFragment(savedInstanceState.getInt(EXTRA_FRAGMENT_ID, R.id.nav_home))
+        } else {
+            changeFragment(R.id.nav_home)
+        }
         /*---------------------Create the Database, if not already exist--------------------------*/
         val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
         subjectViewModel.allSubject.observe(this, Observer {
@@ -66,38 +75,48 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
-    private fun changeFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment, fragment)
-        //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
-        transaction.commit()
-    }
+    fun changeFragment(id: Int) {
 
-    /*---------------------TO DO when item in navigation drawer pressed--------------------------*/
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_home -> changeFragment(FragmentHome())
-            R.id.nav_timetable -> changeFragment(FragmentTimetable())
-            R.id.nav_exam -> changeFragment(FragmentExam())
-            R.id.nav_task -> changeFragment(FragmentTask())
-            R.id.nav_subject -> changeFragment(FragmentSubject())
-            R.id.nav_teacher -> changeFragment(FragmentTeacher())
-            R.id.nav_room -> changeFragment(FragmentRoom())
-            R.id.nav_year -> changeFragment(FragmentYear())
-            R.id.nav_examtype -> changeFragment(FragmentExamtype())
-            R.id.nav_schoollesson -> changeFragment(FragmentSchoolLesson())
-            R.id.nav_settings -> changeFragment(FragmentSettings())
+        currentFragment = id
+
+        val newFragment: Fragment
+
+        when (id) {
+            R.id.nav_home -> newFragment = FragmentHome()
+            R.id.nav_timetable -> newFragment = FragmentTimetable()
+            R.id.nav_exam -> newFragment = FragmentExam()
+            R.id.nav_task -> newFragment = FragmentTask()
+            R.id.nav_subject -> newFragment = FragmentSubject()
+            R.id.nav_teacher -> newFragment = FragmentTeacher()
+            R.id.nav_room -> newFragment = FragmentRoom()
+            R.id.nav_year -> newFragment = FragmentYear()
+            R.id.nav_examtype -> newFragment = FragmentExamtype()
+            R.id.nav_schoollesson -> newFragment = FragmentSchoolLesson()
+            R.id.nav_settings -> newFragment = FragmentSettings()
             R.id.nav_info -> {
-                val fragment = LibsBuilder()
+                val infoFragment = LibsBuilder()
                         .withFields(R.string::class.java.fields) // in some cases it may be needed to provide the R class, if it can not be automatically resolved
                         .withAboutDescription("for more information check out my github project\nCreated by Raphael Ebner")
                         .withActivityTitle(getString(R.string.app_name))
                         .supportFragment()
-                changeFragment(fragment)
+                newFragment = infoFragment
             }
             else -> {
+                return
             }
         }
+
+
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragment, newFragment)
+        //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
+        transaction.commit()
+
+    }
+
+    /*---------------------TO DO when item in navigation drawer pressed--------------------------*/
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        changeFragment(item.itemId)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
@@ -111,10 +130,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (currentFragment is FragmentHome) {
                 super.onBackPressed()
             } else {
-                changeFragment(FragmentHome())
+                changeFragment(R.id.nav_home)
                 navigationView.setCheckedItem(R.id.nav_home)
             }
         }
 
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(EXTRA_FRAGMENT_ID, currentFragment)
     }
 }

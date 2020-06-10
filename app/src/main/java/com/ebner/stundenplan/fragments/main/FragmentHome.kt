@@ -12,10 +12,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.ebner.stundenplan.BuildConfig
+import com.ebner.stundenplan.MainActivity
 import com.ebner.stundenplan.R
-import com.ebner.stundenplan.fragments.manage.FragmentSubject
-import com.ebner.stundenplan.fragments.manage.FragmentYear
-import com.google.android.material.navigation.NavigationView
 import kotlin.math.roundToInt
 
 
@@ -41,6 +39,7 @@ class FragmentHome : Fragment() {
         val tvVersionNumber = root.findViewById<TextView>(R.id.tv_version_number)
         tvVersionNumber.text = versionName
 
+        val mainactivity = (activity as MainActivity)
 
         /*---------------------Set correct layout margin to main FrameLaout--------------------------*/
         val all: Int = convertDpToPixel(16F, root.context).roundToInt()
@@ -57,52 +56,29 @@ class FragmentHome : Fragment() {
         ibtnExam = root.findViewById(R.id.ibtn_exam)
 
         ibtnTimetable.setOnClickListener {
-            changeFragment(FragmentTimetable())
+            mainactivity.changeFragment(R.id.nav_timetable)
         }
 
         ibtnSubject.setOnClickListener {
-            changeFragment(FragmentSubject())
+            mainactivity.changeFragment(R.id.nav_subject)
         }
 
         ibtnTask.setOnClickListener {
-            changeFragment(FragmentTask())
+            mainactivity.changeFragment(R.id.nav_task)
         }
 
         ibtnYear.setOnClickListener {
-            changeFragment(FragmentYear())
+            mainactivity.changeFragment(R.id.nav_year)
         }
 
         ibtnExam.setOnClickListener {
-            changeFragment(FragmentExam())
+            mainactivity.changeFragment(R.id.nav_exam)
         }
-
-
-
-
 
 
         return root
     }
 
-    private fun changeFragment(fragment: Fragment) {
-        val transaction = activity!!.supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment, fragment)
-        //transaction.addToBackStack(null); //need when you can press back and something should happen (go to last fragment)
-        transaction.commit()
-
-        val navigationView = activity!!.findViewById<View>(R.id.nav_view) as NavigationView
-        navigationView.setCheckedItem(R.id.nav_home)
-        when (fragment) {
-            is FragmentTimetable -> navigationView.setCheckedItem(R.id.nav_timetable)
-            is FragmentSubject -> navigationView.setCheckedItem(R.id.nav_subject)
-            is FragmentTask -> navigationView.setCheckedItem(R.id.nav_task)
-            is FragmentYear -> navigationView.setCheckedItem(R.id.nav_year)
-            is FragmentExam -> navigationView.setCheckedItem(R.id.nav_exam)
-            else -> {
-            }
-        }
-
-    }
 
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.

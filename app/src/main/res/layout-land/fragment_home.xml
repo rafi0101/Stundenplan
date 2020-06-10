@@ -24,12 +24,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:padding="8dp">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:orientation="vertical">
 
@@ -37,29 +37,29 @@
                         android:id="@+id/ibtn_timetable"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:padding="32dp"
-                        android:src="@drawable/ic_schedule"
-                        android:tint="@color/green_500"
-                        android:background="?android:selectableItemBackground"
-                        android:scaleType="fitCenter"
+                        android:layout_weight="85"
                         android:adjustViewBounds="true"
-                        android:layout_weight="9" />
+                        android:background="?android:selectableItemBackground"
+                        android:padding="32dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_schedule"
+                        android:tint="@color/green_500" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:text="@string/fragment_timetable"
-                        android:layout_weight="1"
                         android:layout_gravity="center"
-                        android:gravity="center" />
+                        android:layout_weight="15"
+                        android:gravity="center"
+                        android:text="@string/fragment_timetable" />
                 </LinearLayout>
 
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="horizontal"
-                    android:layout_weight="2">
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
 
 
                     <LinearLayout
@@ -73,20 +73,20 @@
                             android:id="@+id/ibtn_subject"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:padding="16dp"
-                            android:src="@drawable/ic_widgets"
-                            android:scaleType="fitCenter"
+                            android:layout_weight="85"
                             android:adjustViewBounds="true"
-                            android:layout_weight="85" />
+                            android:padding="16dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_widgets" />
 
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:text="@string/fragment_subjects"
-                            android:layout_weight="15"
                             android:layout_gravity="center"
-                            android:gravity="center" />
+                            android:layout_weight="15"
+                            android:gravity="center"
+                            android:text="@string/fragment_subjects" />
 
                     </LinearLayout>
 
@@ -100,30 +100,30 @@
                             android:id="@+id/ibtn_task"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:padding="16dp"
-                            android:src="@drawable/ic_work"
-                            android:scaleType="fitCenter"
+                            android:layout_weight="85"
                             android:adjustViewBounds="true"
-                            android:layout_weight="85" />
+                            android:padding="16dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_work" />
 
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:text="@string/fragment_tasks"
-                            android:layout_weight="15"
                             android:layout_gravity="center"
-                            android:gravity="center" />
+                            android:layout_weight="15"
+                            android:gravity="center"
+                            android:text="@string/fragment_tasks" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="horizontal"
-                    android:layout_weight="2">
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -135,20 +135,20 @@
                             android:id="@+id/ibtn_year"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:padding="16dp"
-                            android:src="@drawable/ic_year"
-                            android:scaleType="fitCenter"
+                            android:layout_weight="85"
                             android:adjustViewBounds="true"
-                            android:layout_weight="85" />
+                            android:padding="16dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_year" />
 
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:text="@string/fragment_years"
-                            android:layout_weight="15"
                             android:layout_gravity="center"
-                            android:gravity="center" />
+                            android:layout_weight="15"
+                            android:gravity="center"
+                            android:text="@string/fragment_years" />
 
                     </LinearLayout>
 
@@ -162,20 +162,20 @@
                             android:id="@+id/ibtn_exam"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:padding="16dp"
-                            android:src="@drawable/ic_grade"
-                            android:scaleType="fitCenter"
+                            android:layout_weight="85"
                             android:adjustViewBounds="true"
-                            android:layout_weight="85" />
+                            android:padding="16dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ic_grade" />
 
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:text="@string/fragment_exams"
-                            android:layout_weight="15"
                             android:layout_gravity="center"
-                            android:gravity="center" />
+                            android:layout_weight="15"
+                            android:gravity="center"
+                            android:text="@string/fragment_exams" />
 
                     </LinearLayout>
 
