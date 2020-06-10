@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.main.FragmentTimetable"
-    android:orientation="vertical">
+    android:id="@+id/cl_timetable">
 
-
-    <ProgressBar
-        android:id="@+id/pb_timetable"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="visible"
-        tools:visibility="visible" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <ProgressBar
+            android:id="@+id/pb_timetable"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="visible"
+            tools:visibility="visible" />
 
 
     <com.alamkanak.weekview.WeekView
@@ -60,5 +65,5 @@
         app:timeColumnTextSize="12sp"
         app:todayHeaderTextColor="@color/blue_600" />
 
-
-</LinearLayout>
+    </LinearLayout>
+</com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout>

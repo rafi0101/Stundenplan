@@ -39,5 +39,9 @@ class SchoolLessonViewModel(application: Application) : AndroidViewModel(applica
         schoolLessonRepository.delete(schoolLesson)
     }
 
+    suspend fun allSchoolLessonList(): List<SchoolLesson> {
+        return schoolLessonRepository.getAllSchoolLessonList()
+    }
+
 
 }

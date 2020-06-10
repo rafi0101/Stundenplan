@@ -33,6 +33,7 @@
         <activity android:name=".fragments.manage.ActivityAddEditExamtype" />
         <activity android:name=".fragments.manage.ActivityAddEditSchoolLesson" />
         <activity android:name=".fragments.main.ActivityAddEditExam" />
+        <activity android:name=".fragments.manage.ActivityAddEditLesson" />
         <activity android:name=".SubjectExamsActivity" />
     </application>
 

@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_timetable -> newFragment = FragmentTimetable()
             R.id.nav_exam -> newFragment = FragmentExam()
             R.id.nav_task -> newFragment = FragmentTask()
+            R.id.nav_lesson -> newFragment = FragmentLesson()
             R.id.nav_subject -> newFragment = FragmentSubject()
             R.id.nav_teacher -> newFragment = FragmentTeacher()
             R.id.nav_room -> newFragment = FragmentRoom()

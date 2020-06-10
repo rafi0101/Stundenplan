@@ -39,6 +39,7 @@ class FragmentHome : Fragment() {
         val tvVersionNumber = root.findViewById<TextView>(R.id.tv_version_number)
         tvVersionNumber.text = versionName
 
+        activity?.title = getString(R.string.app_name)
         val mainactivity = (activity as MainActivity)
 
         /*---------------------Set correct layout margin to main FrameLaout--------------------------*/

@@ -1,9 +1,10 @@
 package com.ebner.stundenplan.fragments.main
 
-
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.RectF
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ProgressBar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -22,38 +24,52 @@ import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewDisplayable
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.SubjectExamsActivity
+import com.ebner.stundenplan.database.table.lesson.Lesson
 import com.ebner.stundenplan.database.table.lesson.LessonViewModel
 import com.ebner.stundenplan.database.table.mergedEntities.LessonEvent
+import com.ebner.stundenplan.database.table.mergedEntities.LessonSubjectSchoollessonYear
+import com.ebner.stundenplan.database.table.schoolLesson.SchoolLesson
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
+import com.ebner.stundenplan.database.table.subject.Subject
+import com.ebner.stundenplan.fragments.manage.ActivityAddEditLesson
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import java.time.DayOfWeek
 import java.util.*
 import kotlin.math.roundToInt
 
-
 /**
- * A simple [Fragment] subclass.
+ * A simple [Fragment] subclass. Explanation for this Fragment -->
+ *
+ * The Timetable works as Following:
+ * Every lesson with [Subject], day, and [SchoolLesson] is saved in the [Lesson] Table (merged as one Object in [LessonSubjectSchoollessonYear])
+ * 1. All [Lesson]s are fetched as [LessonSubjectSchoollessonYear] (depending on the current active year)
+ * 2. Every [Lesson] is converted in a [LessonEvent] Object and added to a [MutableList]<[WeekViewDisplayable]>
+ *   The [Lesson.lid] is always the same as the [LessonEvent.id] so it is easy the get the Original [Lesson] Object back from it's [LessonEvent]
+ * 3. This MutableList is submitted to the [weekView] and shown in the Timetable
+ * The Timetable is limited to the current Week. Horizontal scrolling is disabled
+ * When the User [onEventClick] or [onEventLongClick] on a [LessonEvent] the selected [Lesson] is fetched from the Database, and you see an
+ *   overview [SubjectExamsActivity], you change [ActivityAddEditLesson] or delete it
  */
 class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEventLongClickListener<LessonEvent> {
 
-    private val TAG = "debug_FragmentTimetable"
+    private val weekView: WeekView<LessonEvent> by lazy { requireActivity().findViewById<WeekView<LessonEvent>>(R.id.weekView) }
 
-    private val weekView: WeekView<LessonEvent> by lazy {
-        requireActivity().findViewById<WeekView<LessonEvent>>(R.id.weekView)
-    }
     private lateinit var pbTimetable: ProgressBar
-
+    private lateinit var clTimetable: CoordinatorLayout
     private lateinit var lessonViewModel: LessonViewModel
     private lateinit var settingsViewModel: SettingsViewModel
+
     private var activeYearID: Int = -1
 
+    companion object {
+        private const val EDIT_LESSON_REQUEST = 2
+    }
 
-    @SuppressLint("ClickableViewAccessibility", "SimpleDateFormat")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_timetable, container, false)
 
@@ -69,11 +85,10 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
 
         /*---------------------Link items to Layout--------------------------*/
         pbTimetable = root.findViewById(R.id.pb_timetable)
+        clTimetable = root.findViewById(R.id.cl_timetable)
 
         lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
-
-
 
         settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
             activeYearID = setting.settings.setyid
@@ -90,6 +105,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
                     //Add Each lesson to the list
                     lessons.forEach {
 
+                        //save current Year and Month
                         val calendar = Calendar.getInstance()
                         val currentYear = calendar.get(Calendar.YEAR)
                         val currentMonth = calendar.get(Calendar.MONTH)
@@ -145,12 +161,10 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         })
 
 
-
-
         return root
     }
 
-
+    /*---------------------Normal Click on Item, to get overview about Subject--------------------------*/
     override fun onEventClick(data: LessonEvent, eventRect: RectF) {
         pbTimetable.visibility = View.VISIBLE
 
@@ -179,6 +193,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         }
     }
 
+    /*---------------------Long Click on Item, to change or delete it--------------------------*/
     override fun onEventLongClick(data: LessonEvent, eventRect: RectF) {
         pbTimetable.visibility = View.VISIBLE
 
@@ -188,24 +203,52 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         //Fetch lesson in IO thread
         CoroutineScope(IO).launch {
 
-            val lesson = lessonViewModel.singleLesson(data.id.toInt())
+            val lessonSubjectSchoollessonYear = lessonViewModel.singleLesson(data.id.toInt())
+            //Replace Int of Day to String
+            val lessonDay = when (lessonSubjectSchoollessonYear.lesson.lday) {
+                1 -> "Montag"
+                2 -> "Dienstag"
+                3 -> "Mittwoch"
+                4 -> "Donnerstag"
+                5 -> "Freitag"
+                6 -> "Samstag"
+                7 -> "Sonntag"
+                else -> ""
+            }
 
             //Create AlertDialog with 3 options what to do
             withContext(Main) {
-                /*---------------------Confirm Delete Dialog--------------------------*/
+                /*---------------------Change or Delete Dialog--------------------------*/
                 MaterialAlertDialogBuilder(context)
-                        .setTitle("${lesson.subject.sname} am ${DayOfWeek.of(lesson.lesson.lday)}")
+                        .setTitle("${lessonSubjectSchoollessonYear.subject.sname} am $lessonDay in der ${lessonSubjectSchoollessonYear.schoolLesson.slnumber} Stunde")
                         .setMessage("Was möchtes du unternehmen?")
                         .setPositiveButton("Löschen") { dialog, _ ->
-                            lessonViewModel.delete(lesson.lesson)
+                            lessonViewModel.delete(lessonSubjectSchoollessonYear.lesson)
                             pbTimetable.visibility = View.INVISIBLE
                             dialog.dismiss()
+                            // show snack bar with Undo option
+                            val snackbar = Snackbar
+                                    .make(clTimetable, "Stunde gelöscht", 8000)
+                            snackbar.setAction("UNDO") {
+                                // undo is selected, restore the deleted item
+                                lessonViewModel.insert(lessonSubjectSchoollessonYear.lesson)
+                            }
+                            snackbar.setActionTextColor(Color.YELLOW)
+                            snackbar.show()
+
                         }
                         .setNeutralButton("Abbrechen") { _, _ ->
                             pbTimetable.visibility = View.INVISIBLE
                         }
+                        /*---------------------Start AddEdit Activity, to edit (this) entry--------------------------*/
                         .setNegativeButton("Ändern") { dialog, _ ->
-                            //Will be added soon
+                            val intent = Intent(context, ActivityAddEditLesson::class.java)
+                            intent.putExtra(ActivityAddEditLesson.EXTRA_LID, lessonSubjectSchoollessonYear.lesson.lid)
+                            intent.putExtra(ActivityAddEditLesson.EXTRA_LDAY, lessonSubjectSchoollessonYear.lesson.lday)
+                            intent.putExtra(ActivityAddEditLesson.EXTRA_L_SLID, lessonSubjectSchoollessonYear.lesson.lslid)
+                            intent.putExtra(ActivityAddEditLesson.EXTRA_L_SID, lessonSubjectSchoollessonYear.lesson.lsid)
+                            startActivityForResult(intent, EDIT_LESSON_REQUEST)
+
                             pbTimetable.visibility = View.INVISIBLE
                             dialog.dismiss()
                         }
@@ -215,6 +258,32 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
                         .show()
             }
         }
+    }
+
+    /*---------------------when returning from |ActivityAddEditLesson| do something--------------------------*/
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && requestCode == EDIT_LESSON_REQUEST) {
+            //Save extras to vars
+            val id = data!!.getIntExtra(ActivityAddEditLesson.EXTRA_LID, -1)
+            val lday = data.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
+            val lslid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SLID, -1)
+            val lsid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SID, -1)
+
+            val lesson = Lesson(lday, lslid, lsid, activeYearID)
+
+            if (lslid == -1 || lsid == -1 || activeYearID == -1 || id == -1) {
+                val snackbar = Snackbar
+                        .make(clTimetable, "Failed to update Lesson!", Snackbar.LENGTH_LONG)
+                snackbar.show()
+                return
+            }
+
+            lesson.lid = id
+            lessonViewModel.update(lesson)
+        }
+
     }
 
 

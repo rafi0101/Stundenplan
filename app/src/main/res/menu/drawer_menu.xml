@@ -28,6 +28,10 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
+                    android:id="@+id/nav_lesson"
+                    android:icon="@drawable/ic_lesson"
+                    android:title="@string/fragment_lessons" />
+                <item
                     android:id="@+id/nav_subject"
                     android:icon="@drawable/ic_widgets"
                     android:title="@string/fragment_subjects" />

@@ -16,7 +16,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
-        versionName '0.2.14'
+        versionName '0.2.15'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -114,5 +114,9 @@ dependencies {
     //Week View
     //https://github.com/thellmund/Android-Week-View
     implementation 'com.github.thellmund.Android-Week-View:core:4.1.6'
+
+    //MaterialDayPicker
+    //https://github.com/gantonious/MaterialDayPicker
+    implementation 'ca.antonious:materialdaypicker:0.7.2'
 
 }

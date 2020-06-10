@@ -7,11 +7,13 @@
 
 
     <string name="fragment_home">Home</string>
-    <string name="fragment_timetable">Stundenplan</string>
+    <string name="fragment_timetable">@string/app_name</string>
     <string name="fragment_exam">Prüfung</string>
     <string name="fragment_exams">Prüfungen</string>
     <string name="fragment_task">Aufgabe</string>
     <string name="fragment_tasks">Aufgaben</string>
+    <string name="fragment_lesson">Stunde</string>
+    <string name="fragment_lessons">Stunden</string>
     <string name="fragment_subject">Fach</string>
     <string name="fragment_subjects">Fächer</string>
     <string name="fragment_teacher">Lehrer</string>

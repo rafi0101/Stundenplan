@@ -17,4 +17,6 @@ class SchoolLessonRepository(
     //Live data view
     val getAllSchoolLesson: LiveData<List<SchoolLesson>> = schoolLessonDao.getAllSchoolLesson()
 
+    suspend fun getAllSchoolLessonList(): List<SchoolLesson> = schoolLessonDao.getAllSchoolLessonList()
+
 }

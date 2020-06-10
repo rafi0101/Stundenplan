@@ -15,4 +15,7 @@ interface SchoolLessonDao : BaseDao<SchoolLesson> {
     @Query("SELECT * FROM schoollesson ORDER BY slnumber ASC")
     fun getAllSchoolLesson(): LiveData<List<SchoolLesson>>
 
+    @Query("SELECT * FROM schoollesson ORDER BY slnumber ASC")
+    suspend fun getAllSchoolLessonList(): List<SchoolLesson>
+
 }
