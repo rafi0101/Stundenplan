@@ -3,36 +3,49 @@ package com.ebner.stundenplan.fragments.main
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.graphics.RectF
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.alamkanak.weekview.OnEventClickListener
+import com.alamkanak.weekview.OnEventLongClickListener
 import com.alamkanak.weekview.WeekView
 import com.alamkanak.weekview.WeekViewDisplayable
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.SubjectExamsActivity
 import com.ebner.stundenplan.database.table.lesson.LessonViewModel
 import com.ebner.stundenplan.database.table.mergedEntities.LessonEvent
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
-import kotlinx.coroutines.runBlocking
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import java.time.DayOfWeek
 import java.util.*
 import kotlin.math.roundToInt
+
 
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentTimetable : Fragment() {
+class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEventLongClickListener<LessonEvent> {
 
     private val TAG = "debug_FragmentTimetable"
 
     private val weekView: WeekView<LessonEvent> by lazy {
         requireActivity().findViewById<WeekView<LessonEvent>>(R.id.weekView)
     }
+    private lateinit var pbTimetable: ProgressBar
+
     private lateinit var lessonViewModel: LessonViewModel
     private lateinit var settingsViewModel: SettingsViewModel
     private var activeYearID: Int = -1
@@ -54,6 +67,8 @@ class FragmentTimetable : Fragment() {
         params.setMargins(all, all, all, all)
         fragmentmain.layoutParams = params
 
+        /*---------------------Link items to Layout--------------------------*/
+        pbTimetable = root.findViewById(R.id.pb_timetable)
 
         lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
@@ -107,12 +122,11 @@ class FragmentTimetable : Fragment() {
 
                         val isCanceled = false
 
+                        //IF last lesson is greater then lastEventTime, expand the view
                         if (it.schoolLesson.slendhour >= lastEventTime) {
                             lastEventTime = it.schoolLesson.slendhour + 2
                         }
 
-                        Log.d(TAG, "endhour: ${it.schoolLesson.slendhour}")
-                        Log.d(TAG, "lastEventTime: $lastEventTime")
 
                         lessonEvent.add(LessonEvent(id, title, startTime, endTime, location, color, false, isCanceled))
 
@@ -121,9 +135,12 @@ class FragmentTimetable : Fragment() {
 
                 weekView.maxHour = lastEventTime
                 weekView.submit(lessonEvent)
+                pbTimetable.visibility = View.INVISIBLE
+
 
             })
-
+            weekView.onEventClickListener = this
+            weekView.onEventLongClickListener = this
 
         })
 
@@ -132,6 +149,74 @@ class FragmentTimetable : Fragment() {
 
         return root
     }
+
+
+    override fun onEventClick(data: LessonEvent, eventRect: RectF) {
+        pbTimetable.visibility = View.VISIBLE
+
+        CoroutineScope(IO).launch {
+            //Fetch lesson in IO thread
+            val lesson = lessonViewModel.singleLesson(data.id.toInt())
+
+            //Start Activity in Main thread to see all information about this subject
+            withContext(Main) {
+
+                val intent = Intent(context, SubjectExamsActivity::class.java)
+                intent.putExtra(SubjectExamsActivity.EXTRA_SID, lesson.subject.sid)
+                intent.putExtra(SubjectExamsActivity.EXTRA_SNAME, lesson.subject.sname)
+                intent.putExtra(SubjectExamsActivity.EXTRA_SCOLOR, lesson.subject.scolor)
+                startActivity(intent)
+
+                //Wait 1s in IO thread
+                withContext(IO) {
+                    delay(1000)
+                }
+                //Make the Progressbar after this second invisible
+                withContext(Main) {
+                    pbTimetable.visibility = View.INVISIBLE
+                }
+            }
+        }
+    }
+
+    override fun onEventLongClick(data: LessonEvent, eventRect: RectF) {
+        pbTimetable.visibility = View.VISIBLE
+
+        //Vibrate
+        view?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+
+        //Fetch lesson in IO thread
+        CoroutineScope(IO).launch {
+
+            val lesson = lessonViewModel.singleLesson(data.id.toInt())
+
+            //Create AlertDialog with 3 options what to do
+            withContext(Main) {
+                /*---------------------Confirm Delete Dialog--------------------------*/
+                MaterialAlertDialogBuilder(context)
+                        .setTitle("${lesson.subject.sname} am ${DayOfWeek.of(lesson.lesson.lday)}")
+                        .setMessage("Was möchtes du unternehmen?")
+                        .setPositiveButton("Löschen") { dialog, _ ->
+                            lessonViewModel.delete(lesson.lesson)
+                            pbTimetable.visibility = View.INVISIBLE
+                            dialog.dismiss()
+                        }
+                        .setNeutralButton("Abbrechen") { _, _ ->
+                            pbTimetable.visibility = View.INVISIBLE
+                        }
+                        .setNegativeButton("Ändern") { dialog, _ ->
+                            //Will be added soon
+                            pbTimetable.visibility = View.INVISIBLE
+                            dialog.dismiss()
+                        }
+                        .setOnCancelListener {
+                            pbTimetable.visibility = View.INVISIBLE
+                        }
+                        .show()
+            }
+        }
+    }
+
 
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.

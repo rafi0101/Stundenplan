@@ -18,4 +18,6 @@ class LessonRepository(
     //Live data view
     fun getAllLesson(yid: Int): LiveData<List<LessonSubjectSchoollessonYear>> = lessonDao.getAllLesson(yid)
 
+    suspend fun getLesson(lid: Int): LessonSubjectSchoollessonYear = lessonDao.getLesson(lid)
+
 }

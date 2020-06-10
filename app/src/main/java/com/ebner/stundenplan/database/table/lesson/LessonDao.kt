@@ -18,4 +18,8 @@ interface LessonDao : BaseDao<Lesson> {
     @Query("SELECT * FROM lesson INNER JOIN subject ON subject.sid = lesson.l_sid INNER JOIN room ON room.rid = subject.s_rid  INNER JOIN teacher ON teacher.tid = subject.s_tid INNER JOIN year ON year.yid = lesson.l_yid INNER JOIN schoollesson ON schoollesson.slid = lesson.l_slid WHERE l_yid=:yid")
     fun getAllLesson(yid: Int): LiveData<List<LessonSubjectSchoollessonYear>>
 
+    @Transaction
+    @Query("SELECT * FROM lesson INNER JOIN subject ON subject.sid = lesson.l_sid INNER JOIN room ON room.rid = subject.s_rid  INNER JOIN teacher ON teacher.tid = subject.s_tid INNER JOIN year ON year.yid = lesson.l_yid INNER JOIN schoollesson ON schoollesson.slid = lesson.l_slid WHERE lid=:lid")
+    suspend fun getLesson(lid: Int): LessonSubjectSchoollessonYear
+
 }

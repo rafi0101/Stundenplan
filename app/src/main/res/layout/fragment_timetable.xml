@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.main.FragmentTimetable">
+    tools:context=".fragments.main.FragmentTimetable"
+    android:orientation="vertical">
+
+
+    <ProgressBar
+        android:id="@+id/pb_timetable"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="visible"
+        tools:visibility="visible" />
 
 
     <com.alamkanak.weekview.WeekView
         android:id="@+id/weekView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:adaptiveEventTextSize="true"
         app:allDayEventTextSize="13sp"
         app:columnGap="1dp"
@@ -21,22 +30,22 @@
         app:eventPaddingVertical="2dp"
         app:eventTextColor="@android:color/white"
         app:firstDayOfWeek="monday"
+        app:futureBackgroundColor="@color/white"
+        app:futureWeekendBackgroundColor="@color/grey_200"
         app:headerRowBottomLineColor="@color/grey_400"
-        app:headerRowPadding="12dp"
+        app:headerRowPadding="4dp"
+        app:horizontalScrollingEnabled="false"
         app:hourHeight="60dp"
         app:minHour="6"
-        app:horizontalScrollingEnabled="false"
-        app:showDistinctPastFutureColor="true"
-        app:showDistinctWeekendColor="true"
-        app:futureBackgroundColor="@color/white"
-        app:pastBackgroundColor="@color/grey_300"
-        app:futureWeekendBackgroundColor="@color/grey_200"
         app:nowLineColor="@color/blue_500"
         app:nowLineDotColor="@color/blue_500"
         app:nowLineDotRadius="5dp"
         app:nowLineStrokeWidth="1dp"
         app:numberOfVisibleDays="7"
         app:overlappingEventGap="1dp"
+        app:pastBackgroundColor="@color/grey_300"
+        app:showDistinctPastFutureColor="true"
+        app:showDistinctWeekendColor="true"
         app:showFirstDayOfWeekFirst="true"
         app:showHeaderRowBottomLine="true"
         app:showNowLine="true"
@@ -52,4 +61,4 @@
         app:todayHeaderTextColor="@color/blue_600" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
