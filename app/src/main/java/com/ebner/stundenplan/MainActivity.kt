@@ -79,9 +79,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         currentFragment = id
 
+        navigationView.setCheckedItem(currentFragment)
+
         val newFragment: Fragment
 
-        when (id) {
+        when (currentFragment) {
             R.id.nav_home -> newFragment = FragmentHome()
             R.id.nav_timetable -> newFragment = FragmentTimetable()
             R.id.nav_exam -> newFragment = FragmentExam()
