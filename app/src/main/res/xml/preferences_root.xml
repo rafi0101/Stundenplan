@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$GenearlFragment"
+        app:icon="@drawable/ic_room"
+        app:key="messages_header"
+        app:title="messages (not working)" />
+
+    <Preference
+        app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$BackupFragment"
+        app:icon="@drawable/ic_backup"
+        app:key="Backup_header"
+        app:title="Backup" />
+
+</PreferenceScreen>

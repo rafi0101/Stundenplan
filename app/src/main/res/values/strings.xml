@@ -32,5 +32,9 @@
     <string name="menu_verwalten">Verwalten</string>
     <string name="menu_einstellungen">Einstellungen</string>
 
+    <string name="p_backup_manBackup">p_backup_manBackup</string>
+    <string name="spc_backup_autoBackup">spc_backup_autoBackup</string>
+    <string name="p_back_restore">p_back_restore</string>
+
 
 </resources>

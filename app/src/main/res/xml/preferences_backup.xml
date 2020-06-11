@@ -1,0 +1,24 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Sichern">
+
+        <Preference
+            app:key="@string/p_backup_manBackup"
+            app:title="Manuelle Sicherung" />
+
+        <SwitchPreference
+            app:key="@string/spc_backup_autoBackup"
+            app:title="Automatische Sicherung" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Wiederherstellen">
+
+        <Preference
+            app:key="@string/p_back_restore"
+            app:title="Wiederherstellen" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

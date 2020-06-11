@@ -1,5 +1,6 @@
 package com.ebner.stundenplan
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -16,7 +17,7 @@ import com.ebner.stundenplan.fragments.main.FragmentHome
 import com.ebner.stundenplan.fragments.main.FragmentTask
 import com.ebner.stundenplan.fragments.main.FragmentTimetable
 import com.ebner.stundenplan.fragments.manage.*
-import com.ebner.stundenplan.fragments.settings.FragmentSettings
+import com.ebner.stundenplan.fragments.settings.SettingsActivity
 import com.google.android.material.navigation.NavigationView
 import com.mikepenz.aboutlibraries.LibsBuilder
 
@@ -95,7 +96,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_year -> newFragment = FragmentYear()
             R.id.nav_examtype -> newFragment = FragmentExamtype()
             R.id.nav_schoollesson -> newFragment = FragmentSchoolLesson()
-            R.id.nav_settings -> newFragment = FragmentSettings()
+            R.id.nav_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                currentFragment = R.id.nav_home
+                navigationView.setCheckedItem(currentFragment)
+                newFragment = FragmentHome()
+            }
             R.id.nav_info -> {
                 val infoFragment = LibsBuilder()
                         .withFields(R.string::class.java.fields) // in some cases it may be needed to provide the R class, if it can not be automatically resolved
