@@ -99,9 +99,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
-                currentFragment = R.id.nav_home
-                navigationView.setCheckedItem(currentFragment)
-                newFragment = FragmentHome()
+                this.finish()
+                return
             }
             R.id.nav_info -> {
                 val infoFragment = LibsBuilder()

@@ -54,6 +54,9 @@ abstract class StundenplanDatabase : RoomDatabase() {
 
 
     companion object {
+
+        const val DATABASE_NAME = "stundenplandb"
+
         @Volatile
         private var INSTANCE: StundenplanDatabase? = null
 
@@ -66,7 +69,7 @@ abstract class StundenplanDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context) =
                 Room.databaseBuilder(context.applicationContext,
-                        StundenplanDatabase::class.java, "stundenplandb")
+                        StundenplanDatabase::class.java, DATABASE_NAME)
                         //Delete Database, when something changed
                         .fallbackToDestructiveMigration()
                         // prepopulate the database after onCreate was called

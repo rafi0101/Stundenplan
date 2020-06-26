@@ -1,13 +1,18 @@
 package com.ebner.stundenplan.fragments.settings
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
+import com.ebner.roomdatabasebackup.core.RoomBackup
+import com.ebner.stundenplan.MainActivity
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.database.main.StundenplanDatabase
 
 private const val TITLE_TAG = "settingsActivityTitle"
 private lateinit var sharedPreferences: SharedPreferences
@@ -58,9 +63,17 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         if (supportFragmentManager.popBackStackImmediate()) {
             return true
         }
-        super.onBackPressed()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        this.finish()
         return super.onSupportNavigateUp()
 
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        this.finish()
     }
 
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
@@ -121,6 +134,48 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 editor.apply()
 
                 //true to update the view
+                true
+            }
+
+            pManBackup.onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
+                RoomBackup()
+                        .context(requireContext())
+                        .database(StundenplanDatabase.getInstance(requireContext()))
+                        .backupIsEncrypted(true)
+                        .maxFileCount(15)
+                        .onCompleteListener { success, message ->
+                            if (success) {
+                                val intent = Intent(requireContext(), MainActivity::class.java)
+                                startActivity(intent)
+                                Toast.makeText(requireContext(), "Backup successful", Toast.LENGTH_SHORT).show()
+                                activity?.finish()
+                            } else {
+                                Toast.makeText(requireContext(), "Backup failed", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .backup()
+
+                true
+            }
+
+            pRestore.onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
+                RoomBackup()
+                        .context(requireContext())
+                        .database(StundenplanDatabase.getInstance(requireContext()))
+                        .backupIsEncrypted(true)
+                        .onCompleteListener { success, message ->
+                            if (success) {
+                                val intent = Intent(requireContext(), MainActivity::class.java)
+                                startActivity(intent)
+                                Toast.makeText(requireContext(), "Restore successful", Toast.LENGTH_SHORT).show()
+                                activity?.finish()
+                            } else {
+                                Toast.makeText(requireContext(), "Restore failed", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .restore()
+
+
                 true
             }
 
