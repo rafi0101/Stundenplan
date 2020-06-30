@@ -16,7 +16,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
-        versionName '0.2.22'
+        versionName '0.2.23'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -129,6 +129,6 @@ dependencies {
 
     //Room Database Backup
     //https://github.com/rafi0101/Android-Room-Database-Backup
-    implementation 'com.github.rafi0101:Android-Room-Database-Backup:1.0.0-beta01'
+    implementation 'com.github.rafi0101:Android-Room-Database-Backup:1.0.0-beta02'
 
 }

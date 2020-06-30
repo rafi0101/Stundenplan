@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
@@ -16,6 +18,7 @@ import com.ebner.stundenplan.database.main.StundenplanDatabase
 
 private const val TITLE_TAG = "settingsActivityTitle"
 private lateinit var sharedPreferences: SharedPreferences
+private lateinit var pbSettings: ProgressBar
 
 private val TAG = "debug_SettingsActivity"
 
@@ -23,8 +26,8 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
 
     companion object {
-        private const val SHARED_PREFS = "sharedPrefs"
-        private const val BACKUP_AUTOBACKUP = "backupautobackup"
+        const val SHARED_PREFS = "sharedPrefs"
+        const val BACKUP_AUTOBACKUP = "backupautobackup"
 
     }
 
@@ -35,6 +38,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
         //Initialize SharedPrefs
         sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        pbSettings = findViewById(R.id.pb_settings)
 
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -71,9 +75,13 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
     }
 
     override fun onBackPressed() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        this.finish()
+        if (supportFragmentManager.popBackStackImmediate()) {
+            return
+        } else {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            this.finish()
+        }
     }
 
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
@@ -137,13 +145,14 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 true
             }
 
-            pManBackup.onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
+            pManBackup.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                pbSettings.visibility = View.VISIBLE
                 RoomBackup()
                         .context(requireContext())
                         .database(StundenplanDatabase.getInstance(requireContext()))
                         .backupIsEncrypted(true)
                         .maxFileCount(15)
-                        .onCompleteListener { success, message ->
+                        .onCompleteListener { success, _ ->
                             if (success) {
                                 val intent = Intent(requireContext(), MainActivity::class.java)
                                 startActivity(intent)
@@ -151,6 +160,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                                 activity?.finish()
                             } else {
                                 Toast.makeText(requireContext(), "Backup failed", Toast.LENGTH_SHORT).show()
+                                pbSettings.visibility = View.INVISIBLE
                             }
                         }
                         .backup()
@@ -158,12 +168,13 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                 true
             }
 
-            pRestore.onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
+            pRestore.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                pbSettings.visibility = View.VISIBLE
                 RoomBackup()
                         .context(requireContext())
                         .database(StundenplanDatabase.getInstance(requireContext()))
                         .backupIsEncrypted(true)
-                        .onCompleteListener { success, message ->
+                        .onCompleteListener { success, _ ->
                             if (success) {
                                 val intent = Intent(requireContext(), MainActivity::class.java)
                                 startActivity(intent)
@@ -171,6 +182,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                                 activity?.finish()
                             } else {
                                 Toast.makeText(requireContext(), "Restore failed", Toast.LENGTH_SHORT).show()
+                                pbSettings.visibility = View.INVISIBLE
                             }
                         }
                         .restore()

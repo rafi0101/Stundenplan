@@ -1,8 +1,11 @@
 package com.ebner.stundenplan
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -11,6 +14,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.ebner.roomdatabasebackup.core.RoomBackup
+import com.ebner.stundenplan.database.main.StundenplanDatabase
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.ebner.stundenplan.fragments.main.FragmentExam
 import com.ebner.stundenplan.fragments.main.FragmentHome
@@ -20,17 +25,22 @@ import com.ebner.stundenplan.fragments.manage.*
 import com.ebner.stundenplan.fragments.settings.SettingsActivity
 import com.google.android.material.navigation.NavigationView
 import com.mikepenz.aboutlibraries.LibsBuilder
+import kotlinx.coroutines.runBlocking
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         const val EXTRA_FRAGMENT_ID = "com.ebner.stundenplan.EXTRA_FRAGMENT_ID"
+        const val BACKUP_LASTAUTOBACKUP = "lastautobackup"
     }
 
 
     private lateinit var toolbar: Toolbar
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+    private lateinit var sharedPreferences: SharedPreferences
 
     private var currentFragment: Int = R.id.nav_home
 
@@ -56,6 +66,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.bringToFront()
         navigationView.setNavigationItemSelectedListener(this)
 
+        /*---------------------if Autobackup is enabled, run autobackup--------------------------*/
+        sharedPreferences = getSharedPreferences(SettingsActivity.SHARED_PREFS, Context.MODE_PRIVATE)
+        if (sharedPreferences.getBoolean(SettingsActivity.BACKUP_AUTOBACKUP, false)) {
+            runBlocking {
+                runAutoBackup()
+            }
+        }
 
         /*---------------------Select first Item in NavDrawer--------------------------*/
         val menu = navigationView.menu
@@ -74,6 +91,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         subjectViewModel.allSubject.observe(this, Observer {
             //Nothing to do here, because just for initializing
         })
+
+    }
+
+    private fun runAutoBackup() {
+        val currentTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val currentDateFormatted = currentTime.format(formatter)
+
+        val lastBackupDate = sharedPreferences.getString(BACKUP_LASTAUTOBACKUP, null)
+        if (lastBackupDate == null || lastBackupDate != currentDateFormatted) {
+            RoomBackup()
+                    .context(this)
+                    .database(StundenplanDatabase.getInstance(this))
+                    .backupIsEncrypted(true)
+                    .maxFileCount(15)
+                    .customBackupFileName("autobackup-$currentDateFormatted.sqlite3")
+                    .onCompleteListener { success, _ ->
+                        if (success) {
+                            Toast.makeText(this, "Backup successful", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "Backup failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .backup()
+
+            val editor = sharedPreferences.edit()
+            editor.putString(BACKUP_LASTAUTOBACKUP, currentDateFormatted)
+            editor.apply()
+        }
     }
 
     fun changeFragment(id: Int) {
