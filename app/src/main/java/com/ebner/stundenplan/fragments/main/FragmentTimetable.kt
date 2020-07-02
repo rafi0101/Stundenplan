@@ -33,6 +33,7 @@ import com.ebner.stundenplan.database.table.settings.SettingsViewModel
 import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.fragments.manage.ActivityAddEditLesson
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -65,6 +66,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
     private var activeYearID: Int = -1
 
     companion object {
+        private const val ADD_LESSON_REQUEST = 1
         private const val EDIT_LESSON_REQUEST = 2
     }
 
@@ -86,6 +88,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         /*---------------------Link items to Layout--------------------------*/
         pbTimetable = root.findViewById(R.id.pb_timetable)
         clTimetable = root.findViewById(R.id.cl_timetable)
+        val fab = root.findViewById<FloatingActionButton>(R.id.btn_timetable_addLesson)
 
         lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
@@ -159,6 +162,12 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
             weekView.onEventLongClickListener = this
 
         })
+
+        /*---------------------FAB Add Button--------------------------*/
+        fab.setOnClickListener {
+            val intent = Intent(root.context, ActivityAddEditLesson::class.java)
+            startActivityForResult(intent, ADD_LESSON_REQUEST)
+        }
 
 
         return root
@@ -264,24 +273,39 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_OK && requestCode == EDIT_LESSON_REQUEST) {
+        if (resultCode == Activity.RESULT_OK) {
+
             //Save extras to vars
-            val id = data!!.getIntExtra(ActivityAddEditLesson.EXTRA_LID, -1)
-            val lday = data.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
+            val lday = data!!.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
             val lslid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SLID, -1)
             val lsid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SID, -1)
 
             val lesson = Lesson(lday, lslid, lsid, activeYearID)
 
-            if (lslid == -1 || lsid == -1 || activeYearID == -1 || id == -1) {
-                val snackbar = Snackbar
-                        .make(clTimetable, "Failed to update Lesson!", Snackbar.LENGTH_LONG)
-                snackbar.show()
-                return
-            }
+            if (requestCode == ADD_LESSON_REQUEST) {
 
-            lesson.lid = id
-            lessonViewModel.update(lesson)
+                if (lslid == -1 || lsid == -1 || activeYearID == -1) {
+                    val snackbar = Snackbar
+                            .make(clTimetable, "Failed to insert Lesson!", Snackbar.LENGTH_LONG)
+                    snackbar.show()
+                    return
+                }
+
+                lessonViewModel.insert(lesson)
+
+            } else if (requestCode == EDIT_LESSON_REQUEST) {
+                val id = data.getIntExtra(ActivityAddEditLesson.EXTRA_LID, -1)
+
+                if (lslid == -1 || lsid == -1 || activeYearID == -1 || id == -1) {
+                    val snackbar = Snackbar
+                            .make(clTimetable, "Failed to update Lesson!", Snackbar.LENGTH_LONG)
+                    snackbar.show()
+                    return
+                }
+
+                lesson.lid = id
+                lessonViewModel.update(lesson)
+            }
         }
 
     }
