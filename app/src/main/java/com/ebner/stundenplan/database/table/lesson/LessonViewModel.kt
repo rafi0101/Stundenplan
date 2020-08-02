@@ -42,5 +42,12 @@ class LessonViewModel(application: Application) : AndroidViewModel(application) 
 
     suspend fun singleLesson(lid: Int): LessonSubjectSchoollessonYear = lessonRepository.getLesson(lid)
 
+    suspend fun lessonBySubject(sid: Int): List<Lesson> = lessonRepository.getLessonBySubject(sid)
+    suspend fun lessonBySubjectDay(sid: Int, day: Int): List<LessonSubjectSchoollessonYear> = lessonRepository.getLessonbySubjectDay(sid, day)
+    suspend fun lessonbySubjectDaySchoollesson(sid: Int, day: Int, slid: Int): List<Lesson> = lessonRepository.getLessonbySubjectDaySchoollesson(sid, day, slid)
+
+    suspend fun allLessonList(): List<Lesson> {
+        return lessonRepository.getAllLessonList()
+    }
 
 }

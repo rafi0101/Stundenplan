@@ -22,4 +22,19 @@ interface LessonDao : BaseDao<Lesson> {
     @Query("SELECT * FROM lesson INNER JOIN subject ON subject.sid = lesson.l_sid INNER JOIN room ON room.rid = subject.s_rid  INNER JOIN teacher ON teacher.tid = subject.s_tid INNER JOIN year ON year.yid = lesson.l_yid INNER JOIN schoollesson ON schoollesson.slid = lesson.l_slid WHERE lid=:lid")
     suspend fun getLesson(lid: Int): LessonSubjectSchoollessonYear
 
+    @Transaction
+    @Query("SELECT * FROM lesson WHERE l_sid=:sid")
+    suspend fun getLessonBySubject(sid: Int): List<Lesson>
+
+    @Transaction
+    @Query("SELECT * FROM lesson INNER JOIN subject ON subject.sid = lesson.l_sid INNER JOIN room ON room.rid = subject.s_rid  INNER JOIN teacher ON teacher.tid = subject.s_tid INNER JOIN year ON year.yid = lesson.l_yid INNER JOIN schoollesson ON schoollesson.slid = lesson.l_slid WHERE l_sid=:sid AND lday=:day ORDER BY schoollesson.slnumber")
+    suspend fun getLessonBySubjectDay(sid: Int, day: Int): List<LessonSubjectSchoollessonYear>
+
+    @Transaction
+    @Query("SELECT * FROM lesson WHERE l_sid=:sid AND lday=:day AND l_slid=:slid")
+    suspend fun getLessonbySubjectDaySchoollesson(sid: Int, day: Int, slid: Int): List<Lesson>
+
+    @Query("SELECT * FROM lesson")
+    suspend fun getAllLessonList(): List<Lesson>
+
 }

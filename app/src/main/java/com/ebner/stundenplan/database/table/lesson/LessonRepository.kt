@@ -19,5 +19,9 @@ class LessonRepository(
     fun getAllLesson(yid: Int): LiveData<List<LessonSubjectSchoollessonYear>> = lessonDao.getAllLesson(yid)
 
     suspend fun getLesson(lid: Int): LessonSubjectSchoollessonYear = lessonDao.getLesson(lid)
+    suspend fun getAllLessonList(): List<Lesson> = lessonDao.getAllLessonList()
+    suspend fun getLessonBySubject(sid: Int): List<Lesson> = lessonDao.getLessonBySubject(sid)
+    suspend fun getLessonbySubjectDay(sid: Int, day: Int): List<LessonSubjectSchoollessonYear> = lessonDao.getLessonBySubjectDay(sid, day)
+    suspend fun getLessonbySubjectDaySchoollesson(sid: Int, day: Int, slid: Int): List<Lesson> = lessonDao.getLessonbySubjectDaySchoollesson(sid, day, slid)
 
 }

@@ -18,6 +18,8 @@ import com.ebner.stundenplan.database.table.settings.Settings
 import com.ebner.stundenplan.database.table.settings.SettingsDao
 import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.database.table.subject.SubjectDao
+import com.ebner.stundenplan.database.table.task.Task
+import com.ebner.stundenplan.database.table.task.TaskDao
 import com.ebner.stundenplan.database.table.teacher.Teacher
 import com.ebner.stundenplan.database.table.teacher.TeacherDao
 import com.ebner.stundenplan.database.table.year.Year
@@ -37,7 +39,8 @@ import java.util.concurrent.Executors
     Settings::class,
     Exam::class,
     Lesson::class,
-    SchoolLesson::class
+    SchoolLesson::class,
+    Task::class
 ], version = 1, exportSchema = false)
 abstract class StundenplanDatabase : RoomDatabase() {
 
@@ -51,6 +54,7 @@ abstract class StundenplanDatabase : RoomDatabase() {
     abstract fun examDao(): ExamDao
     abstract fun lessonDao(): LessonDao
     abstract fun schoolLessonDao(): SchoolLessonDao
+    abstract fun taskDao(): TaskDao
 
 
     companion object {
@@ -122,6 +126,12 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).lessonDao().insert(Lesson(2, 1, 6, 1))
                                     getInstance(context).lessonDao().insert(Lesson(2, 2, 2, 1))
                                     getInstance(context).lessonDao().insert(Lesson(3, 3, 3, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 2, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 3, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe4", "", 4, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe5", "", 5, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe6", "", 6, 1))
 
 
                                 }
