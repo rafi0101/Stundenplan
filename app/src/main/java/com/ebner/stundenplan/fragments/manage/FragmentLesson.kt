@@ -114,7 +114,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
                 lesson.lid = lessonItem.lesson.lid
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
                         .setMessage("Es wird die Stunde ${lessonItem.subject.sname} gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
                         .setPositiveButton("Löschen") { _, _ ->

@@ -96,7 +96,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
                 val examtypeitem = adapter.getExamtypeAt(position)
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
                         .setMessage("Es wird die Prüfungsart ${examtypeitem?.etname} und alle zugehörigen Fächer, Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
                         .setPositiveButton("Löschen") { _, _ ->

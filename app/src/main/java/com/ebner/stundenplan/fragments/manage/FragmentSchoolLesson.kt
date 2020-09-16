@@ -94,7 +94,7 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
                 val schoolLessonItem = adapter.getSchoolLessonAt(position)!!
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
                         .setMessage("Es wird die Schulstunde ${schoolLessonItem.slnumber} und alle zugehörigen Stunden im Stundenplan gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
                         .setPositiveButton("Löschen") { _, _ ->

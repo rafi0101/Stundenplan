@@ -228,7 +228,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
             //Create AlertDialog with 3 options what to do
             withContext(Main) {
                 /*---------------------Change or Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("${lessonSubjectSchoollessonYear.subject.sname} am $lessonDay in der ${lessonSubjectSchoollessonYear.schoolLesson.slnumber} Stunde")
                         .setMessage("Was möchtes du unternehmen?")
                         .setPositiveButton("Löschen") { dialog, _ ->

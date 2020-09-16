@@ -96,7 +96,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
                 val roomItem = adapter.getRoomAt(position)
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
                         .setMessage("Es wird der Raum ${roomItem?.rname} und alle zugehörigen Fächer, Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
                         .setPositiveButton("Löschen") { _, _ ->

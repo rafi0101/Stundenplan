@@ -114,7 +114,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
                 if (activeYearID == yearItem?.yid) {
-                    MaterialAlertDialogBuilder(context)
+                    MaterialAlertDialogBuilder(context!!)
                             .setTitle("Achtung!")
                             .setMessage("Diese Klasse kann nicht gelöscht werden, da es die aktuell aktive Klasse ist.\n" +
                                     "Bitte ändere zunächst die aktive Klasse.")
@@ -127,7 +127,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
                             .show()
                 } else {
 
-                    MaterialAlertDialogBuilder(context)
+                    MaterialAlertDialogBuilder(context!!)
                             .setTitle("Achtung!")
                             .setMessage("Es wird die Klasse ${yearItem?.yname}, der Stundenplan und ALLE verknüpften Prüfungen und Aufgaben gelöscht.\n\nDas Wiederherstellen ist nicht mehr möglich!")
                             .setPositiveButton("Alles Löschen") { _, _ ->

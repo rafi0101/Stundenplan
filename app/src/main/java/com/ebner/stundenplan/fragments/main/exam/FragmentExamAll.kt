@@ -165,7 +165,7 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
         val exam = Exam(examSubjectYearExamtype.exam.esid, examSubjectYearExamtype.exam.eetid, examSubjectYearExamtype.exam.eyid, examSubjectYearExamtype.exam.egrade, examSubjectYearExamtype.exam.edateyear, examSubjectYearExamtype.exam.edatemonth, examSubjectYearExamtype.exam.edateday)
         exam.eid = examSubjectYearExamtype.exam.eid
 
-        MaterialAlertDialogBuilder(context)
+        MaterialAlertDialogBuilder(context!!)
                 .setTitle("Achtung")
                 .setMessage("Es wird gelöscht: ${examSubjectYearExamtype.subject.sname} ${examSubjectYearExamtype.examtype.etname} vom ${exam.edateday}.${exam.edatemonth}.${exam.edateyear}")
                 .setPositiveButton("Löschen") { _, _ ->

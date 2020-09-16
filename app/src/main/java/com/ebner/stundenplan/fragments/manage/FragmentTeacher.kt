@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -95,7 +96,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
                 val teacherItem = adapter.getTeacherAt(position)
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
                         .setMessage("Es wird der Lehrer ${teacherItem?.tname} und alle zugehörigen Fächer, Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!")
                         .setPositiveButton("Löschen") { _, _ ->

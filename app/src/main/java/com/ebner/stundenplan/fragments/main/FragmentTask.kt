@@ -108,7 +108,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
                 task.tkid = taskItem.task.tkid
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
-                MaterialAlertDialogBuilder(context)
+                MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
                         .setMessage("Es wird die Aufgabe ${task.tkname} gelöscht")
                         .setPositiveButton("Löschen") { _, _ ->
