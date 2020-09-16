@@ -1,16 +1,15 @@
 package com.ebner.stundenplan.fragments.main
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import ca.antonious.materialdaypicker.MaterialDayPicker
@@ -20,7 +19,12 @@ import com.ebner.stundenplan.database.table.lesson.LessonViewModel
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.coroutines.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
+
 
 class ActivityAddEditTask : AppCompatActivity() {
 
@@ -29,10 +33,16 @@ class ActivityAddEditTask : AppCompatActivity() {
         const val EXTRA_TKNAME = "com.ebner.stundenplan.fragments.main.EXTRA_TKNAME"
         const val EXTRA_TKNOTE = "com.ebner.stundenplan.fragments.main.EXTRA_TKNOTE"
         const val EXTRA_TKLID = "com.ebner.stundenplan.fragments.main.EXTRA_TKLID"
-
+        const val EXTRA_TKDATEDAY = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEDAY"
+        const val EXTRA_TKDATEMONTH = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEMONTH"
+        const val EXTRA_TKDATEYEAR = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEYEAR"
+        private val TAG = "debug_ActivityAddEditTask"
     }
 
     var selectedLID: Int = -1
+    var selectedDateDay: Int = -1
+    var selectedDateMonth: Int = -1
+    var selectedDateYear: Int = -1
 
     private lateinit var tietName: TextInputEditText
     private lateinit var tilName: TextInputLayout
@@ -42,6 +52,7 @@ class ActivityAddEditTask : AppCompatActivity() {
     private lateinit var tietNote: TextInputEditText
     private lateinit var tilNote: TextInputLayout
     private lateinit var pbTask: ProgressBar
+    private lateinit var btn_datepicker: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +76,7 @@ class ActivityAddEditTask : AppCompatActivity() {
         tilNote = findViewById(R.id.til_task_tknote)
         mdpTask = findViewById(R.id.mdp_task_day)
         pbTask = findViewById(R.id.pb_task)
+        btn_datepicker = findViewById(R.id.btn_datepicker)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
@@ -74,17 +86,24 @@ class ActivityAddEditTask : AppCompatActivity() {
             val tkid = intent.getIntExtra(EXTRA_TKID, -1)
             val tkname = intent.getStringExtra(EXTRA_TKNAME)
             val tknote = intent.getStringExtra(EXTRA_TKNOTE)
+            val tkdateday = intent.getIntExtra(EXTRA_TKDATEDAY, -1)
+            val tkdatemonth = intent.getIntExtra(EXTRA_TKDATEMONTH, -1)
+            val tkdateyear = intent.getIntExtra(EXTRA_TKDATEYEAR, -1)
             val tklid = intent.getIntExtra(EXTRA_TKLID, -1)
 
 
+
             selectedLID = tklid
+            selectedDateDay = tkdateday
+            selectedDateMonth = tkdatemonth
+            selectedDateYear = tkdateyear
 
             tietName.setText(tkname)
             tietNote.setText(tknote)
 
             //Fetch lists, and pass values to set in spinner etc.
             CoroutineScope(Dispatchers.IO).launch {
-                fetchFromDatabase(tklid)
+                fetchFromDatabase(selectedLID, selectedDateDay, selectedDateMonth, selectedDateYear)
             }
 
         } else {
@@ -92,13 +111,13 @@ class ActivityAddEditTask : AppCompatActivity() {
 
             //Fetch lists, and pass values to set in spinner etc.
             CoroutineScope(Dispatchers.IO).launch {
-                fetchFromDatabase(-1)
+                fetchFromDatabase(-1, -1, -1, -1)
             }
         }
     }
 
     /*---------------------Fetch Rooms and Teachers in another "thread" and set them to the spinner--------------------------*/
-    private suspend fun fetchFromDatabase(lid: Int) {
+    private suspend fun fetchFromDatabase(lid: Int, tkdateday: Int, tkdatemonth: Int, tkdateyear: Int) {
         var selectedLday: Int = -1
         var selectedLslid: Int = -1
         var selectedLsid: Int = -1
@@ -146,7 +165,7 @@ class ActivityAddEditTask : AppCompatActivity() {
             selectedLslid = lessonLslid.getItem(posLid)!!
             selectedLsid = lessonLsid.getItem(posLid)!!
         } else {
-            selectedLsid = subjectSid.getItem(1)!!
+            selectedLsid = subjectSid.getItem(0)!!
         }
 
         /*---------------------Set list of all subjects to spinner (back in the Main thread)--------------------------*/
@@ -168,11 +187,13 @@ class ActivityAddEditTask : AppCompatActivity() {
                 val selectedSubjectPos = subjectSid.getPosition(selectedLsid)
                 selectedSubjectPos.let { spSid.getSpinner().setSelection(it) }
 
-                showSelectDaysBySubject(selectedLsid, selectedLday)
+                btn_datepicker.text = "$tkdateday.${tkdatemonth + 1}.$tkdateyear"
+
+                showSelectDaysBySubject(selectedLsid)
                 showSelectLessonsBySubjectDay(selectedLsid, selectedLday, -1)
 
             } else {
-                showSelectDaysBySubject(selectedLsid, -1)
+                showSelectDaysBySubject(selectedLsid)
             }
 
             //After 0,5s disable the progressbar
@@ -185,37 +206,13 @@ class ActivityAddEditTask : AppCompatActivity() {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     //Get position, and with this run query on room_rid
                     selectedLsid = subjectSid.getItem(position)!!
+                    Log.d(TAG, "spSid: selectedLsid: $selectedLsid")
 
                     //Subject changed, set selected day and schoollesson to -1
                     selectedLday = -1
                     selectedLslid = -1
 
-                    showSelectDaysBySubject(selectedLsid, -1)
-                }
-            }
-
-            /*---------------------Listener, if Day selection change, and if true "lessons" will be updated--------------------------*/
-            mdpTask.daySelectionChangedListener = object : MaterialDayPicker.DaySelectionChangedListener {
-                override fun onDaySelectionChanged(selectedDays: List<MaterialDayPicker.Weekday>) {
-
-                    if (selectedDays.isEmpty()) {
-                        spSlid.getSpinner().adapter = null
-                        return
-                    }
-
-                    val selectedDay = selectedDays.single()
-
-                    selectedLday = when (selectedDay) {
-                        MaterialDayPicker.Weekday.MONDAY -> 1
-                        MaterialDayPicker.Weekday.TUESDAY -> 2
-                        MaterialDayPicker.Weekday.WEDNESDAY -> 3
-                        MaterialDayPicker.Weekday.THURSDAY -> 4
-                        MaterialDayPicker.Weekday.FRIDAY -> 5
-                        MaterialDayPicker.Weekday.SATURDAY -> 6
-                        MaterialDayPicker.Weekday.SUNDAY -> 7
-                        else -> -1
-                    }
-                    showSelectLessonsBySubjectDay(selectedLsid, selectedLday, selectedLslid)
+                    showSelectDaysBySubject(selectedLsid)
                 }
             }
 
@@ -228,41 +225,88 @@ class ActivityAddEditTask : AppCompatActivity() {
      * @param sid selected Subject --> Show all available days for this Subject
      * @param selected if !=-1 set specific day as selected
      */
-    private fun showSelectDaysBySubject(sid: Int, selected: Int) {
-        val lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
-        CoroutineScope(Dispatchers.IO).launch {
-            val lessonBySubject = lessonViewModel.lessonBySubject(sid)
+    private fun showSelectDaysBySubject(sid: Int) {
+        var datePickerDialog: DatePickerDialog
+        val calendar = Calendar.getInstance()
 
-            withContext(Dispatchers.Main) {
-                mdpTask.disableAllDays()
-                lessonBySubject.forEach {
-                    //Enable all Available Days
-                    when (it.lday) {
-                        1 -> mdpTask.enableDay(MaterialDayPicker.Weekday.MONDAY)
-                        2 -> mdpTask.enableDay(MaterialDayPicker.Weekday.TUESDAY)
-                        3 -> mdpTask.enableDay(MaterialDayPicker.Weekday.WEDNESDAY)
-                        4 -> mdpTask.enableDay(MaterialDayPicker.Weekday.THURSDAY)
-                        5 -> mdpTask.enableDay(MaterialDayPicker.Weekday.FRIDAY)
-                        6 -> mdpTask.enableDay(MaterialDayPicker.Weekday.SATURDAY)
-                        7 -> mdpTask.enableDay(MaterialDayPicker.Weekday.SUNDAY)
-                    }
+        var Year = calendar.get(Calendar.YEAR)
+        var Month = calendar.get(Calendar.MONTH)
+        var Day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        if (selectedDateDay != -1 && selectedDateMonth != -1 && selectedDateYear != -1) {
+            Year = selectedDateYear
+            Month = selectedDateMonth
+            Day = selectedDateDay
+        }
+
+        btn_datepicker.setOnClickListener {
+
+            datePickerDialog = DatePickerDialog.newInstance(object : DatePickerDialog.OnDateSetListener {
+                override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+                    val date = "$dayOfMonth.${monthOfYear + 1}.$year"
+                    btn_datepicker.text = date
+
+                    val firstApiFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    //Add 0 in front of all dates < 10
+                    val date2 = LocalDate.parse("$year-${if (monthOfYear + 1 < 10) "0${monthOfYear + 1}" else monthOfYear + 1}-${if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth}", firstApiFormat)
+
+                    showSelectLessonsBySubjectDay(sid, date2.dayOfWeek.value, -1)
+
+                    selectedDateDay = dayOfMonth
+                    selectedDateMonth = monthOfYear
+                    selectedDateYear = year
+
                 }
 
-                //Select selected Day
-                when (selected) {
-                    1 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.MONDAY)
-                    2 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.TUESDAY)
-                    3 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.WEDNESDAY)
-                    4 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.THURSDAY)
-                    5 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.FRIDAY)
-                    6 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.SATURDAY)
-                    7 -> mdpTask.setSelectedDays(MaterialDayPicker.Weekday.SUNDAY)
-                    else -> mdpTask.clearSelection()
+            }, Year, Month, Day)
+
+            Log.d(TAG, "Subject id: $sid")
+
+            val lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
+            CoroutineScope(Dispatchers.IO).launch {
+                val lessonBySubject = lessonViewModel.lessonBySubject(sid)
+
+                withContext(Dispatchers.Main) {
+
+                    //https://www.freakyjolly.com/android-material-datepicker-and-timepicker-by-wdullaer-tutorial-by-example/#more-2649
+                    // Setting Min Date to 1 year ago
+                    val min_date_c = Calendar.getInstance()
+                    min_date_c[Calendar.YEAR] = Year - 1
+                    datePickerDialog.minDate = min_date_c
+
+                    // Setting Max Date to next 2 years
+                    val max_date_c = Calendar.getInstance()
+                    max_date_c[Calendar.YEAR] = Year + 2
+                    datePickerDialog.maxDate = max_date_c
+
+                    //Disable all SUNDAYS and SATURDAYS between Min and Max Dates
+                    var loopdate = min_date_c
+                    while (min_date_c.before(max_date_c)) {
+                        val dayOfWeek = loopdate[Calendar.DAY_OF_WEEK]
+                        //IF dayOfWeek not in lessonBySubject.lday disable this day
+                        //if (it.lday==7){1} else {it.lday+1} Calendar.Monday ist 2, und wenn it.lday montag is ist es dort 1, deswegen überall +1 und Sonntag wird auf 1 gesetzt
+                        if (lessonBySubject.none {
+                                    if (it.lday == 7) {
+                                        1
+                                    } else {
+                                        it.lday + 1
+                                    } == dayOfWeek
+                                }) {
+                            val disabledDays = arrayOfNulls<Calendar>(1)
+                            disabledDays[0] = loopdate
+                            datePickerDialog.disabledDays = disabledDays
+                        }
+                        min_date_c.add(Calendar.DATE, 1)
+                        loopdate = min_date_c
+                    }
+
+                    datePickerDialog.show(supportFragmentManager, "Datepickerdialog")
                 }
 
 
             }
         }
+
     }
 
     /**
@@ -330,12 +374,19 @@ class ActivityAddEditTask : AppCompatActivity() {
     }
 
     /*---------------------Save current entries, and return to Fragment--------------------------*/
+    @SuppressLint("SetTextI18n")
     private fun saveTask() {
 
         var error = false
         /*---------------------If EditText is empty return error--------------------------*/
         if (TextUtils.isEmpty(tietName.text.toString())) {
             tilName.error = "Gib einen Namen ein!"
+            error = true
+        }
+        if (selectedDateDay == -1 || selectedDateMonth == -1 || selectedDateYear == -1) {
+            btn_datepicker.text = "Bitte wähle ein Datum"
+            btn_datepicker.isAllCaps = false
+            btn_datepicker.setBackgroundColor(getColor(R.color.red_400))
             error = true
         }
 
@@ -349,6 +400,9 @@ class ActivityAddEditTask : AppCompatActivity() {
         val data = Intent()
         data.putExtra(EXTRA_TKNAME, tkname)
         data.putExtra(EXTRA_TKNOTE, tknote)
+        data.putExtra(EXTRA_TKDATEDAY, selectedDateDay)
+        data.putExtra(EXTRA_TKDATEMONTH, selectedDateMonth)
+        data.putExtra(EXTRA_TKDATEYEAR, selectedDateYear)
         data.putExtra(EXTRA_TKLID, selectedLID)
 
         val id = intent.getIntExtra(EXTRA_TKID, -1)
@@ -382,4 +436,5 @@ class ActivityAddEditTask : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 }

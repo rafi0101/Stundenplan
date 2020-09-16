@@ -21,11 +21,20 @@ import com.ebner.stundenplan.database.table.year.Year
 )
 data class Task(
 
-        @ColumnInfo(name = "tk_name")
+        @ColumnInfo(name = "tkname")
         var tkname: String,
 
-        @ColumnInfo(name = "tk_note")
+        @ColumnInfo(name = "tknote")
         var tknote: String,
+
+        @ColumnInfo(name = "tkdateday")
+        var tkdateday: Int,
+
+        @ColumnInfo(name = "tkdatemonth")
+        var tkdatemonth: Int,
+
+        @ColumnInfo(name = "tkdateyear")
+        var tkdateyear: Int,
 
         @ColumnInfo(name = "tk_lid")
         var tklid: Int,

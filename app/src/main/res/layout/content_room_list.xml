@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:text="room_number"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
 
     </RelativeLayout>

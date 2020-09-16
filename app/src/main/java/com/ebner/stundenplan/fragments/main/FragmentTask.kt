@@ -104,7 +104,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
                 //Item from database (teacherItem?.rid gives the id)
                 val taskItem: TaskLesson = adapter.getTaskAt(position)!!
 
-                val task = Task(taskItem.task.tkname, taskItem.task.tknote, taskItem.task.tklid, activeYearID)
+                val task = Task(taskItem.task.tkname, taskItem.task.tknote, taskItem.task.tklid, taskItem.task.tkdateday, taskItem.task.tkdatemonth, taskItem.task.tkdateyear, activeYearID)
                 task.tkid = taskItem.task.tkid
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
@@ -170,8 +170,11 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
             val tkname: String = data!!.getStringExtra(ActivityAddEditTask.EXTRA_TKNAME)
             val tknote = data.getStringExtra(ActivityAddEditTask.EXTRA_TKNOTE)
             val tklid = data.getIntExtra(ActivityAddEditTask.EXTRA_TKLID, -1)
+            val tkdateday = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEDAY, -1)
+            val tkdatemonth = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEMONTH, -1)
+            val tkdateyear = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEYEAR, -1)
 
-            val task = Task(tkname, tknote, tklid, activeYearID)
+            val task = Task(tkname, tknote, tkdateday, tkdatemonth, tkdateyear, tklid, activeYearID)
 
             /*---------------------If the Request was a ADD subject request--------------------------*/
             if (requestCode == ADD_TASK_REQUEST) {
@@ -212,6 +215,9 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditTask.EXTRA_TKID, taskLesson.task.tkid)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKNAME, taskLesson.task.tkname)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKNOTE, taskLesson.task.tknote)
+        intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEDAY, taskLesson.task.tkdateday)
+        intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEMONTH, taskLesson.task.tkdatemonth)
+        intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEYEAR, taskLesson.task.tkdateyear)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKLID, taskLesson.task.tklid)
         startActivityForResult(intent, EDIT_TASK_REQUEST)
 

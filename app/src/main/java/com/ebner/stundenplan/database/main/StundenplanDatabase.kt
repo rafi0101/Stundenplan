@@ -126,12 +126,12 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).lessonDao().insert(Lesson(2, 1, 6, 1))
                                     getInstance(context).lessonDao().insert(Lesson(2, 2, 2, 1))
                                     getInstance(context).lessonDao().insert(Lesson(3, 3, 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 2, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe4", "", 4, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe5", "", 5, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe6", "", 6, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 10, 2020, 1, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 1, 10, 2020, 2, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 1, 10, 2020, 3, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe4", "", 1, 10, 2020, 4, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe5", "", 1, 10, 2020, 5, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe6", "", 1, 10, 2020, 6, 1))
 
 
                                 }
