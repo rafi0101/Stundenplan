@@ -17,5 +17,6 @@ class TaskRepository(
 
     //Live data view
     fun getAllTask(yid: Int): LiveData<List<TaskLesson>> = taskDao.getAllTask(yid)
+    fun getSubjectTasks(yid: Int, sid: Int): LiveData<List<Task>> = taskDao.getSubjectTasks(yid, sid)
 
 }

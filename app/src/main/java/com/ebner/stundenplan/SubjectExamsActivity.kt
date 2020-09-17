@@ -12,8 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.customAdapter.SubjectExamsExamsListAdapter
+import com.ebner.stundenplan.customAdapter.SubjectExamsTasksListAdapter
 import com.ebner.stundenplan.database.table.exam.ExamViewModel
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
+import com.ebner.stundenplan.database.table.task.TaskViewModel
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -28,6 +30,7 @@ class SubjectExamsActivity : AppCompatActivity() {
     private lateinit var rvSubjectexamsTasks: RecyclerView
     private lateinit var rvSubjectexamsExams: RecyclerView
 
+    private lateinit var tasksViewModel: TaskViewModel
     private lateinit var examViewModel: ExamViewModel
     private lateinit var settingsViewModel: SettingsViewModel
     private var activeYearID: Int = -1
@@ -55,10 +58,14 @@ class SubjectExamsActivity : AppCompatActivity() {
             val sid = intent.getIntExtra(EXTRA_SID, -1)
 
 
-            val adapter = SubjectExamsExamsListAdapter()
-            rvSubjectexamsExams.adapter = adapter
+            val tasksListAdapter = SubjectExamsTasksListAdapter()
+            val examsListAdapter = SubjectExamsExamsListAdapter()
+            rvSubjectexamsTasks.adapter = tasksListAdapter
+            rvSubjectexamsExams.adapter = examsListAdapter
+            rvSubjectexamsTasks.layoutManager = LinearLayoutManager(this)
             rvSubjectexamsExams.layoutManager = LinearLayoutManager(this)
 
+            tasksViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
             examViewModel = ViewModelProvider(this).get(ExamViewModel::class.java)
             settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
             //Automatic update the recyclerlayout
@@ -67,8 +74,12 @@ class SubjectExamsActivity : AppCompatActivity() {
             settingsViewModel.allSettings.observe(this, Observer { setting ->
                 activeYearID = setting.settings.setyid
 
+                tasksViewModel.subjectTasks(activeYearID, sid).observe(this, Observer {
+                    tasksListAdapter.submitList(it)
+                })
+
                 examViewModel.subjectExams(activeYearID, sid).observe(this, Observer {
-                    adapter.submitList(it)
+                    examsListAdapter.submitList(it)
                 })
 
 

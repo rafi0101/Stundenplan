@@ -9,13 +9,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.SubjectExamsActivity
 import com.ebner.stundenplan.database.table.mergedEntities.ExamSubjectYearExamtype
 
 /**
  * Created by raphael on 31.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.customAdapter
  */
-class SubjectExamsExamsListAdapter : ListAdapter<ExamSubjectYearExamtype, SubjectExamsExamsListAdapter.ExamViewHolder>(ExamsTaskDiffCallback()) {
+/**
+ * ---------------------This is the adapter class to show each item in Exams in [SubjectExamsActivity] --------------------------
+ */
+class SubjectExamsExamsListAdapter : ListAdapter<ExamSubjectYearExamtype, SubjectExamsExamsListAdapter.ExamViewHolder>(SubjectExamsExamsDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -53,7 +57,7 @@ class SubjectExamsExamsListAdapter : ListAdapter<ExamSubjectYearExamtype, Subjec
 }
 
 /*---------------------Makes the Animation to the recyclerview, when item is changed, added or deleted--------------------------*/
-class ExamsTaskDiffCallback : DiffUtil.ItemCallback<ExamSubjectYearExamtype>() {
+class SubjectExamsExamsDiffCallback : DiffUtil.ItemCallback<ExamSubjectYearExamtype>() {
     override fun areItemsTheSame(oldItem: ExamSubjectYearExamtype, newItem: ExamSubjectYearExamtype): Boolean {
         return oldItem.exam.eid == newItem.exam.eid
     }
