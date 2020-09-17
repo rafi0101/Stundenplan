@@ -6,8 +6,6 @@ Stundenplan manager for Android
 * Raphael Ebner
 * [paypal.me/raphaelebner](https://www.paypal.me/raphaelebner)
 
-# Test
-
 # License
 
     Copyright 2020 Raphael Ebner
