@@ -1,5 +1,6 @@
 package com.ebner.stundenplan.database.table.task
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,7 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
 
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        @SuppressLint("SetTextI18n")
         fun bind(item: TaskLesson, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
             val tvTaskName: TextView = itemView.findViewById(R.id.tv_task_name)
@@ -53,8 +55,8 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
 
             tvTaskName.text = item.task.tkname
             tvTaskName.setTextColor(item.lessonSubjectSchoollessonYear.subject.scolor)
-            tvTaskSubject.text = item.lessonSubjectSchoollessonYear.subject.sname
-            tvTaskTeacher.text = item.lessonSubjectSchoollessonYear.teacher.tname
+            tvTaskSubject.text = "${item.lessonSubjectSchoollessonYear.subject.sname},"
+            tvTaskTeacher.text = "${if (item.lessonSubjectSchoollessonYear.teacher.tgender == 0) "Hr." else "Fr."} ${item.lessonSubjectSchoollessonYear.teacher.tname}"
             tvTaskNote.text = item.task.tknote
 
             itemView.setOnClickListener {

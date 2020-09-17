@@ -57,7 +57,7 @@ class SubjectListAdapter(private val itemClickListener: OnItemClickListener) : L
             tvSubjectName.text = item.subject.sname
             tvSubjectNote.text = item.subject.snote
             tvSubjectRoom.text = "Raum: " + item.room.rname
-            tvSubjectTeacher.text = "Lehrer: " + item.teacher.tname
+            tvSubjectTeacher.text = "Lehrer: ${if (item.teacher.tgender == 0) "Hr." else "Fr."} ${item.teacher.tname}"
 
             if (TextUtils.isEmpty(item.subject.snote) || TextUtils.getTrimmedLength(item.subject.snote) == 0) {
                 tvSubjectNote.visibility = View.GONE

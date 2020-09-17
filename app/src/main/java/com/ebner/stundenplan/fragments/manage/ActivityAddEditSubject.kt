@@ -194,7 +194,7 @@ class ActivityAddEditSubject : AppCompatActivity() {
 
         teacherAll.forEach {
             teacherTid.add(it.tid)
-            teacherTname.add(it.tname)
+            teacherTname.add("${if (it.tgender == 0) "Hr." else "Fr."} ${it.tname}")
         }
 
         /*---------------------Set list of all rooms / teachers to spinner (back in the Main thread)--------------------------*/

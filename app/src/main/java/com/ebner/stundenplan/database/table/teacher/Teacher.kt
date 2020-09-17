@@ -15,6 +15,13 @@ data class Teacher(
         @ColumnInfo(name = "tname")
         var tname: String,
 
+        @ColumnInfo(name = "tgender")
+        var tgender: Int,
+        /*
+         * 0 == Herr
+         * 1 == Frau
+         */
+
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "tid")
         var tid: Int = 0

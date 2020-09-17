@@ -46,8 +46,11 @@ class TeacherListAdapter(private val itemClickListener: OnItemClickListener) : L
         fun bind(item: Teacher, itemclickListener: OnItemClickListener) = with(itemView) {
             //Bind the data with View
             val tvTeacherName: TextView = itemView.findViewById(R.id.tv_teacher_name)
+            val tvTeacherGender: TextView = itemView.findViewById(R.id.tv_teacher_gender)
 
             tvTeacherName.text = item.tname
+
+            tvTeacherGender.text = if (item.tgender == 0) "Herr" else "Frau"
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)

@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -154,7 +153,8 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
         /*---------------------If the Request was successful--------------------------*/
         if (resultCode == Activity.RESULT_OK) {
             val tname = data!!.getStringExtra(ActivityAddEditTeacher.EXTRA_TNAME)
-            val teacher = Teacher(tname)
+            val tgender = data.getIntExtra(ActivityAddEditTeacher.EXTRA_TGENDER, -1)
+            val teacher = Teacher(tname, tgender)
 
             /*---------------------If the Request was a ADD teacher request--------------------------*/
             if (requestCode == ADD_TEACHER_REQUEST && resultCode == Activity.RESULT_OK) {
@@ -183,6 +183,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
         val intent = Intent(context, ActivityAddEditTeacher::class.java)
         intent.putExtra(ActivityAddEditTeacher.EXTRA_TID, teacher.tid)
         intent.putExtra(ActivityAddEditTeacher.EXTRA_TNAME, teacher.tname)
+        intent.putExtra(ActivityAddEditTeacher.EXTRA_TGENDER, teacher.tgender)
         startActivityForResult(intent, EDIT_TEACHER_REQUEST)
     }
 
