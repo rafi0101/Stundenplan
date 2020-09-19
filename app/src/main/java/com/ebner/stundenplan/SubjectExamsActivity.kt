@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -16,6 +17,7 @@ import com.ebner.stundenplan.customAdapter.SubjectExamsTasksListAdapter
 import com.ebner.stundenplan.database.table.exam.ExamViewModel
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
 import com.ebner.stundenplan.database.table.task.TaskViewModel
+import kotlinx.coroutines.runBlocking
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -29,6 +31,7 @@ class SubjectExamsActivity : AppCompatActivity() {
 
     private lateinit var rvSubjectexamsTasks: RecyclerView
     private lateinit var rvSubjectexamsExams: RecyclerView
+    private lateinit var tvSubjectexamsGrade: TextView
 
     private lateinit var tasksViewModel: TaskViewModel
     private lateinit var examViewModel: ExamViewModel
@@ -50,6 +53,7 @@ class SubjectExamsActivity : AppCompatActivity() {
         /*---------------------Link items to Layout--------------------------*/
         rvSubjectexamsTasks = findViewById(R.id.rv_subjectexams_tasks)
         rvSubjectexamsExams = findViewById(R.id.rv_subjectexams_exams)
+        tvSubjectexamsGrade = findViewById(R.id.tv_subjectexams_grade)
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
         if (intent.hasExtra(EXTRA_SID)) {
@@ -82,7 +86,7 @@ class SubjectExamsActivity : AppCompatActivity() {
                     examsListAdapter.submitList(it)
                 })
 
-
+                calculateAndApplySubjectGrade(sid)
             })
 
 
@@ -91,6 +95,51 @@ class SubjectExamsActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun calculateAndApplySubjectGrade(sid: Int) {
+        //runBlocked, so the adapter needs to wait with submitList until this action has finished
+        runBlocking {
+            /**
+             * Get a List of all Exams for this Subject (and the activeYear)
+             * This function does not return LiveData with all Exams, so in to update the adapter automatic
+             * this happens [onResume]
+             */
+            /**
+             * Get a List of all Exams for this Subject (and the activeYear)
+             * This function does not return LiveData with all Exams, so in to update the adapter automatic
+             * this happens [onResume]
+             */
+            val exams = examViewModel.subjectExamsSuspend(activeYearID, sid)
+
+            //allGradesCounted are all exam grades counted together (with exam weight multiplied)
+            var allGradesCounted = 0.0
+            //items is the count of exams multiplied with the exam weight
+            var items = 0.0
+
+            //now add each exam to allGradesCounted and items when grade for this exam is already present
+            exams.forEach {
+                if (it.exam.egrade != -1) {
+                    allGradesCounted += (it.exam.egrade * it.examtype.etweight)
+                    items += it.examtype.etweight
+                }
+            }
+            var result = 0.0
+            /**
+             * If all Exams have no grades or no exams saved for this subject, the resultGrade = 0.0
+             */
+
+            if (items != 0.0) {
+                result = allGradesCounted / items
+                result = (result * 100.0).roundToInt() / 100.0
+
+            }
+
+            //if result == 0.0, set text to "-" else the calculated grade
+            tvSubjectexamsGrade.text = if (result > 0.0) "$result" else "-"
+
+
+        }
     }
 
 

@@ -85,6 +85,28 @@
 
             </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Note: "
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+                <TextView
+                    android:id="@+id/tv_subjectexams_grade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GRADE"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
+
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
