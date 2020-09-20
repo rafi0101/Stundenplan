@@ -127,12 +127,17 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).lessonDao().insert(Lesson(2, 1, 6, 1))
                                     getInstance(context).lessonDao().insert(Lesson(2, 2, 2, 1))
                                     getInstance(context).lessonDao().insert(Lesson(3, 3, 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 10, 2020, 1, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 1, 10, 2020, 2, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 1, 10, 2020, 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe4", "", 1, 10, 2020, 4, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe5", "", 1, 10, 2020, 5, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe6", "", 1, 10, 2020, 6, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 10, 2020, false, 1, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 2, 10, 2020, false, 2, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 3, 10, 2020, false, 3, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe4", "", 4, 10, 2020, false, 4, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe5", "", 5, 10, 2020, false, 5, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe6", "", 6, 10, 2020, false, 6, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe7", "niceNotiz2", 15, 11, 2020, true, 2, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe8", "niceNotiz3", 16, 10, 2020, true, 3, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe9", "", 17, 10, 2020, true, 4, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe10", "", 18, 10, 2020, true, 5, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe11", "", 19, 10, 2020, true, 6, 1))
 
 
                                 }

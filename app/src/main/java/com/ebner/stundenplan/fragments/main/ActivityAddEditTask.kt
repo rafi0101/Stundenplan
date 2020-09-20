@@ -17,6 +17,7 @@ import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.database.table.lesson.LessonViewModel
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
@@ -32,10 +33,11 @@ class ActivityAddEditTask : AppCompatActivity() {
         const val EXTRA_TKID = "com.ebner.stundenplan.fragments.main.EXTRA_TKID"
         const val EXTRA_TKNAME = "com.ebner.stundenplan.fragments.main.EXTRA_TKNAME"
         const val EXTRA_TKNOTE = "com.ebner.stundenplan.fragments.main.EXTRA_TKNOTE"
-        const val EXTRA_TKLID = "com.ebner.stundenplan.fragments.main.EXTRA_TKLID"
         const val EXTRA_TKDATEDAY = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEDAY"
         const val EXTRA_TKDATEMONTH = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEMONTH"
         const val EXTRA_TKDATEYEAR = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEYEAR"
+        const val EXTRA_TKLID = "com.ebner.stundenplan.fragments.main.EXTRA_TKLID"
+        const val EXTRA_TKFINISHED = "com.ebner.stundenplan.fragments.main.EXTRA_TKFINISHED"
         private val TAG = "debug_ActivityAddEditTask"
     }
 
@@ -53,6 +55,7 @@ class ActivityAddEditTask : AppCompatActivity() {
     private lateinit var tilNote: TextInputLayout
     private lateinit var pbTask: ProgressBar
     private lateinit var btn_datepicker: Button
+    private lateinit var cbFinished: MaterialCheckBox
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +80,7 @@ class ActivityAddEditTask : AppCompatActivity() {
         mdpTask = findViewById(R.id.mdp_task_day)
         pbTask = findViewById(R.id.pb_task)
         btn_datepicker = findViewById(R.id.btn_datepicker)
+        cbFinished = findViewById(R.id.cb_finished)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
@@ -89,6 +93,7 @@ class ActivityAddEditTask : AppCompatActivity() {
             val tkdateday = intent.getIntExtra(EXTRA_TKDATEDAY, -1)
             val tkdatemonth = intent.getIntExtra(EXTRA_TKDATEMONTH, -1)
             val tkdateyear = intent.getIntExtra(EXTRA_TKDATEYEAR, -1)
+            val tkfinished = intent.getBooleanExtra(EXTRA_TKFINISHED, false)
             val tklid = intent.getIntExtra(EXTRA_TKLID, -1)
 
 
@@ -98,6 +103,7 @@ class ActivityAddEditTask : AppCompatActivity() {
             selectedDateMonth = tkdatemonth
             selectedDateYear = tkdateyear
 
+            cbFinished.isChecked = tkfinished
             tietName.setText(tkname)
             tietNote.setText(tknote)
 
@@ -395,6 +401,7 @@ class ActivityAddEditTask : AppCompatActivity() {
 
         val tkname = tietName.text.toString()
         val tknote = tietNote.text.toString()
+        val tkfinished = cbFinished.isChecked
 
 
         val data = Intent()
@@ -403,6 +410,7 @@ class ActivityAddEditTask : AppCompatActivity() {
         data.putExtra(EXTRA_TKDATEDAY, selectedDateDay)
         data.putExtra(EXTRA_TKDATEMONTH, selectedDateMonth)
         data.putExtra(EXTRA_TKDATEYEAR, selectedDateYear)
+        data.putExtra(EXTRA_TKFINISHED, tkfinished)
         data.putExtra(EXTRA_TKLID, selectedLID)
 
         val id = intent.getIntExtra(EXTRA_TKID, -1)

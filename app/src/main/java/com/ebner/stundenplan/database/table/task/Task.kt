@@ -36,6 +36,9 @@ data class Task(
         @ColumnInfo(name = "tkdateyear")
         var tkdateyear: Int,
 
+        @ColumnInfo(name = "tkfinished")
+        var tkfinished: Boolean,
+
         @ColumnInfo(name = "tk_lid")
         var tklid: Int,
 
