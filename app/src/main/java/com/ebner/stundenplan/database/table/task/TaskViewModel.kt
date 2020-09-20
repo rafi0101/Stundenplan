@@ -38,6 +38,9 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun allTask(yid: Int): LiveData<List<TaskLesson>> = taskRepository.getAllTask(yid)
+    fun allTaskBySubject(yid: Int, sid: Int): LiveData<List<TaskLesson>> = taskRepository.getAllTaskBySubject(yid, sid)
+    fun allTaskByFinished(yid: Int, finished: Boolean): LiveData<List<TaskLesson>> = taskRepository.getAllTaskByFinished(yid, finished)
+    fun allTaskBySubjectFinished(yid: Int, sid: Int, finished: Boolean): LiveData<List<TaskLesson>> = taskRepository.getAllTaskBySubjectFinished(yid, sid, finished)
     fun subjectTasks(yid: Int, sid: Int): LiveData<List<Task>> = taskRepository.getSubjectTasks(yid, sid)
 
 

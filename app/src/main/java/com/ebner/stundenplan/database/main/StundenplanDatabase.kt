@@ -133,11 +133,12 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).taskDao().insert(Task("Aufgabe4", "", 4, 10, 2020, false, 4, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe5", "", 5, 10, 2020, false, 5, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe6", "", 6, 10, 2020, false, 6, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe7", "niceNotiz2", 15, 11, 2020, true, 2, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe7", "niceNotiz2", 15, 10, 2020, true, 2, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe8", "niceNotiz3", 16, 10, 2020, true, 3, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe9", "", 17, 10, 2020, true, 4, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe10", "", 18, 10, 2020, true, 5, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe11", "", 19, 10, 2020, true, 6, 1))
+                                    getInstance(context).taskDao().insert(Task("Aufgabe12", "", 20, 10, 2020, true, 6, 1))
 
 
                                 }

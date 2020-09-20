@@ -9,6 +9,9 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -21,12 +24,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.database.table.mergedEntities.TaskLesson
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
+import com.ebner.stundenplan.database.table.subject.Subject
+import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.ebner.stundenplan.database.table.task.Task
 import com.ebner.stundenplan.database.table.task.TaskListAdapter
 import com.ebner.stundenplan.database.table.task.TaskViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 /**
@@ -35,10 +41,16 @@ import kotlin.math.roundToInt
 class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
 
     private lateinit var taskViewModel: TaskViewModel
+    private lateinit var subjectViewModel: SubjectViewModel
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var clTask: CoordinatorLayout
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: TaskListAdapter
+
 
     private var activeYearID: Int = -1
+    private var selectedSubject: Int = -1
+    private var selectedFinished: Int = -1
 
     companion object {
         private const val ADD_TASK_REQUEST = 1
@@ -63,15 +75,18 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
 
         /*---------------------Link items to Layout--------------------------*/
         clTask = root.findViewById(R.id.cl_task)
-        val recyclerView = root.findViewById<RecyclerView>(R.id.rv_task)
+        recyclerView = root.findViewById<RecyclerView>(R.id.rv_task)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_task_addTask)
+        val dropdownSubject: AutoCompleteTextView = root.findViewById(R.id.actv_dropdown_subject)
+        val dropdownFinished: AutoCompleteTextView = root.findViewById(R.id.actv_dropdown_finished)
 
 
-        val adapter = TaskListAdapter(this)
+        adapter = TaskListAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(root.context)
 
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
+        subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
         taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
         //Automatic update the recyclerlayout
 
@@ -79,10 +94,42 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
         settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
             activeYearID = setting.settings.setyid
 
-            taskViewModel.allTask(activeYearID).observe(viewLifecycleOwner, Observer { tasks ->
-                adapter.submitList(tasks)
-            })
+            updateRecyclerView()
         })
+
+
+        val subjectsList: MutableList<Subject> = mutableListOf(Subject("Auswählen", "", -1, "", true, -1, -1))
+        val selectFinishedList = listOf("Alle", "Ja", "Nein")
+
+        runBlocking {
+            //Get a List of all Subjects
+            subjectsList.addAll(subjectViewModel.allSubjectList() as MutableList<Subject>)
+        }
+
+        val dropDownAdapterSubject = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, subjectsList)
+        dropdownSubject.setAdapter(dropDownAdapterSubject)
+        val dropDownAdapterFinished = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, selectFinishedList)
+        dropdownFinished.setAdapter(dropDownAdapterFinished)
+
+
+        dropdownSubject.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            val selectedSubjectSubject = parent.adapter.getItem(position) as Subject
+            selectedSubject = selectedSubjectSubject.sid
+
+            if (selectedSubjectSubject.sname == "Auswählen" && selectedSubjectSubject.scolor == -1 && selectedSubjectSubject.sinactive) {
+                selectedSubject = -1
+            }
+
+            updateRecyclerView()
+        }
+        dropdownFinished.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            selectedFinished = position
+            if (parent.adapter.getItem(position).toString() == "Alle") {
+                selectedFinished = -1
+            }
+            updateRecyclerView()
+        }
+
 
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
@@ -104,7 +151,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
                 //Item from database (teacherItem?.rid gives the id)
                 val taskItem: TaskLesson = adapter.getTaskAt(position)!!
 
-                val task = Task(taskItem.task.tkname, taskItem.task.tknote, taskItem.task.tklid, taskItem.task.tkdateday, taskItem.task.tkdatemonth, taskItem.task.tkdateyear, activeYearID)
+                val task = Task(taskItem.task.tkname, taskItem.task.tknote, taskItem.task.tkdateday, taskItem.task.tkdatemonth, taskItem.task.tkdateyear, taskItem.task.tkfinished, taskItem.task.tklid, activeYearID)
                 task.tkid = taskItem.task.tkid
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
@@ -160,6 +207,37 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
 
     }
 
+    /*---------------------Update Recycler View--------------------------*/
+    private fun updateRecyclerView() {
+
+        if (selectedSubject == -1 && selectedFinished == -1) {
+            taskViewModel.allTask(activeYearID).observe(viewLifecycleOwner, Observer { tasks ->
+                adapter.submitList(tasks)
+            })
+        } else if (selectedSubject != -1 && selectedFinished == -1) {
+            taskViewModel.allTaskBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, Observer { tasks ->
+                adapter.submitList(tasks)
+            })
+        } else if (selectedSubject == -1 && selectedFinished != -1) {
+            //If selectedFinished == 1, then true, else (if == 2) = false
+            val calculatedFinished = selectedFinished == 1
+            taskViewModel.allTaskByFinished(activeYearID, calculatedFinished).observe(viewLifecycleOwner, Observer { tasks ->
+                adapter.submitList(tasks)
+            })
+
+        } else if (selectedSubject != -1 && selectedFinished != -1) {
+            //If selectedFinished == 1, then true, else (if == 2) = false
+            val calculatedFinished = selectedFinished == 1
+            taskViewModel.allTaskBySubjectFinished(activeYearID, selectedSubject, calculatedFinished).observe(viewLifecycleOwner, Observer { tasks ->
+                adapter.submitList(tasks)
+            })
+
+        }
+
+        recyclerView.smoothScrollToPosition(0)
+    }
+
+
     /*---------------------when returning from |ActivityAddEditSubject| do something--------------------------*/
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -169,12 +247,13 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
             //Save extras to vars
             val tkname: String = data!!.getStringExtra(ActivityAddEditTask.EXTRA_TKNAME)
             val tknote = data.getStringExtra(ActivityAddEditTask.EXTRA_TKNOTE)
-            val tklid = data.getIntExtra(ActivityAddEditTask.EXTRA_TKLID, -1)
             val tkdateday = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEDAY, -1)
             val tkdatemonth = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEMONTH, -1)
             val tkdateyear = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEYEAR, -1)
+            val tkfinished = data.getBooleanExtra(ActivityAddEditTask.EXTRA_TKFINISHED, false)
+            val tklid = data.getIntExtra(ActivityAddEditTask.EXTRA_TKLID, -1)
 
-            val task = Task(tkname, tknote, tkdateday, tkdatemonth, tkdateyear, tklid, activeYearID)
+            val task = Task(tkname, tknote, tkdateday, tkdatemonth, tkdateyear, tkfinished, tklid, activeYearID)
 
             /*---------------------If the Request was a ADD subject request--------------------------*/
             if (requestCode == ADD_TASK_REQUEST) {
@@ -218,6 +297,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEDAY, taskLesson.task.tkdateday)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEMONTH, taskLesson.task.tkdatemonth)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEYEAR, taskLesson.task.tkdateyear)
+        intent.putExtra(ActivityAddEditTask.EXTRA_TKFINISHED, taskLesson.task.tkfinished)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKLID, taskLesson.task.tklid)
         startActivityForResult(intent, EDIT_TASK_REQUEST)
 
