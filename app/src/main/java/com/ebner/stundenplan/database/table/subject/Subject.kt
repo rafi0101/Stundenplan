@@ -50,5 +50,7 @@ data class Subject(
     @ColumnInfo(name = "sid")
     var sid: Int = 0
 
-
+    override fun toString(): String {
+        return sname
+    }
 }
