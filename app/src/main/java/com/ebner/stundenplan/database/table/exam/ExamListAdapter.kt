@@ -61,7 +61,7 @@ class ExamListAdapter(private val itemClickListener: OnItemClickListener, privat
 
             tvExamSubjectName.text = item.subject.sname
             tvExamExamtype.text = item.examtype.etname
-            tvExamDate.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
+            tvExamDate.text = "${item.exam.edateday}.${item.exam.edatemonth + 1}.${item.exam.edateyear}"
             if (item.exam.egrade != -1) {
                 tvExamGrade.text = item.exam.egrade.toString()
             } else {

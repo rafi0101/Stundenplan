@@ -48,7 +48,7 @@ class SubjectExamsExamsListAdapter : ListAdapter<ExamSubjectYearExamtype, Subjec
             tvSubjectexamsExamtype.text = item.examtype.etname
             if (item.exam.egrade == -1) tvSubjectexamsGrade.text = "-" else tvSubjectexamsGrade.text = item.exam.egrade.toString()
             tvSubjectexamsWeight.text = "x${item.examtype.etweight}"
-            tvSubjectexamsDate.text = "${item.exam.edateday}.${item.exam.edatemonth}.${item.exam.edateyear}"
+            tvSubjectexamsDate.text = "${item.exam.edateday}.${item.exam.edatemonth + 1}.${item.exam.edateyear}"
 
 
         }
