@@ -6,50 +6,72 @@
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tv_task_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:text="Task_Name"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:layout_weight="8">
 
             <TextView
-                android:id="@+id/tv_task_subject"
+                android:id="@+id/tv_task_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Task_Subject"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                android:ellipsize="end"
+                android:text="Task_Name"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_task_subject"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Task_Subject"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+
+                <TextView
+                    android:id="@+id/tv_task_teacher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Task_Teacher"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/tv_task_subject"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_task_teacher"
+                android:id="@+id/tv_task_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Task_Teacher"
-                android:layout_marginStart="4dp"
-                android:layout_toEndOf="@+id/tv_task_subject"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+                android:text="Task_date" />
 
+            <TextView
+                android:id="@+id/tv_task_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Task_note" />
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_task_note"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Task_note" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_finished"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clickable="false"
+            android:layout_weight="1"
+            android:gravity="center" />
 
     </LinearLayout>
 

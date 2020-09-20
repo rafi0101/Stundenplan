@@ -1,6 +1,7 @@
 package com.ebner.stundenplan.database.table.task
 
 import android.annotation.SuppressLint
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.database.table.mergedEntities.TaskLesson
+import com.google.android.material.checkbox.MaterialCheckBox
 
 /**
  * Created by raphael on 02.07.2020.
@@ -51,13 +53,21 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
             val tvTaskName: TextView = itemView.findViewById(R.id.tv_task_name)
             val tvTaskSubject: TextView = itemView.findViewById(R.id.tv_task_subject)
             val tvTaskTeacher: TextView = itemView.findViewById(R.id.tv_task_teacher)
+            val tvTaskDate: TextView = itemView.findViewById(R.id.tv_task_date)
             val tvTaskNote: TextView = itemView.findViewById(R.id.tv_task_note)
+            val cbFinished: MaterialCheckBox = itemView.findViewById(R.id.cb_finished)
 
             tvTaskName.text = item.task.tkname
             tvTaskName.setTextColor(item.lessonSubjectSchoollessonYear.subject.scolor)
             tvTaskSubject.text = "${item.lessonSubjectSchoollessonYear.subject.sname},"
             tvTaskTeacher.text = "${if (item.lessonSubjectSchoollessonYear.teacher.tgender == 0) "Hr." else "Fr."} ${item.lessonSubjectSchoollessonYear.teacher.tname}"
+            tvTaskDate.text = "${item.task.tkdateday}.${item.task.tkdatemonth + 1}.${item.task.tkdateyear}"
             tvTaskNote.text = item.task.tknote
+            cbFinished.isChecked = item.task.tkfinished
+
+            if (TextUtils.isEmpty(item.task.tknote) || TextUtils.getTrimmedLength(item.task.tknote) == 0) {
+                tvTaskNote.visibility = View.GONE
+            }
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)
