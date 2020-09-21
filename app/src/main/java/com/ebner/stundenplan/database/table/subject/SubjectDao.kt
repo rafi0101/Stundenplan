@@ -18,8 +18,9 @@ interface SubjectDao : BaseDao<Subject> {
     @Query("SELECT * FROM subject INNER JOIN teacher ON teacher.tid = subject.s_tid INNER JOIN room ON room.rid = subject.s_rid ORDER BY sinactive ASC, sname")
     fun getAllSubject(): LiveData<List<SubjectTeacherRoom>>
 
-
     @Query("SELECT * FROM subject ORDER BY sname ASC")
     suspend fun getAllSubjectList(): List<Subject>
 
+    @Query("SELECT * FROM subject WHERE sid=:sid")
+    suspend fun getSubjectByID(sid: Int): Subject
 }

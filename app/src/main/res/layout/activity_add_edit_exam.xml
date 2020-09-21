@@ -97,6 +97,18 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp" />
 
+                <Button
+                    android:id="@+id/btn_exam_create_calendar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Speichern + \nKalender Eintrag erstellen"
+                    android:textAllCaps="false"
+                    android:layout_gravity="center"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp" />
+
             </LinearLayout>
 
 

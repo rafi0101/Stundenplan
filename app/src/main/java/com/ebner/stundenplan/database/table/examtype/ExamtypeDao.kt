@@ -19,4 +19,7 @@ interface ExamtypeDao : BaseDao<Examtype> {
     @Query("SELECT * FROM examtype ORDER BY etname ASC")
     suspend fun getAllExamtypeList(): List<Examtype>
 
+    @Query("SELECT * FROM examtype WHERE etid=:etid")
+    suspend fun getExamtypeByID(etid: Int): Examtype
+
 }

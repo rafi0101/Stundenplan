@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,6 +19,7 @@ import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ActivityAddEditExam : AppCompatActivity() {
@@ -39,6 +41,8 @@ class ActivityAddEditExam : AppCompatActivity() {
     private var selectedYear: Int = -1
     private var selectedMonth: Int = -1
     private var selectedDay: Int = -1
+    private lateinit var examtypeViewModel: ExamtypeViewModel
+    private lateinit var subjectViewModel: SubjectViewModel
 
 
     private lateinit var spSid: MaterialSpinner
@@ -47,6 +51,7 @@ class ActivityAddEditExam : AppCompatActivity() {
     private lateinit var tilGrade: TextInputLayout
     private lateinit var btnDate: Button
     private lateinit var btnDateToday: Button
+    private lateinit var btnCreateCalendar: Button
     private lateinit var pbExam: ProgressBar
 
 
@@ -62,6 +67,9 @@ class ActivityAddEditExam : AppCompatActivity() {
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
+        examtypeViewModel = ViewModelProvider(this).get(ExamtypeViewModel::class.java)
+        subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
+
 
         /*---------------------Link items to Layout--------------------------*/
         spSid = findViewById(R.id.sp_exam_sid)
@@ -70,6 +78,7 @@ class ActivityAddEditExam : AppCompatActivity() {
         tilGrade = findViewById(R.id.til_exam_grade)
         btnDate = findViewById(R.id.btn_exam_date)
         btnDateToday = findViewById(R.id.btn_exam_date_today)
+        btnCreateCalendar = findViewById(R.id.btn_exam_create_calendar)
         pbExam = findViewById(R.id.pb_exam)
 
 
@@ -114,7 +123,7 @@ class ActivityAddEditExam : AppCompatActivity() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         btnDate.setOnClickListener {
-            val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            val dpd = DatePickerDialog(this, { _, year, month, dayOfMonth ->
                 selectedYear = year
                 selectedMonth = month + 1
                 selectedDay = dayOfMonth
@@ -139,16 +148,16 @@ class ActivityAddEditExam : AppCompatActivity() {
             btnDate.text = "$selectedDay.$selectedMonth.$selectedYear"
         }
 
+        btnCreateCalendar.setOnClickListener {
+            createCalendarEntry()
+        }
+
 
     }
 
 
     /*---------------------Fetch Subjects and Examtypes in another "thread" and set them to the spinner--------------------------*/
     private suspend fun fetchFromDatabase(sid: Int, etid: Int) {
-        /*---------------------get access to room and teacher table --------------------------*/
-        val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
-        val examtypeViewModel = ViewModelProvider(this).get(ExamtypeViewModel::class.java)
-
         /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
          * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
          * For setting the item to the spinner:
@@ -227,6 +236,40 @@ class ActivityAddEditExam : AppCompatActivity() {
 
 
         }
+    }
+
+    /*---------------------Create Calendar Entry for current Exam--------------------------*/
+    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    @SuppressLint("SimpleDateFormat")
+    private fun createCalendarEntry() {
+
+        val selectedExamtypeName: String
+        val selectedSubjectName: String
+        runBlocking {
+            selectedExamtypeName = examtypeViewModel.examtypeByID(selectedETID).etname
+            selectedSubjectName = subjectViewModel.subjectByID(selectedSID).sname
+        }
+
+        //Pass the selected Date
+        if (selectedDay == -1 || selectedMonth == -1 || selectedYear == -1) {
+            Toast.makeText(this, "Bitte wähle zuerst ein Datum aus!", Toast.LENGTH_LONG).show()
+            return
+        }
+        val sdf = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+        val dateString = "$selectedDay-${selectedMonth + 1}-$selectedYear 09:00:00"
+        //formatting the dateString to convert it into a Date
+        val date = sdf.parse(dateString)!!
+
+        saveExam()
+
+        val insertCalendarIntent = Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.Events.TITLE, "$selectedExamtypeName: $selectedSubjectName")
+                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, date.time)
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, date.time)
+                .putExtra(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE)
+        startActivity(insertCalendarIntent)
     }
 
 
