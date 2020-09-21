@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
@@ -11,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import ca.antonious.materialdaypicker.MaterialDayPicker
 import com.dev.materialspinner.MaterialSpinner
@@ -22,6 +24,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -55,7 +58,9 @@ class ActivityAddEditTask : AppCompatActivity() {
     private lateinit var tilNote: TextInputLayout
     private lateinit var pbTask: ProgressBar
     private lateinit var btn_datepicker: Button
+    private lateinit var btnCreateCalendar: Button
     private lateinit var cbFinished: MaterialCheckBox
+    private lateinit var lessonViewModel: LessonViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,7 @@ class ActivityAddEditTask : AppCompatActivity() {
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
+        lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
 
         /*---------------------Link items to Layout--------------------------*/
         spSid = findViewById(R.id.sp_task_sid)
@@ -80,6 +86,7 @@ class ActivityAddEditTask : AppCompatActivity() {
         mdpTask = findViewById(R.id.mdp_task_day)
         pbTask = findViewById(R.id.pb_task)
         btn_datepicker = findViewById(R.id.btn_datepicker)
+        btnCreateCalendar = findViewById(R.id.btn_task_create_calendar)
         cbFinished = findViewById(R.id.cb_finished)
 
 
@@ -120,7 +127,47 @@ class ActivityAddEditTask : AppCompatActivity() {
                 fetchFromDatabase(-1, -1, -1, -1)
             }
         }
+
+        btnCreateCalendar.setOnClickListener {
+            createCalendarEntry()
+        }
+
+        tietName.addTextChangedListener {
+            tilName.error = ""
+        }
     }
+
+    /*---------------------Create Calendar Entry for current Exam--------------------------*/
+    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+    @SuppressLint("SimpleDateFormat")
+    private fun createCalendarEntry() {
+
+        if (checkBeforeSave()) return
+
+        val selectedSubjectName: String
+        runBlocking {
+            selectedSubjectName = lessonViewModel.singleLesson(selectedLID).subject.sname
+        }
+
+        //Pass the selected Date
+        val sdf = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
+        val dateString = "$selectedDateDay-${selectedDateMonth + 1}-$selectedDateYear 09:00:00"
+        //formatting the dateString to convert it into a Date
+        val date = sdf.parse(dateString)!!
+
+        saveTask()
+
+        val insertCalendarIntent = Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.Events.TITLE, "${tietName.text.toString()} | $selectedSubjectName")
+                .putExtra(CalendarContract.Events.DESCRIPTION, tietNote.text.toString())
+                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, date.time)
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, date.time)
+                .putExtra(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE)
+        startActivity(insertCalendarIntent)
+    }
+
 
     /*---------------------Fetch Rooms and Teachers in another "thread" and set them to the spinner--------------------------*/
     private suspend fun fetchFromDatabase(lid: Int, tkdateday: Int, tkdatemonth: Int, tkdateyear: Int) {
@@ -129,7 +176,6 @@ class ActivityAddEditTask : AppCompatActivity() {
         var selectedLsid: Int = -1
 
         /*---------------------get access to room and teacher table --------------------------*/
-        val lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
         val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
 
         /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
@@ -380,29 +426,13 @@ class ActivityAddEditTask : AppCompatActivity() {
     }
 
     /*---------------------Save current entries, and return to Fragment--------------------------*/
-    @SuppressLint("SetTextI18n")
     private fun saveTask() {
 
-        var error = false
-        /*---------------------If EditText is empty return error--------------------------*/
-        if (TextUtils.isEmpty(tietName.text.toString())) {
-            tilName.error = "Gib einen Namen ein!"
-            error = true
-        }
-        if (selectedDateDay == -1 || selectedDateMonth == -1 || selectedDateYear == -1) {
-            btn_datepicker.text = "Bitte wähle ein Datum"
-            btn_datepicker.isAllCaps = false
-            btn_datepicker.setBackgroundColor(getColor(R.color.red_400))
-            error = true
-        }
-
-        if (error) return
-
+        if (checkBeforeSave()) return
 
         val tkname = tietName.text.toString()
         val tknote = tietNote.text.toString()
         val tkfinished = cbFinished.isChecked
-
 
         val data = Intent()
         data.putExtra(EXTRA_TKNAME, tkname)
@@ -420,6 +450,25 @@ class ActivityAddEditTask : AppCompatActivity() {
         setResult(Activity.RESULT_OK, data)
         finish()
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun checkBeforeSave(): Boolean {
+        //false = everything is ok
+        //true = input is mising
+        var error = false
+        /*---------------------If EditText is empty return error--------------------------*/
+        if (TextUtils.isEmpty(tietName.text.toString())) {
+            tilName.error = "Gib einen Namen ein!"
+            error = true
+        }
+        if (selectedDateDay == -1 || selectedDateMonth == -1 || selectedDateYear == -1) {
+            btn_datepicker.text = "Bitte wähle ein Datum"
+            btn_datepicker.isAllCaps = false
+            btn_datepicker.setBackgroundColor(getColor(R.color.red_400))
+            error = true
+        }
+        return error
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

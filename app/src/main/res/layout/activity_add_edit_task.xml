@@ -109,6 +109,18 @@
                 android:maxLines="15" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/btn_task_create_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Speichern + \nKalender Eintrag erstellen"
+            android:textAllCaps="false"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp" />
+
 
     </LinearLayout>
 
