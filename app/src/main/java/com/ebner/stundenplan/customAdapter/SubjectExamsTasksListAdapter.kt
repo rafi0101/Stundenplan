@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.SubjectExamsActivity
 import com.ebner.stundenplan.database.table.task.Task
+import com.google.android.material.checkbox.MaterialCheckBox
 
 /**
  * Created by raphael on 17.09.2020.
@@ -44,12 +45,11 @@ class SubjectExamsTasksListAdapter : ListAdapter<Task, SubjectExamsTasksListAdap
             //Bind the data with View
             val tvSubjecttasksName: TextView = itemView.findViewById(R.id.tv_subjecttasks_name)
             val tvSubjecttasksDate: TextView = itemView.findViewById(R.id.tv_subjecttasks_date)
-            val tvSubjecttasksDone: TextView = itemView.findViewById(R.id.tv_subjecttasks_done)
+            val mcbSubjecttasksDone: MaterialCheckBox = itemView.findViewById(R.id.mcb_subjecttasks_done)
 
             tvSubjecttasksName.text = item.tkname
             tvSubjecttasksDate.text = "${item.tkdateday}.${item.tkdatemonth + 1}.${item.tkdateyear}"
-
-            val SubjectExamsActivity: SubjectExamsActivity
+            mcbSubjecttasksDone.isChecked = item.tkfinished
 
         }
     }

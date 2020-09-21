@@ -35,13 +35,13 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
 
-        <TextView
-            android:id="@+id/tv_subjecttasks_done"
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mcb_subjecttasks_done"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="25dp"
             android:textAlignment="center"
             android:gravity="center"
-            android:text="Done?"
+            android:clickable="false"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
