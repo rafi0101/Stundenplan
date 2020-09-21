@@ -17,7 +17,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
  * Created by raphael on 02.07.2020.
  * Stundenplan Created in com.ebner.stundenplan.database.table.task
  */
-class TaskListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<TaskLesson, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
+class TaskListAdapter(private val itemClickListener: OnItemClickListener, private val checkboxChangeListener: OnCheckboxChangeListener) : ListAdapter<TaskLesson, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -30,7 +30,7 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
 
     /*---------------------Bind the data with the View--------------------------*/
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(getItem(position), itemClickListener)
+        holder.bind(getItem(position), itemClickListener, checkboxChangeListener)
     }
 
     /*---------------------Transform Task infos to position number--------------------------*/
@@ -45,10 +45,16 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
         fun onItemClicked(taskLesson: TaskLesson)
     }
 
+    /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/
+    interface OnCheckboxChangeListener {
+
+        fun onCheckboxChange(taskLesson: TaskLesson, isChecked: Boolean)
+    }
+
     /*---------------------get the item from the onBindViewHolder, and apply it to the current view row--------------------------*/
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(item: TaskLesson, itemclickListener: OnItemClickListener) = with(itemView) {
+        fun bind(item: TaskLesson, itemclickListener: OnItemClickListener, checkBoxChangeListener: OnCheckboxChangeListener) = with(itemView) {
             //Bind the data with View
             val tvTaskName: TextView = itemView.findViewById(R.id.tv_task_name)
             val tvTaskSubject: TextView = itemView.findViewById(R.id.tv_task_subject)
@@ -63,7 +69,6 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
             tvTaskTeacher.text = "${if (item.lessonSubjectSchoollessonYear.teacher.tgender == 0) "Hr." else "Fr."} ${item.lessonSubjectSchoollessonYear.teacher.tname}"
             tvTaskDate.text = "${item.task.tkdateday}.${item.task.tkdatemonth + 1}.${item.task.tkdateyear}"
             tvTaskNote.text = item.task.tknote
-            cbFinished.isChecked = item.task.tkfinished
 
             if (TextUtils.isEmpty(item.task.tknote) || TextUtils.getTrimmedLength(item.task.tknote) == 0) {
                 tvTaskNote.visibility = View.GONE
@@ -71,6 +76,12 @@ class TaskListAdapter(private val itemClickListener: OnItemClickListener) : List
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)
+            }
+
+            cbFinished.setOnCheckedChangeListener(null)
+            cbFinished.isChecked = item.task.tkfinished
+            cbFinished.setOnCheckedChangeListener { _, isChecked ->
+                checkBoxChangeListener.onCheckboxChange(item, isChecked)
             }
         }
     }
@@ -86,7 +97,13 @@ class TaskDiffCallback : DiffUtil.ItemCallback<TaskLesson>() {
     override fun areContentsTheSame(oldItem: TaskLesson, newItem: TaskLesson): Boolean {
         //Compare all items, so if there is a new field, add it with &&
         return oldItem.task.tkname == newItem.task.tkname &&
-                oldItem.task.tknote == newItem.task.tknote
+                oldItem.task.tknote == newItem.task.tknote &&
+                oldItem.task.tkdateday == newItem.task.tkdateday &&
+                oldItem.task.tkdatemonth == newItem.task.tkdatemonth &&
+                oldItem.task.tkdateyear == newItem.task.tkdateyear &&
+                oldItem.task.tkfinished == newItem.task.tkfinished &&
+                oldItem.task.tklid == newItem.task.tklid &&
+                oldItem.task.tkyid == newItem.task.tkyid
     }
 
 

@@ -38,7 +38,7 @@ import kotlin.math.roundToInt
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
+class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAdapter.OnCheckboxChangeListener {
 
     private lateinit var taskViewModel: TaskViewModel
     private lateinit var subjectViewModel: SubjectViewModel
@@ -47,6 +47,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TaskListAdapter
 
+    private val TAG = "debug_FragmentTask"
 
     private var activeYearID: Int = -1
     private var selectedSubject: Int = -1
@@ -81,7 +82,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
         val dropdownFinished: AutoCompleteTextView = root.findViewById(R.id.actv_dropdown_finished)
 
 
-        adapter = TaskListAdapter(this)
+        adapter = TaskListAdapter(this, this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(root.context)
 
@@ -301,6 +302,12 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditTask.EXTRA_TKLID, taskLesson.task.tklid)
         startActivityForResult(intent, EDIT_TASK_REQUEST)
 
+    }
+
+    /*---------------------Change finished state for Task--------------------------*/
+    override fun onCheckboxChange(taskLesson: TaskLesson, isChecked: Boolean) {
+        taskLesson.task.tkfinished = isChecked
+        taskViewModel.update(taskLesson.task)
     }
 
     /**
