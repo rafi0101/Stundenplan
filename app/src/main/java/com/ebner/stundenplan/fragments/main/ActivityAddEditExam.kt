@@ -91,7 +91,7 @@ class ActivityAddEditExam : AppCompatActivity() {
             selectedMonth = edatemonth
             selectedDay = edateday
 
-            btnDate.text = "$selectedDay.$selectedMonth.$selectedYear"
+            btnDate.text = "$selectedDay.${selectedMonth + 1}.$selectedYear"
 
             //Fetch subject and examtype list, and pass values to set in spinner
             CoroutineScope(Dispatchers.IO).launch {
