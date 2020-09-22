@@ -8,11 +8,61 @@
     android:paddingRight="8dp"
     tools:context=".fragments.main.exam.FragmentExamOverview">
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_exam_overview"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/content_exam_overview" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Gewichtung:"
+                android:gravity="center"
+                style="@style/TextAppearance.MaterialComponents.Headline5" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tv_examoverview_grade_arithmetic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="end"
+                    android:text="Arithmetisch:"
+                    style="@style/TextAppearance.MaterialComponents.Body2" />
+
+                <TextView
+                    android:id="@+id/tv_examoverview_grade_weighted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="end"
+                    android:text="Gewichtet:"
+                    style="@style/TextAppearance.MaterialComponents.Body2" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_exam_overview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/content_exam_overview" />
+
+    </LinearLayout>
 
 </FrameLayout>

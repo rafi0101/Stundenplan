@@ -51,5 +51,6 @@ class ExamViewModel(application: Application) : AndroidViewModel(application) {
     fun subjectExams(yid: Int, sid: Int): LiveData<List<ExamSubjectYearExamtype>> = examRepository.getSubjectExams(yid, sid)
 
     suspend fun subjectExamsSuspend(yid: Int, sid: Int): List<ExamSubjectYearExamtype> = examRepository.getSubjectExamsSuspend(yid, sid)
+    suspend fun allExamSuspend(yid: Int): List<ExamSubjectYearExamtype> = examRepository.getAllExamSuspend(yid)
 
 }
