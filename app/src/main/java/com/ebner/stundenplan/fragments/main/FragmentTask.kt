@@ -3,18 +3,15 @@ package com.ebner.stundenplan.fragments.main
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.FrameLayout
+import android.view.*
+import android.widget.*
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +26,7 @@ import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.ebner.stundenplan.database.table.task.Task
 import com.ebner.stundenplan.database.table.task.TaskListAdapter
 import com.ebner.stundenplan.database.table.task.TaskViewModel
+import com.ebner.stundenplan.fragments.settings.SettingsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -46,8 +44,9 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
     private lateinit var clTask: CoordinatorLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TaskListAdapter
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var dropdownFinished: AutoCompleteTextView
 
-    private val TAG = "debug_FragmentTask"
 
     private var activeYearID: Int = -1
     private var selectedSubject: Int = -1
@@ -56,6 +55,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
     companion object {
         private const val ADD_TASK_REQUEST = 1
         private const val EDIT_TASK_REQUEST = 2
+        const val TASK_DEFAULT_SORT_ORDER = "taskdefaultsortorderint"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +64,8 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         val root = inflater.inflate(R.layout.fragment_task, container, false)
 
         activity?.title = getString(R.string.fragment_tasks)
+        setHasOptionsMenu(true)
+        sharedPreferences = requireContext().getSharedPreferences(SettingsActivity.SHARED_PREFS, Context.MODE_PRIVATE)
 
 
         /*---------------------Set correct layout margin to main FrameLaout--------------------------*/
@@ -79,7 +81,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         recyclerView = root.findViewById<RecyclerView>(R.id.rv_task)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_task_addTask)
         val dropdownSubject: AutoCompleteTextView = root.findViewById(R.id.actv_dropdown_subject)
-        val dropdownFinished: AutoCompleteTextView = root.findViewById(R.id.actv_dropdown_finished)
+        dropdownFinished = root.findViewById(R.id.actv_dropdown_finished)
 
 
         adapter = TaskListAdapter(this, this)
@@ -90,14 +92,6 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
         taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
         //Automatic update the recyclerlayout
-
-        //Get current activeYearID
-        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
-            activeYearID = setting.settings.setyid
-
-            updateRecyclerView()
-        })
-
 
         val subjectsList: MutableList<Subject> = mutableListOf(Subject("Auswählen", "", -1, "", true, -1, -1))
         val selectFinishedList = listOf("Alle", "Ja", "Nein")
@@ -130,6 +124,32 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
             }
             updateRecyclerView()
         }
+
+
+        //Set predefined sort order
+        val selectedDefaultOrderMenuId = sharedPreferences.getInt(TASK_DEFAULT_SORT_ORDER, -1)
+        when (selectedDefaultOrderMenuId) {
+            R.id.tasks_finished_all -> {
+                selectedFinished = -1
+                dropdownFinished.setText(dropDownAdapterFinished.getItem(0).toString(), false)
+            }
+            R.id.tasks_finished_yes -> {
+                selectedFinished = 1
+                dropdownFinished.setText(dropDownAdapterFinished.getItem(1).toString(), false)
+            }
+            R.id.tasks_finished_no -> {
+                selectedFinished = 2
+                dropdownFinished.setText(dropDownAdapterFinished.getItem(2).toString(), false)
+            }
+        }
+        updateRecyclerView()
+
+        //Get current activeYearID
+        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+            activeYearID = setting.settings.setyid
+
+            updateRecyclerView()
+        })
 
 
         /*---------------------FAB Add Button--------------------------*/
@@ -309,6 +329,44 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         taskLesson.task.tkfinished = isChecked
         taskViewModel.update(taskLesson.task)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.tasks_finished_sort_menu, menu)
+        var selectedOrderMenuID = sharedPreferences.getInt(TASK_DEFAULT_SORT_ORDER, 0)
+        if (selectedOrderMenuID == 0) selectedOrderMenuID = R.id.tasks_finished_all
+        menu.findItem(selectedOrderMenuID).isChecked = true
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            //Save Button
+            R.id.tasks_finished_all -> {
+                saveDefaultSortOrder(R.id.tasks_finished_all)
+                item.isChecked = true
+                true
+            }
+            R.id.tasks_finished_yes -> {
+                saveDefaultSortOrder(R.id.tasks_finished_yes)
+                item.isChecked = true
+                true
+            }
+            R.id.tasks_finished_no -> {
+                saveDefaultSortOrder(R.id.tasks_finished_no)
+                item.isChecked = true
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun saveDefaultSortOrder(id: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt(TASK_DEFAULT_SORT_ORDER, id)
+        editor.apply()
+        
+    }
+
 
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
