@@ -68,7 +68,8 @@ class TaskDiffCallback : DiffUtil.ItemCallback<Teacher>() {
 
     override fun areContentsTheSame(oldItem: Teacher, newItem: Teacher): Boolean {
         //Compare all items, so if there is a new field, add it with &&
-        return oldItem.tname == newItem.tname
+        return oldItem.tname == newItem.tname &&
+                oldItem.tgender == newItem.tgender
     }
 
 
