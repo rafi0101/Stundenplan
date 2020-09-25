@@ -29,4 +29,10 @@ data class SchoolLesson(
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "slid")
         var slid: Int = 0
-)
+) {
+        override fun toString(): String {
+                val returnStartMinute = if (slstartminute < 10) "0$slstartminute" else "$slstartminute"
+                val returnEndMinute = if (slendminute < 10) "0$slendminute" else "$slendminute"
+                return "$slnumber: $slstarthour:$returnStartMinute - $slendhour:$returnEndMinute"
+        }
+}

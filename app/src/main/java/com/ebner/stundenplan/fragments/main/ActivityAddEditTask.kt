@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,9 +13,10 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
-import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.database.table.lesson.LessonViewModel
+import com.ebner.stundenplan.database.table.schoolLesson.SchoolLesson
+import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textfield.TextInputEditText
@@ -40,22 +40,26 @@ class ActivityAddEditTask : AppCompatActivity() {
         const val EXTRA_TKDATEYEAR = "com.ebner.stundenplan.fragments.main.EXTRA_TKDATEYEAR"
         const val EXTRA_TKLID = "com.ebner.stundenplan.fragments.main.EXTRA_TKLID"
         const val EXTRA_TKFINISHED = "com.ebner.stundenplan.fragments.main.EXTRA_TKFINISHED"
-        private val TAG = "debug_ActivityAddEditTask"
     }
 
-    var selectedLID: Int = -1
-    var selectedDateDay: Int = -1
-    var selectedDateMonth: Int = -1
-    var selectedDateYear: Int = -1
+    private var selectedLID: Int = -1
+    private var selectedDateDay: Int = -1
+    private var selectedDateMonth: Int = -1
+    private var selectedDateYear: Int = -1
+    private var selectedLday: Int = -1
+    private var selectedLslid: Int = -1
+    private var selectedLsid: Int = -1
 
     private lateinit var tietName: TextInputEditText
     private lateinit var tilName: TextInputLayout
-    private lateinit var spSid: MaterialSpinner
-    private lateinit var spSlid: MaterialSpinner
+    private lateinit var dropdownSid: AutoCompleteTextView
+    private lateinit var tilSid: TextInputLayout
+    private lateinit var dropdownSlid: AutoCompleteTextView
+    private lateinit var tilSlid: TextInputLayout
     private lateinit var tietNote: TextInputEditText
     private lateinit var tilNote: TextInputLayout
     private lateinit var pbTask: ProgressBar
-    private lateinit var btn_datepicker: Button
+    private lateinit var btnDatepicker: Button
     private lateinit var btnCreateCalendar: Button
     private lateinit var cbFinished: MaterialCheckBox
     private lateinit var lessonViewModel: LessonViewModel
@@ -75,14 +79,16 @@ class ActivityAddEditTask : AppCompatActivity() {
         lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
 
         /*---------------------Link items to Layout--------------------------*/
-        spSid = findViewById(R.id.sp_task_sid)
-        spSlid = findViewById(R.id.sp_task_slid)
         tietName = findViewById(R.id.tiet_task_tkname)
         tilName = findViewById(R.id.til_task_tkname)
+        dropdownSid = findViewById(R.id.actv_dropdown_task_sid)
+        tilSid = findViewById(R.id.til_dropdown_task_sid)
+        dropdownSlid = findViewById(R.id.actv_dropdown_task_slid)
+        tilSlid = findViewById(R.id.til_dropdown_task_slid)
         tietNote = findViewById(R.id.tiet_task_tknote)
         tilNote = findViewById(R.id.til_task_tknote)
         pbTask = findViewById(R.id.pb_task)
-        btn_datepicker = findViewById(R.id.btn_datepicker)
+        btnDatepicker = findViewById(R.id.btn_datepicker)
         btnCreateCalendar = findViewById(R.id.btn_task_create_calendar)
         cbFinished = findViewById(R.id.cb_finished)
 
@@ -91,7 +97,6 @@ class ActivityAddEditTask : AppCompatActivity() {
         if (intent.hasExtra(EXTRA_TKID)) {
             title = getString(R.string.fragment_task) + " bearbeiten"
             //Save extras to vars
-            val tkid = intent.getIntExtra(EXTRA_TKID, -1)
             val tkname = intent.getStringExtra(EXTRA_TKNAME)
             val tknote = intent.getStringExtra(EXTRA_TKNOTE)
             val tkdateday = intent.getIntExtra(EXTRA_TKDATEDAY, -1)
@@ -99,8 +104,6 @@ class ActivityAddEditTask : AppCompatActivity() {
             val tkdateyear = intent.getIntExtra(EXTRA_TKDATEYEAR, -1)
             val tkfinished = intent.getBooleanExtra(EXTRA_TKFINISHED, false)
             val tklid = intent.getIntExtra(EXTRA_TKLID, -1)
-
-
 
             selectedLID = tklid
             selectedDateDay = tkdateday
@@ -167,79 +170,41 @@ class ActivityAddEditTask : AppCompatActivity() {
 
 
     /*---------------------Fetch Rooms and Teachers in another "thread" and set them to the spinner--------------------------*/
+    @SuppressLint("SetTextI18n")
     private suspend fun fetchFromDatabase(lid: Int, tkdateday: Int, tkdatemonth: Int, tkdateyear: Int) {
-        var selectedLday: Int = -1
-        var selectedLslid: Int = -1
-        var selectedLsid: Int = -1
-
-        /*---------------------get access to room and teacher table --------------------------*/
+        /*---------------------get access to subject table --------------------------*/
         val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
 
-        /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
-         * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
-         * For setting the item to the spinner:
-         *  1. the *_*id Adapter is compared with the given id, and returns the position where the id is located
-         *  2. this position is set to the spinner, so i get the correct name
-         * For getting the selected id, it is vice versa
-         */
-        val subjectSname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val subjectSid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val lessonLday = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val lessonLslid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val lessonLsid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val lessonLid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
+        /*---------------------get the list with all items in subject and lesson--------------------------*/
+        val subjectList = subjectViewModel.allSubjectList()
+        val lessonList = lessonViewModel.allLessonList()
 
-
-        /*---------------------get the list with all items in room and teacher--------------------------*/
-        val subjectAll = subjectViewModel.allSubjectList()
-        val lessonAll = lessonViewModel.allLessonList()
-
-        /*---------------------add each item to the Arrayadapters--------------------------*/
-        subjectAll.forEach {
-            subjectSname.add(it.sname)
-            subjectSid.add(it.sid)
-        }
-
-        lessonAll.forEach {
-            lessonLday.add(it.lday)
-            lessonLslid.add(it.lslid)
-            lessonLsid.add(it.lsid)
-            lessonLid.add(it.lid)
-        }
+        val dropDownAdapterSubjects = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, subjectList)
 
         /*---------------------fill vars with selected id's--------------------------*/
         if (lid != -1) {
-            val posLid = lessonLid.getPosition(lid)
-            selectedLday = lessonLday.getItem(posLid)!!
-            selectedLslid = lessonLslid.getItem(posLid)!!
-            selectedLsid = lessonLsid.getItem(posLid)!!
-        } else {
-            selectedLsid = subjectSid.getItem(0)!!
+            val selectedLesson = lessonList.first { it.lid == lid }
+            selectedLday = selectedLesson.lday
+            selectedLslid = selectedLesson.lslid
+            selectedLsid = selectedLesson.lsid
         }
-
         /*---------------------Set list of all subjects to spinner (back in the Main thread)--------------------------*/
         withContext(Dispatchers.Main) {
 
-            //First Define some Properties
-            spSid.setLabel("Fach")
-            spSlid.setLabel("Schulstunde")
+            //Add the ArrayAdapter to the Dropdown menu
+            dropdownSid.setAdapter(dropDownAdapterSubjects)
 
-            // Set layout to use when the list of choices appear
-            subjectSname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-            // Set Adapter to Spinner
-            spSid.setAdapter(subjectSname)
 
             //If edit task, or new task
             if (lid != -1) {
-                //Set given subject ID to Spinner
-                val selectedSubjectPos = subjectSid.getPosition(selectedLsid)
-                selectedSubjectPos.let { spSid.getSpinner().setSelection(it) }
+                //Set given subject ID to Dropdown menu
+                val selectedSubject: Subject = subjectList.first { it.sid == selectedLsid }
+                dropdownSid.setText(selectedSubject.sname, false)
 
-                btn_datepicker.text = "$tkdateday.${tkdatemonth + 1}.$tkdateyear"
+                btnDatepicker.text = "$tkdateday.${tkdatemonth + 1}.$tkdateyear"
 
                 showSelectDaysBySubject(selectedLsid)
-                showSelectLessonsBySubjectDay(selectedLsid, selectedLday, -1)
+                showSelectLessonsBySubjectDay(selectedLsid, selectedLday, selectedLslid)
 
             } else {
                 showSelectDaysBySubject(selectedLsid)
@@ -250,21 +215,16 @@ class ActivityAddEditTask : AppCompatActivity() {
             pbTask.visibility = View.INVISIBLE
 
             /*---------------------Listener, if Subject changed, and if true "days + lessons" below will be updated--------------------------*/
-            spSid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on room_rid
-                    selectedLsid = subjectSid.getItem(position)!!
-                    Log.d(TAG, "spSid: selectedLsid: $selectedLsid")
+            dropdownSid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                selectedLsid = (parent.adapter.getItem(position) as Subject).sid
+                tilSid.error = ""
 
-                    //Subject changed, set selected day and schoollesson to -1
-                    selectedLday = -1
-                    selectedLslid = -1
+                //Subject changed, set selected day and schoollesson to -1
+                selectedLday = -1
+                selectedLslid = -1
 
-                    showSelectDaysBySubject(selectedLsid)
-                }
+                showSelectDaysBySubject(selectedLsid)
             }
-
         }
     }
 
@@ -272,30 +232,31 @@ class ActivityAddEditTask : AppCompatActivity() {
      * Show available Days for this Subject, and maybe select day
      *
      * @param sid selected Subject --> Show all available days for this Subject
-     * @param selected if !=-1 set specific day as selected
      */
+    @Suppress("IMPLICIT_CAST_TO_ANY")
+    @SuppressLint("SetTextI18n")
     private fun showSelectDaysBySubject(sid: Int) {
         var datePickerDialog: DatePickerDialog
         val calendar = Calendar.getInstance()
 
-        var Year = calendar.get(Calendar.YEAR)
-        var Month = calendar.get(Calendar.MONTH)
-        var Day = calendar.get(Calendar.DAY_OF_MONTH)
+        var year = calendar.get(Calendar.YEAR)
+        var month = calendar.get(Calendar.MONTH)
+        var day = calendar.get(Calendar.DAY_OF_MONTH)
 
         if (selectedDateDay != -1 && selectedDateMonth != -1 && selectedDateYear != -1) {
-            Year = selectedDateYear
-            Month = selectedDateMonth
-            Day = selectedDateDay
+            year = selectedDateYear
+            month = selectedDateMonth
+            day = selectedDateDay
         }
 
-        btn_datepicker.setOnClickListener {
+        btnDatepicker.setOnClickListener {
 
-            datePickerDialog = DatePickerDialog.newInstance(object : DatePickerDialog.OnDateSetListener {
-                @SuppressLint("ResourceAsColor")
-                override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+            if (sid != -1) {
+
+                datePickerDialog = DatePickerDialog.newInstance({ _, year, monthOfYear, dayOfMonth ->
                     val date = "$dayOfMonth.${monthOfYear + 1}.$year"
-                    btn_datepicker.text = date
-                    btn_datepicker.setBackgroundColor(getColor(R.color.colorPrimary))
+                    btnDatepicker.text = date
+                    btnDatepicker.setBackgroundColor(getColor(R.color.colorPrimary))
 
                     val firstApiFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     //Add 0 in front of all dates < 10
@@ -307,54 +268,54 @@ class ActivityAddEditTask : AppCompatActivity() {
                     selectedDateMonth = monthOfYear
                     selectedDateYear = year
 
-                }
+                }, year, month, day)
 
-            }, Year, Month, Day)
+                val lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val lessonBySubject = lessonViewModel.lessonBySubject(sid)
 
-            Log.d(TAG, "Subject id: $sid")
+                    withContext(Dispatchers.Main) {
 
-            val lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
-            CoroutineScope(Dispatchers.IO).launch {
-                val lessonBySubject = lessonViewModel.lessonBySubject(sid)
+                        //https://www.freakyjolly.com/android-material-datepicker-and-timepicker-by-wdullaer-tutorial-by-example/#more-2649
+                        // Setting Min Date to 1 year ago
+                        val minDateC = Calendar.getInstance()
+                        minDateC[Calendar.YEAR] = year - 1
+                        datePickerDialog.minDate = minDateC
 
-                withContext(Dispatchers.Main) {
+                        // Setting Max Date to next 2 years
+                        val maxDateC = Calendar.getInstance()
+                        maxDateC[Calendar.YEAR] = year + 2
+                        datePickerDialog.maxDate = maxDateC
 
-                    //https://www.freakyjolly.com/android-material-datepicker-and-timepicker-by-wdullaer-tutorial-by-example/#more-2649
-                    // Setting Min Date to 1 year ago
-                    val min_date_c = Calendar.getInstance()
-                    min_date_c[Calendar.YEAR] = Year - 1
-                    datePickerDialog.minDate = min_date_c
-
-                    // Setting Max Date to next 2 years
-                    val max_date_c = Calendar.getInstance()
-                    max_date_c[Calendar.YEAR] = Year + 2
-                    datePickerDialog.maxDate = max_date_c
-
-                    //Disable all SUNDAYS and SATURDAYS between Min and Max Dates
-                    var loopdate = min_date_c
-                    while (min_date_c.before(max_date_c)) {
-                        val dayOfWeek = loopdate[Calendar.DAY_OF_WEEK]
-                        //IF dayOfWeek not in lessonBySubject.lday disable this day
-                        //if (it.lday==7){1} else {it.lday+1} Calendar.Monday ist 2, und wenn it.lday montag is ist es dort 1, deswegen überall +1 und Sonntag wird auf 1 gesetzt
-                        if (lessonBySubject.none {
-                                    if (it.lday == 7) {
-                                        1
-                                    } else {
-                                        it.lday + 1
-                                    } == dayOfWeek
-                                }) {
-                            val disabledDays = arrayOfNulls<Calendar>(1)
-                            disabledDays[0] = loopdate
-                            datePickerDialog.disabledDays = disabledDays
+                        //Disable all SUNDAYS and SATURDAYS between Min and Max Dates
+                        var loopdate = minDateC
+                        while (minDateC.before(maxDateC)) {
+                            val dayOfWeek = loopdate[Calendar.DAY_OF_WEEK]
+                            //IF dayOfWeek not in lessonBySubject.lday disable this day
+                            //if (it.lday==7){1} else {it.lday+1} Calendar.Monday ist 2, und wenn it.lday montag is ist es dort 1, deswegen überall +1 und Sonntag wird auf 1 gesetzt
+                            if (lessonBySubject.none {
+                                        if (it.lday == 7) {
+                                            1
+                                        } else {
+                                            it.lday + 1
+                                        } == dayOfWeek
+                                    }) {
+                                val disabledDays = arrayOfNulls<Calendar>(1)
+                                disabledDays[0] = loopdate
+                                datePickerDialog.disabledDays = disabledDays
+                            }
+                            minDateC.add(Calendar.DATE, 1)
+                            loopdate = minDateC
                         }
-                        min_date_c.add(Calendar.DATE, 1)
-                        loopdate = min_date_c
+
+                        datePickerDialog.show(supportFragmentManager, "Datepickerdialog")
                     }
 
-                    datePickerDialog.show(supportFragmentManager, "Datepickerdialog")
+
                 }
-
-
+            } else {
+                btnDatepicker.isAllCaps = false
+                btnDatepicker.text = "Bitte wähle zuerst ein Fach"
             }
         }
 
@@ -369,58 +330,42 @@ class ActivityAddEditTask : AppCompatActivity() {
      */
     private fun showSelectLessonsBySubjectDay(sid: Int, day: Int, lesson: Int) {
         val lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
-        val schoollessonSlname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val schoollessonSlid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-
-        schoollessonSlname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val lessonBySubjectDay = lessonViewModel.lessonBySubjectDay(sid, day)
+            val lessonSSlYBySubjectDayList = lessonViewModel.lessonBySubjectDay(sid, day)
+            val lessonBySubjectDayList = lessonSSlYBySubjectDayList.mapIndexed { _, lessonSubjectSchoollessonYear -> lessonSubjectSchoollessonYear.schoolLesson }
 
             withContext(Dispatchers.Main) {
-
-                schoollessonSlname.clear()
-                schoollessonSlid.clear()
-                lessonBySubjectDay.forEach {
-                    val returnStartMinute = if (it.schoolLesson.slstartminute < 10) "0${it.schoolLesson.slstartminute}" else "${it.schoolLesson.slstartminute}"
-                    val returnEndMinute = if (it.schoolLesson.slendminute < 10) "0${it.schoolLesson.slendminute}" else "${it.schoolLesson.slendminute}"
-
-                    schoollessonSlname.add("${it.schoolLesson.slnumber}: ${it.schoolLesson.slstarthour}:$returnStartMinute - ${it.schoolLesson.slendhour}:$returnEndMinute")
-                    schoollessonSlid.add(it.schoolLesson.slid)
-                }
+                val dropDownAdapterLessons = ArrayAdapter(this@ActivityAddEditTask, R.layout.dropdown_menu_popup_item, lessonBySubjectDayList)
                 //Set available list of school lessons to Spinner
-                spSlid.setAdapter(schoollessonSlname)
+                dropdownSlid.setAdapter(dropDownAdapterLessons)
 
                 //Select selected school lesson
                 if (lesson != -1) {
-                    val selectedSchoollessonPos = schoollessonSlid.getPosition(lesson)
-                    selectedSchoollessonPos.let { spSlid.getSpinner().setSelection(it) }
+                    val selectedExamtype = lessonBySubjectDayList.first { it.slid == lesson }
+
+                    dropdownSlid.setText(selectedExamtype.toString(), false)
                 }
 
                 /*---------------------Listener, if Lesson changed, and if true selectedLID will be updated--------------------------*/
-                spSlid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        val slid = schoollessonSlid.getItem(position)!!
+                dropdownSlid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                    selectedLslid = (parent.adapter.getItem(position) as SchoolLesson).slid
+                    tilSlid.error = ""
 
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val lessons = lessonViewModel.lessonbySubjectDaySchoollesson(sid, day, slid)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val lessons = lessonViewModel.lessonbySubjectDaySchoollesson(sid, day, selectedLslid)
 
-                            val selectedLesson = lessons.singleOrNull()
+                        val selectedLesson = lessons.singleOrNull()
 
-                            if (selectedLesson != null) {
-                                selectedLID = selectedLesson.lid
-                            } else {
-                                withContext(Dispatchers.Main) {}
-                                Toast.makeText(this@ActivityAddEditTask, "no or more than 1 entry was found ", Toast.LENGTH_SHORT).show()
-                            }
-
+                        if (selectedLesson != null) {
+                            selectedLID = selectedLesson.lid
+                        } else {
+                            withContext(Dispatchers.Main) {}
+                            Toast.makeText(this@ActivityAddEditTask, "no or more than 1 entry was found ", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
-
-
         }
     }
 
@@ -461,10 +406,18 @@ class ActivityAddEditTask : AppCompatActivity() {
             tilName.error = "Gib einen Namen ein!"
             error = true
         }
+        if (selectedLsid == -1) {
+            tilSid.error = "Bitte wähle ein Fach"
+            error = true
+        }
+        if (selectedLslid == -1) {
+            tilSlid.error = "Bitte wähle eine Schulstunde"
+            error = true
+        }
         if (selectedDateDay == -1 || selectedDateMonth == -1 || selectedDateYear == -1) {
-            btn_datepicker.text = "Bitte wähle ein Datum"
-            btn_datepicker.isAllCaps = false
-            btn_datepicker.setBackgroundColor(getColor(R.color.red_400))
+            btnDatepicker.text = "Bitte wähle ein Datum"
+            btnDatepicker.isAllCaps = false
+            btnDatepicker.setBackgroundColor(getColor(R.color.red_400))
             error = true
         }
         return error

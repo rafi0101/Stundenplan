@@ -39,20 +39,28 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <com.dev.materialspinner.MaterialSpinner
-            android:id="@+id/sp_task_sid"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_dropdown_task_sid"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:tooltipText="Subject" />
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp"
+            app:errorEnabled="true">
+
+            <AutoCompleteTextView
+                android:id="@+id/actv_dropdown_task_sid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:hint="Fach" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp"
             android:paddingTop="12dp"
             android:paddingBottom="12dp">
 
@@ -77,14 +85,23 @@
 
         </LinearLayout>
 
-        <com.dev.materialspinner.MaterialSpinner
-            android:id="@+id/sp_task_slid"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_dropdown_task_slid"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:tooltipText="Examtype" />
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp"
+            app:errorEnabled="true">
+
+            <AutoCompleteTextView
+                android:id="@+id/actv_dropdown_task_slid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:hint="Schulstunde" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_task_tknote"
