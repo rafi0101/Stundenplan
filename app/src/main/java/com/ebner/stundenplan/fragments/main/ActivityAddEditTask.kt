@@ -14,7 +14,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
-import ca.antonious.materialdaypicker.MaterialDayPicker
 import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.database.table.lesson.LessonViewModel
@@ -52,7 +51,6 @@ class ActivityAddEditTask : AppCompatActivity() {
     private lateinit var tietName: TextInputEditText
     private lateinit var tilName: TextInputLayout
     private lateinit var spSid: MaterialSpinner
-    private lateinit var mdpTask: MaterialDayPicker
     private lateinit var spSlid: MaterialSpinner
     private lateinit var tietNote: TextInputEditText
     private lateinit var tilNote: TextInputLayout
@@ -83,7 +81,6 @@ class ActivityAddEditTask : AppCompatActivity() {
         tilName = findViewById(R.id.til_task_tkname)
         tietNote = findViewById(R.id.tiet_task_tknote)
         tilNote = findViewById(R.id.til_task_tknote)
-        mdpTask = findViewById(R.id.mdp_task_day)
         pbTask = findViewById(R.id.pb_task)
         btn_datepicker = findViewById(R.id.btn_datepicker)
         btnCreateCalendar = findViewById(R.id.btn_task_create_calendar)
