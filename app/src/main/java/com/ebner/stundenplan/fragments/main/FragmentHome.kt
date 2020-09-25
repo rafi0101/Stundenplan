@@ -2,33 +2,31 @@ package com.ebner.stundenplan.fragments.main
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ebner.stundenplan.BuildConfig
 import com.ebner.stundenplan.MainActivity
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.customAdapter.HomeListAdapter
+import com.ebner.stundenplan.customObjects.HomeField
 import kotlin.math.roundToInt
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class FragmentHome : Fragment() {
+class FragmentHome : Fragment(), HomeListAdapter.OnItemClickListener {
 
-
-    private lateinit var ibtnTimetable: ImageButton
-    private lateinit var ibtnSubject: ImageButton
-    private lateinit var ibtnTask: ImageButton
-    private lateinit var ibtnYear: ImageButton
-    private lateinit var ibtnExam: ImageButton
-
+    private lateinit var rvHomeItems: RecyclerView
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +38,6 @@ class FragmentHome : Fragment() {
         tvVersionNumber.text = versionName
 
         activity?.title = getString(R.string.app_name)
-        val mainactivity = (activity as MainActivity)
 
         /*---------------------Set correct layout margin to main FrameLaout--------------------------*/
         val all: Int = convertDpToPixel(16F, root.context).roundToInt()
@@ -50,32 +47,41 @@ class FragmentHome : Fragment() {
         fragmentmain.layoutParams = params
 
         /*---------------------Link items to Layout--------------------------*/
-        ibtnTimetable = root.findViewById(R.id.ibtn_timetable)
-        ibtnSubject = root.findViewById(R.id.ibtn_subject)
-        ibtnTask = root.findViewById(R.id.ibtn_task)
-        ibtnYear = root.findViewById(R.id.ibtn_year)
-        ibtnExam = root.findViewById(R.id.ibtn_exam)
+        rvHomeItems = root.findViewById(R.id.rv_home_items)
 
-        ibtnTimetable.setOnClickListener {
-            mainactivity.changeFragment(R.id.nav_timetable)
+        val homeItemList = listOf(
+                HomeField(1, "Stundenplan", R.drawable.ic_schedule, R.color.green_500),
+                HomeField(2, "Fächer", R.drawable.ic_widgets),
+                HomeField(3, "Aufgaben", R.drawable.ic_work),
+                HomeField(4, "Klassen", R.drawable.ic_year),
+                HomeField(5, "Prüfungen", R.drawable.ic_grade))
+
+        rvHomeItems.setHasFixedSize(true)
+
+        val layoutManager: GridLayoutManager
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // In landscape
+            layoutManager = GridLayoutManager(context, homeItemList.size, RecyclerView.VERTICAL, false)
+        } else {
+            // In portrait
+            layoutManager = GridLayoutManager(context, 2, RecyclerView.VERTICAL, false)
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return when (position) {
+                        0 -> 2
+                        else -> 1
+                    }
+                }
+            }
         }
 
-        ibtnSubject.setOnClickListener {
-            mainactivity.changeFragment(R.id.nav_subject)
-        }
+        rvHomeItems.layoutManager = layoutManager
 
-        ibtnTask.setOnClickListener {
-            mainactivity.changeFragment(R.id.nav_task)
-        }
-
-        ibtnYear.setOnClickListener {
-            mainactivity.changeFragment(R.id.nav_year)
-        }
-
-        ibtnExam.setOnClickListener {
-            mainactivity.changeFragment(R.id.nav_exam)
-        }
-
+        val adapter = HomeListAdapter(this)
+        rvHomeItems.adapter = adapter
+        adapter.submitList(homeItemList)
+        rvHomeItems.addItemDecoration(HomeFieldItemDecoration(16, 16))
 
         return root
     }
@@ -90,5 +96,17 @@ class FragmentHome : Fragment() {
      */
     fun convertDpToPixel(dp: Float, context: Context): Float {
         return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
+    override fun onItemClicked(home: HomeField) {
+        val mainactivity = (activity as MainActivity)
+        when (home.id) {
+            1 -> mainactivity.changeFragment(R.id.nav_timetable)
+            2 -> mainactivity.changeFragment(R.id.nav_subject)
+            3 -> mainactivity.changeFragment(R.id.nav_task)
+            4 -> mainactivity.changeFragment(R.id.nav_year)
+            5 -> mainactivity.changeFragment(R.id.nav_exam)
+            else -> mainactivity.changeFragment(R.id.nav_home)
+        }
     }
 }

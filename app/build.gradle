@@ -16,7 +16,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
-        versionName '0.3.92'
+        versionName '0.3.93'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -142,7 +142,7 @@ dependencies {
 
     //Room Database Backup
     //https://github.com/rafi0101/Android-Room-Database-Backup
-    implementation 'com.github.rafi0101:Android-Room-Database-Backup:1.0.0-beta02'
+    implementation 'com.github.rafi0101:Android-Room-Database-Backup:v1.0.0-beta04'
 
     //Custom MaterialDatePicker
     //https://github.com/wdullaer/MaterialDateTimePicker

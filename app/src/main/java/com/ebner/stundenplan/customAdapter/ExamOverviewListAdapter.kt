@@ -16,7 +16,7 @@ import com.ebner.stundenplan.database.table.mergedEntities.SubjectGrade
  * Created by raphael on 31.05.2020.
  * Stundenplan Created in com.ebner.stundenplan.customAdapter
  */
-class ExamOverviewListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<SubjectGrade, ExamOverviewListAdapter.ExamViewHolder>(TaskDiffCallback()) {
+class ExamOverviewListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<SubjectGrade, ExamOverviewListAdapter.ExamViewHolder>(ExamOverviewDiffCallback()) {
 
 
     /*---------------------creates the ViewHolder (returns the view with all items in it)--------------------------*/
@@ -63,7 +63,7 @@ class ExamOverviewListAdapter(private val itemClickListener: OnItemClickListener
 }
 
 /*---------------------Makes the Animation to the recyclerview, when item is changed, added or deleted--------------------------*/
-class TaskDiffCallback : DiffUtil.ItemCallback<SubjectGrade>() {
+class ExamOverviewDiffCallback : DiffUtil.ItemCallback<SubjectGrade>() {
     override fun areItemsTheSame(oldItem: SubjectGrade, newItem: SubjectGrade): Boolean {
         return oldItem.subject.sid == newItem.subject.sid
     }
