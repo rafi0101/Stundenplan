@@ -107,7 +107,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
                 /*---------------------Confirm Delete Dialog--------------------------*/
                 MaterialAlertDialogBuilder(context!!)
                         .setTitle("Achtung")
-                        .setMessage("Es wird das Fach ${subject.sname} und alle zugehörigen Prüfungen und Aufgaben gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!\n" +
+                        .setMessage("Es wird das Fach ${subject.sname} und alle zugehörigen Prüfungen sowie Aufgaben aller Jahre gelöscht.\nDas Wiederherstellen ist nicht mehr möglich!\n" +
                                 "Empfehlung: setze das Fach auf inaktiv")
                         .setPositiveButton("Löschen") { _, _ ->
                             subjectViewModel.delete(subject)
