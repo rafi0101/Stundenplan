@@ -210,18 +210,13 @@ class ActivityAddEditExam : AppCompatActivity() {
     @SuppressLint("SimpleDateFormat")
     private fun createCalendarEntry() {
 
-        val selectedExamtypeName: String
-        val selectedSubjectName: String
-        runBlocking {
-            selectedExamtypeName = examtypeViewModel.examtypeByID(selectedETID).etname
-            selectedSubjectName = subjectViewModel.subjectByID(selectedSID).sname
-        }
+        if (checkBeforeSave()) return
+
+        //Get Subject and Examtype name
+        val selectedSubjectName = dropdownSid.text.toString()
+        val selectedExamtypeName = dropdownEtid.text.toString()
 
         //Pass the selected Date
-        if (selectedDay == -1 || selectedMonth == -1 || selectedYear == -1) {
-            Toast.makeText(this, "Bitte wähle zuerst ein Datum aus!", Toast.LENGTH_LONG).show()
-            return
-        }
         val sdf = SimpleDateFormat("dd-MM-yyyy hh:mm:ss")
         val dateString = "$selectedDay-${selectedMonth + 1}-$selectedYear 09:00:00"
         //formatting the dateString to convert it into a Date
@@ -243,13 +238,10 @@ class ActivityAddEditExam : AppCompatActivity() {
     /*---------------------Save current entries, and return to Fragment--------------------------*/
     private fun saveExam() {
 
+        if (checkBeforeSave()) return
+
         var egrade = tietGrade.text.toString().toIntOrNull()
         if (egrade == null) egrade = -1
-
-        if (selectedYear == -1 || selectedMonth == -1 || selectedDay == -1) {
-            Toast.makeText(this, "select a date!", Toast.LENGTH_SHORT).show()
-            return
-        }
 
         val data = Intent()
         data.putExtra(EXTRA_E_SID, selectedSID)
@@ -266,6 +258,28 @@ class ActivityAddEditExam : AppCompatActivity() {
         setResult(Activity.RESULT_OK, data)
         finish()
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun checkBeforeSave(): Boolean {
+        //false = everything is ok
+        //true = input is mising
+        var error = false
+        if (selectedYear == -1 || selectedMonth == -1 || selectedDay == -1) {
+            btnDate.text = "Bitte wähle ein Datum"
+            btnDate.isAllCaps = false
+            btnDate.setBackgroundColor(getColor(R.color.red_400))
+            error = true
+        }
+        if (selectedSID == -1) {
+            tilSid.error = "Bitte wähle ein Fach"
+            error = true
+        }
+        if (selectedETID == -1) {
+            tilSEtid.error = "Bitte wähle eine Prüfungsart"
+            error = true
+        }
+        return error
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
