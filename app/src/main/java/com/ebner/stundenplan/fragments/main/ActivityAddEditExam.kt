@@ -12,9 +12,10 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.database.table.examtype.Examtype
 import com.ebner.stundenplan.database.table.examtype.ExamtypeViewModel
+import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -44,9 +45,10 @@ class ActivityAddEditExam : AppCompatActivity() {
     private lateinit var examtypeViewModel: ExamtypeViewModel
     private lateinit var subjectViewModel: SubjectViewModel
 
-
-    private lateinit var spSid: MaterialSpinner
-    private lateinit var spEtid: MaterialSpinner
+    private lateinit var dropdownSid: AutoCompleteTextView
+    private lateinit var tilSid: TextInputLayout
+    private lateinit var dropdownEtid: AutoCompleteTextView
+    private lateinit var tilSEtid: TextInputLayout
     private lateinit var tietGrade: TextInputEditText
     private lateinit var tilGrade: TextInputLayout
     private lateinit var btnDate: Button
@@ -55,7 +57,7 @@ class ActivityAddEditExam : AppCompatActivity() {
     private lateinit var pbExam: ProgressBar
 
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit_exam)
@@ -72,8 +74,10 @@ class ActivityAddEditExam : AppCompatActivity() {
 
 
         /*---------------------Link items to Layout--------------------------*/
-        spSid = findViewById(R.id.sp_exam_sid)
-        spEtid = findViewById(R.id.sp_exam_etid)
+        dropdownSid = findViewById(R.id.actv_dropdown_exam_sid)
+        tilSid = findViewById(R.id.til_dropdown_exam_sid)
+        dropdownEtid = findViewById(R.id.actv_dropdown_exam_etid)
+        tilSEtid = findViewById(R.id.til_dropdown_exam_etid)
         tietGrade = findViewById(R.id.tiet_exam_grade)
         tilGrade = findViewById(R.id.til_exam_grade)
         btnDate = findViewById(R.id.btn_exam_date)
@@ -99,24 +103,21 @@ class ActivityAddEditExam : AppCompatActivity() {
             selectedYear = edateyear
             selectedMonth = edatemonth
             selectedDay = edateday
+            selectedSID = sid
+            selectedETID = etid
 
             btnDate.text = "$selectedDay.${selectedMonth + 1}.$selectedYear"
-
-            //Fetch subject and examtype list, and pass values to set in spinner
-            CoroutineScope(Dispatchers.IO).launch {
-                fetchFromDatabase(sid, etid)
-            }
-
 
         } else {
             title = "Neue " + getString(R.string.fragment_exam)
 
-
-            //Fetch subject and examtype list, and pass values to set in spinner
-            CoroutineScope(Dispatchers.IO).launch {
-                fetchFromDatabase(1, 1)
-            }
         }
+
+        //Fetch subject and examtype list, and pass values to dropdown menu
+        CoroutineScope(Dispatchers.IO).launch {
+            fetchFromDatabase()
+        }
+
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
@@ -125,10 +126,12 @@ class ActivityAddEditExam : AppCompatActivity() {
         btnDate.setOnClickListener {
             val dpd = DatePickerDialog(this, { _, year, month, dayOfMonth ->
                 selectedYear = year
-                selectedMonth = month + 1
+                selectedMonth = month
                 selectedDay = dayOfMonth
 
-                btnDate.text = "$selectedDay.$selectedMonth.$selectedYear"
+                btnDate.text = "$selectedDay.${selectedMonth + 1}.$selectedYear"
+                btnDate.setBackgroundColor(getColor(R.color.colorPrimary))
+
             }, year, month, day)
 
             //If a date is already selected, select this in the datepicker
@@ -143,9 +146,10 @@ class ActivityAddEditExam : AppCompatActivity() {
         btnDateToday.setOnClickListener {
 
             selectedYear = year
-            selectedMonth = month + 1
+            selectedMonth = month
             selectedDay = day
-            btnDate.text = "$selectedDay.$selectedMonth.$selectedYear"
+            btnDate.text = "$selectedDay.${selectedMonth + 1}.$selectedYear"
+            btnDate.setBackgroundColor(getColor(R.color.colorPrimary))
         }
 
         btnCreateCalendar.setOnClickListener {
@@ -157,83 +161,46 @@ class ActivityAddEditExam : AppCompatActivity() {
 
 
     /*---------------------Fetch Subjects and Examtypes in another "thread" and set them to the spinner--------------------------*/
-    private suspend fun fetchFromDatabase(sid: Int, etid: Int) {
-        /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
-         * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
-         * For setting the item to the spinner:
-         *  1. the *_*id Adapter is compared with the given id, and returns the position where the id is located
-         *  2. this position is set to the spinner, so i get the correct name
-         * For getting the selected id, it is vice versa
-         */
-        val subjectSname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val subjectSid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val examtypeEtname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val examtypeEtid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-
-
+    private suspend fun fetchFromDatabase() {
         /*---------------------get the list with all items in room and teacher--------------------------*/
-        val subjectAll = subjectViewModel.allSubjectList()
-        val examtypeAll = examtypeViewModel.allExamtypeList()
+        val subjectList = subjectViewModel.allSubjectList()
+        val examtypeList = examtypeViewModel.allExamtypeList()
 
-        /*---------------------add each item to the Arrayadapters--------------------------*/
-        subjectAll.forEach {
-            subjectSid.add(it.sid)
-            subjectSname.add(it.sname)
-        }
-
-        examtypeAll.forEach {
-            examtypeEtid.add(it.etid)
-            examtypeEtname.add(it.etname)
-        }
+        val dropDownAdapterSubjects = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, subjectList)
+        val dropDownAdapterExamtypes = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, examtypeList)
 
         /*---------------------Set list of all rooms / teachers to spinner (back in the Main thread)--------------------------*/
         withContext(Dispatchers.Main) {
 
-            //First Define some Properties
-            spSid.setLabel(getString(R.string.fragment_subject))
-            spEtid.setLabel(getString(R.string.fragment_examtype))
+            //Add the ArrayAdapter to the Dropdown
+            dropdownSid.setAdapter(dropDownAdapterSubjects)
+            dropdownEtid.setAdapter(dropDownAdapterExamtypes)
 
-            // Set layout to use when the list of choices appear
-            subjectSname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            examtypeEtname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            //Preselect Dropdown menu
+            if (selectedSID != -1) {
+                val selectedSubject: Subject = subjectList.first { it.sid == selectedSID }
+                dropdownSid.setText(selectedSubject.sname, false)
 
-            // Set Adapter to Spinner
-            spSid.setAdapter(subjectSname)
-            spEtid.setAdapter(examtypeEtname)
-
-            //Set gived id's to spinner
-            //How this works is explained a few lines above
-            val selectedSubjectPos = subjectSid.getPosition(sid)
-            selectedSubjectPos.let { spSid.getSpinner().setSelection(it) }
-
-            val selectedExamtypePos = examtypeEtid.getPosition(etid)
-            selectedExamtypePos.let { spEtid.getSpinner().setSelection(it) }
+            }
+            if (selectedETID != -1) {
+                val selectedExamtype: Examtype = examtypeList.first { it.etid == selectedETID }
+                dropdownEtid.setText(selectedExamtype.etname, false)
+            }
 
             //After 0,5s disable the progressbar
             delay(500)
             pbExam.visibility = View.INVISIBLE
 
-            //Save current selected ID, because when nothing changed, id == -1, as declared on top
-            selectedSID = sid
-            selectedETID = etid
-
-            //save new ID, when other item is choosen
-            spSid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on room_rid
-                    selectedSID = subjectSid.getItem(position)!!
-                }
+            //save new ID, when other item is chosen
+            dropdownSid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                selectedSID = (parent.adapter.getItem(position) as Subject).sid
+                tilSid.error = ""
             }
 
-            spEtid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on teacher_tid
-                    selectedETID = examtypeEtid.getItem(position)!!
-                }
+            dropdownEtid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                selectedETID = (parent.adapter.getItem(position) as Examtype).etid
+                tilSEtid.error = ""
             }
-
 
         }
     }

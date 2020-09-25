@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".fragments.main.ActivityAddEditExam">
 
@@ -24,36 +25,56 @@
         android:paddingRight="16dp"
         android:paddingTop="8dp">
 
-
-        <com.dev.materialspinner.MaterialSpinner
-            android:id="@+id/sp_exam_sid"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_dropdown_exam_sid"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:tooltipText="Subject" />
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp"
+            app:errorEnabled="true">
 
+            <AutoCompleteTextView
+                android:id="@+id/actv_dropdown_exam_sid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:hint="Fach" />
 
-        <com.dev.materialspinner.MaterialSpinner
-            android:id="@+id/sp_exam_etid"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_dropdown_exam_etid"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:tooltipText="Examtype" />
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            app:errorEnabled="true">
+
+            <AutoCompleteTextView
+                android:id="@+id/actv_dropdown_exam_etid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Prüfungsart"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:weightSum="10"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
             android:baselineAligned="false">
 
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_exam_grade"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="5">
 
                 <com.google.android.material.textfield.TextInputEditText

@@ -21,4 +21,8 @@ data class Examtype(
         @ColumnInfo(name = "etid")
         var etid: Int = 0
 
-)
+) {
+    override fun toString(): String {
+        return etname
+    }
+}
