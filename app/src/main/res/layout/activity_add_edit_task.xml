@@ -48,15 +48,6 @@
             android:paddingRight="8dp"
             android:tooltipText="Subject" />
 
-        <ca.antonious.materialdaypicker.MaterialDayPicker
-            android:id="@+id/mdp_task_day"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            app:selectionMode="ca.antonious.materialdaypicker.SingleSelectionMode" />
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
