@@ -294,9 +294,11 @@ class ActivityAddEditTask : AppCompatActivity() {
         btn_datepicker.setOnClickListener {
 
             datePickerDialog = DatePickerDialog.newInstance(object : DatePickerDialog.OnDateSetListener {
+                @SuppressLint("ResourceAsColor")
                 override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
                     val date = "$dayOfMonth.${monthOfYear + 1}.$year"
                     btn_datepicker.text = date
+                    btn_datepicker.setBackgroundColor(getColor(R.color.colorPrimary))
 
                     val firstApiFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     //Add 0 in front of all dates < 10
