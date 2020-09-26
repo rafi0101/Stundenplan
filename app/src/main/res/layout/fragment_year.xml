@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cl_year"
     tools:context=".fragments.manage.FragmentYear">
 
@@ -11,13 +12,25 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.dev.materialspinner.MaterialSpinner
-            android:id="@+id/sp_activeyear"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_dropdown_year_yid"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:paddingTop="8dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            app:errorEnabled="true">
+
+            <AutoCompleteTextView
+                android:id="@+id/actv_dropdown_year_yid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:hint="Aktive Klasse" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_year"

@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -21,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
 import com.ebner.stundenplan.database.table.settings.Settings
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
@@ -43,7 +43,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
     private lateinit var yearViewModel: YearViewModel
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var clYear: CoordinatorLayout
-    private lateinit var spActiveyear: MaterialSpinner
+    private lateinit var dropdownYid: AutoCompleteTextView
     private var activeYearID: Int = -1
 
     companion object {
@@ -69,7 +69,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
 
         /*---------------------Link items to Layout--------------------------*/
         clYear = root.findViewById(R.id.cl_year)
-        spActiveyear = root.findViewById(R.id.sp_activeyear)
+        dropdownYid = root.findViewById(R.id.actv_dropdown_year_yid)
         val recyclerView = root.findViewById<RecyclerView>(R.id.rv_year)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_year_addYear)
 
@@ -85,7 +85,8 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
 
         //Automatic update the recyclerlayout
         yearViewModel.allYear.observe(viewLifecycleOwner, Observer { years ->
-            years.let { adapter.submitList(it) }
+            adapter.submitList(years)
+            //This is within observer, because when you update a year, you should have immediately the dropdown menu up to date
             CoroutineScope(Dispatchers.IO).launch {
                 setYearsToSpinner(root.context)
             }
@@ -179,27 +180,14 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
 
 
     private suspend fun setYearsToSpinner(root: Context) {
-        /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
-         * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
-         * For setting the item to the spinner:
-         *  1. the *_*id Adapter is compared with the given id, and returns the position where the id is located
-         *  2. this position is set to the spinner, so i get the correct name
-         * For getting the selected it, it is vice versa
-         */
-        val yearYname = ArrayAdapter<String>(root, android.R.layout.simple_spinner_item)
-        val yearYid = ArrayAdapter<Int>(root, android.R.layout.simple_spinner_item)
-        /*---------------------get the list with all items in room and teacher--------------------------*/
-        val yearAll = yearViewModel.allYearList()
 
-        /*---------------------add each item to the Arrayadapters--------------------------*/
-        yearAll.forEach {
-            yearYname.add(it.yname)
-            yearYid.add(it.yid)
-        }
+        /*---------------------get the list with all items in room --------------------------*/
+        val yearList = yearViewModel.allYearList()
+
+        val dropDownAdapterYear = ArrayAdapter(root, R.layout.dropdown_menu_popup_item, yearList)
 
         /*---------------------Set list of all years to spinner (back in the Main thread)--------------------------*/
         withContext(Main) {
-
 
             //Get current activeYearID
             settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
@@ -208,38 +196,23 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
             //Thats probably not the best way to do, but now wait 100ms that the task above has finished
             delay(100)
 
-
-            // Define some Properties
-            spActiveyear.setLabel("Aktive Klasse")
-
-            // Set layout to use when the list of choices appear
-            yearYid.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            yearYname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-            // Set Adapter to Spinner
-            spActiveyear.setAdapter(yearYname)
+            dropdownYid.setAdapter(dropDownAdapterYear)
 
             //Set gived id's to spinner
-            //How this works is explained a few lines above
-            val selectedYearPos = yearYid.getPosition(activeYearID)
-            selectedYearPos.let { spActiveyear.getSpinner().setSelection(it) }
+            val selectedYear = yearList.first { it.yid == activeYearID }
+            dropdownYid.setText(selectedYear.toString(), false)
 
             //When selected item selected, and is not the same as already selected, then change
-            spActiveyear.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (activeYearID != yearYid.getItem(position)!!) {
-                        activeYearID = yearYid.getItem(position)!!
-                        settingsViewModel.update(Settings(activeYearID))
-                        val snackbar = Snackbar
-                                .make(clYear, "Aktive Klasse geändert zu: ${yearYname.getItem(position)}", Snackbar.LENGTH_LONG)
-                        snackbar.show()
-                    }
-
+            dropdownYid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                val activeYear = parent.adapter.getItem(position) as Year
+                if (activeYearID != activeYear.yid) {
+                    activeYearID = activeYear.yid
+                    settingsViewModel.update(Settings(activeYearID))
+                    val snackbar = Snackbar
+                            .make(clYear, "Aktive Klasse geändert zu: ${activeYear.yname}", Snackbar.LENGTH_LONG)
+                    snackbar.show()
                 }
-
             }
-
         }
     }
 
