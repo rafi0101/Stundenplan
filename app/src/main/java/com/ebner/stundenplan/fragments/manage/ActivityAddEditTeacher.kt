@@ -84,7 +84,7 @@ class ActivityAddEditTeacher : AppCompatActivity() {
 
         var error = false
         /*---------------------If EditText is empty--------------------------*/
-        if (TextUtils.isEmpty(tietTname.text.toString()) || TextUtils.getTrimmedLength(tietTname.text.toString()) == 0) {
+        if (TextUtils.isEmpty(tietTname.text.toString())) {
             tilTname.error = "Gib einen Namen ein!"
             error = true
         }

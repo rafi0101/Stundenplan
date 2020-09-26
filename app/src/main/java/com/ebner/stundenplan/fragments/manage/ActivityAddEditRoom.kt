@@ -58,7 +58,7 @@ class ActivityAddEditRoom : AppCompatActivity() {
     private fun saveRoom() {
 
         /*---------------------If EditText is empty--------------------------*/
-        if (TextUtils.isEmpty(tietRname.text.toString()) || TextUtils.getTrimmedLength(tietRname.text.toString()) == 0) {
+        if (TextUtils.isEmpty(tietRname.text.toString())) {
             tilRname.error = "Gib einen Namen ein!"
             return
 
