@@ -38,17 +38,42 @@
             android:layout_marginTop="32dp"
             android:orientation="vertical">
 
-
-            <com.dev.materialspinner.MaterialSpinner
-                android:id="@+id/sp_lesson_sid"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_dropdown_lesson_sid"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="4dp"
+                app:errorEnabled="true">
 
+                <AutoCompleteTextView
+                    android:id="@+id/actv_dropdown_lesson_sid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:hint="Fach" />
 
-            <com.dev.materialspinner.MaterialSpinner
-                android:id="@+id/sp_lesson_slid"
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_dropdown_lesson_slid"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="4dp"
+                app:errorEnabled="true">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actv_dropdown_lesson_slid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:hint="Stunde" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
 
     </LinearLayout>

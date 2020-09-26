@@ -6,17 +6,16 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import ca.antonious.materialdaypicker.MaterialDayPicker
-import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.database.table.schoolLesson.SchoolLesson
 import com.ebner.stundenplan.database.table.schoolLesson.SchoolLessonViewModel
+import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.*
 
 class ActivityAddEditLesson : AppCompatActivity() {
@@ -33,8 +32,10 @@ class ActivityAddEditLesson : AppCompatActivity() {
     var selectedSID: Int = -1
 
     private lateinit var mdp: MaterialDayPicker
-    private lateinit var spSid: MaterialSpinner
-    private lateinit var spSlid: MaterialSpinner
+    private lateinit var dropdownSid: AutoCompleteTextView
+    private lateinit var tilSid: TextInputLayout
+    private lateinit var dropdownSlid: AutoCompleteTextView
+    private lateinit var tilSlid: TextInputLayout
     private lateinit var pbLesson: ProgressBar
 
 
@@ -51,8 +52,10 @@ class ActivityAddEditLesson : AppCompatActivity() {
 
         /*---------------------Link items to Layout--------------------------*/
         mdp = findViewById(R.id.mdp_lesson_day)
-        spSid = findViewById(R.id.sp_lesson_sid)
-        spSlid = findViewById(R.id.sp_lesson_slid)
+        dropdownSid = findViewById(R.id.actv_dropdown_lesson_sid)
+        tilSid = findViewById(R.id.til_dropdown_lesson_sid)
+        dropdownSlid = findViewById(R.id.actv_dropdown_lesson_slid)
+        tilSlid = findViewById(R.id.til_dropdown_lesson_slid)
         pbLesson = findViewById(R.id.pb_lesson)
 
 
@@ -74,110 +77,68 @@ class ActivityAddEditLesson : AppCompatActivity() {
                 7 -> mdp.setSelectedDays(MaterialDayPicker.Weekday.SUNDAY)
             }
 
-            //Fetch Lesson and SchoolLesson list, and pass values to set in spinner
-            CoroutineScope(Dispatchers.IO).launch {
-                fetchFromDatabase(lsid, lslid)
-            }
+            selectedSID = lsid
+            selectedSLID = lslid
 
 
         } else {
             title = "Neue " + getString(R.string.fragment_lesson)
+        }
 
-            //Fetch Lesson and SchoolLesson list, and pass values to set in spinner
-            CoroutineScope(Dispatchers.IO).launch {
-                fetchFromDatabase(1, 1)
-            }
+        //Fetch Lesson and SchoolLesson list
+        CoroutineScope(Dispatchers.IO).launch {
+            fetchFromDatabase()
         }
 
     }
 
 
     /*---------------------Fetch Subjects and SchoolLessons in another "thread" and set them to the spinner--------------------------*/
-    private suspend fun fetchFromDatabase(sid: Int, slid: Int) {
+    private suspend fun fetchFromDatabase() {
         /*---------------------get access to subject and schoolLesson table --------------------------*/
         val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
         val schoolLessonViewModel = ViewModelProvider(this).get(SchoolLessonViewModel::class.java)
 
-        /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
-         * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
-         * For setting the item to the spinner:
-         *  1. the *_*id Adapter is compared with the given id, and returns the position where the id is located
-         *  2. this position is set to the spinner, so i get the correct name
-         * For getting the selected id, it is vice versa
-         */
-        val subjectSname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val subjectSid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val schoolLessonTime = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val schoolLessonSlid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-
-
         /*---------------------get the list with all items in subject and schoolLesson--------------------------*/
-        val subjectAll = subjectViewModel.allSubjectList()
-        val schoolLessonAll = schoolLessonViewModel.allSchoolLessonList()
+        val subjectList = subjectViewModel.allSubjectList()
+        val schoollessonList = schoolLessonViewModel.allSchoolLessonList()
 
-        /*---------------------add each item to the Arrayadapters--------------------------*/
-        subjectAll.forEach {
-            subjectSid.add(it.sid)
-            subjectSname.add(it.sname)
-        }
-
-        schoolLessonAll.forEach {
-            schoolLessonSlid.add(it.slid)
-            //IF minute is less then 10, add a 0 in front of it (just for the view)
-            val returnStartMinute = if (it.slstartminute < 10) "0${it.slstartminute}" else "${it.slstartminute}"
-            val returnEndMinute = if (it.slendminute < 10) "0${it.slendminute}" else "${it.slendminute}"
-
-            schoolLessonTime.add("${it.slnumber}: ${it.slstarthour}:$returnStartMinute - ${it.slendhour}:$returnEndMinute")
-        }
+        val dropDownAdapterSubjects = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, subjectList)
+        val dropDownAdapterSchoollessons = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, schoollessonList)
 
         /*---------------------Set list of all subjects / schoolLessons to spinner (back in the Main thread)--------------------------*/
         withContext(Dispatchers.Main) {
 
-            //First Define some Properties
-            spSid.setLabel("Fach")
-            spSlid.setLabel("Stunde")
+            //Add the ArrayAdapter to the Dropdown menu
+            dropdownSid.setAdapter(dropDownAdapterSubjects)
+            dropdownSlid.setAdapter(dropDownAdapterSchoollessons)
 
-            // Set layout to use when the list of choices appear
-            subjectSname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            schoolLessonTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-            // Set Adapter to Spinner
-            spSid.setAdapter(subjectSname)
-            spSlid.setAdapter(schoolLessonTime)
             //Set gived id's to spinner
-            //How this works is explained a few lines above
-            val selectedSubjectPos = subjectSid.getPosition(sid)
-            selectedSubjectPos.let { spSid.getSpinner().setSelection(it) }
 
-            val selectedSchoolLessonPos = schoolLessonSlid.getPosition(slid)
-            selectedSchoolLessonPos.let { spSlid.getSpinner().setSelection(it) }
-
+            if (selectedSID != -1) {
+                val selectedSubject = subjectList.first { it.sid == selectedSID }
+                dropdownSid.setText(selectedSubject.sname, false)
+            }
+            if (selectedSLID != -1) {
+                val selectedSchoollesson = schoollessonList.first { it.slid == selectedSLID }
+                dropdownSlid.setText(selectedSchoollesson.toString(), false)
+            }
 
             //After 0,5s disable the progressbar
             delay(500)
             pbLesson.visibility = View.INVISIBLE
 
-            //Save current selected ID, because when nothing changed, id == -1, as declared on top
-            selectedSID = sid
-            selectedSLID = slid
 
-            //save new ID, when other item is choosen
-            spSid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on subject_sid
-                    selectedSID = subjectSid.getItem(position)!!
-                }
+            //save new ID, when other item is chosen
+            dropdownSid.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+                selectedSID = (parent.adapter.getItem(position) as Subject).sid
+                tilSid.error = ""
             }
 
-            spSlid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on schoolLesson_slid
-                    selectedSLID = schoolLessonSlid.getItem(position)!!
-                }
+            dropdownSlid.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+                selectedSLID = (parent.adapter.getItem(position) as SchoolLesson).slid
+                tilSlid.error = ""
             }
-
 
         }
     }
@@ -201,10 +162,20 @@ class ActivityAddEditLesson : AppCompatActivity() {
             else -> -1
         }
 
+        var error = false
         if (selctedDayInt == -1) {
             Toast.makeText(this, "Bitte wähle einen Tag aus", Toast.LENGTH_SHORT).show()
-            return
+            error = true
         }
+        if (selectedSID == -1) {
+            tilSid.error = "Bitte wähle ein Fach"
+            error = true
+        }
+        if (selectedSLID == -1) {
+            tilSlid.error = "Bitte wähle eine Schulstunde"
+            error = true
+        }
+        if (error) return
 
         val data = Intent()
         data.putExtra(EXTRA_LDAY, selctedDayInt)
