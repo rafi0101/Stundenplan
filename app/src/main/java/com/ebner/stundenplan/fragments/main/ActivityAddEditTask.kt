@@ -342,9 +342,8 @@ class ActivityAddEditTask : AppCompatActivity() {
 
                 //Select selected school lesson
                 if (lesson != -1) {
-                    val selectedExamtype = lessonBySubjectDayList.first { it.slid == lesson }
-
-                    dropdownSlid.setText(selectedExamtype.toString(), false)
+                    val selectedSchoollesson = lessonBySubjectDayList.first { it.slid == lesson }
+                    dropdownSlid.setText(selectedSchoollesson.toString(), false)
                 }
 
                 /*---------------------Listener, if Lesson changed, and if true selectedLID will be updated--------------------------*/
