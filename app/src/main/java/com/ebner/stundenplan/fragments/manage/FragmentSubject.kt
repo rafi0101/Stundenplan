@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -39,14 +40,8 @@ import kotlin.math.roundToInt
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
 
-
     private lateinit var subjectViewModel: SubjectViewModel
     private lateinit var clSubject: CoordinatorLayout
-
-    companion object {
-        private const val ADD_SUBJECT_REQUEST = 1
-        private const val EDIT_SUBJECT_REQUEST = 2
-    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -84,7 +79,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditSubject::class.java)
-            startActivityForResult(intent, ADD_SUBJECT_REQUEST)
+            openAddEditSubjectActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -167,13 +162,13 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
 
     }
 
-    /*---------------------when returning from |ActivityAddEditSubject| do something--------------------------*/
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    /*---------------------callback from |ActivityAddEditSubject| do something--------------------------*/
+    private val openAddEditSubjectActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
-            val sname: String = data!!.getStringExtra(ActivityAddEditSubject.EXTRA_SNAME)
+            val data = result.data!!
+            val sname = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNAME)
             val snameshort = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNAMESHORT)
             val scolor = data.getIntExtra(ActivityAddEditSubject.EXTRA_SCOLOR, 0)
             val snote = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNOTE)
@@ -182,35 +177,31 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
             val tid = data.getIntExtra(ActivityAddEditSubject.EXTRA_S_TID, -1)
             val subject = Subject(sname, snameshort, scolor, snote, sinactive, tid, rid)
 
-            /*---------------------If the Request was a ADD subject request--------------------------*/
-            if (requestCode == ADD_SUBJECT_REQUEST) {
+            /*---------------------If the request was a EDIT subject request--------------------------*/
+            if (data.hasExtra(ActivityAddEditSubject.EXTRA_SID)) {
 
-                if (rid == -1 || tid == -1) {
-                    val snackbar = Snackbar
-                            .make(clSubject, "Failed to add Subject", Snackbar.LENGTH_LONG)
-                    snackbar.show()
-                    return
-                }
-
-
-                subjectViewModel.insert(subject)
-
-
-                /*---------------------If the Request was a EDIT teacher request--------------------------*/
-            } else if (requestCode == EDIT_SUBJECT_REQUEST) {
                 val id = data.getIntExtra(ActivityAddEditSubject.EXTRA_SID, -1)
 
                 if (rid == -1 || tid == -1 || id == -1) {
                     val snackbar = Snackbar
                             .make(clSubject, "Failed to update Subject!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
 
                 subject.sid = id
                 subjectViewModel.update(subject)
 
+                /*---------------------Else the request was a ADD teacher request--------------------------*/
+            } else {
+                if (rid == -1 || tid == -1) {
+                    val snackbar = Snackbar
+                            .make(clSubject, "Failed to add Subject", Snackbar.LENGTH_LONG)
+                    snackbar.show()
+                    return@registerForActivityResult
+                }
 
+                subjectViewModel.insert(subject)
             }
         }
     }
@@ -226,7 +217,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditSubject.EXTRA_SINACTIVE, subjectTeacherRoom.subject.sinactive)
         intent.putExtra(ActivityAddEditSubject.EXTRA_SNOTE, subjectTeacherRoom.subject.snote)
         intent.putExtra(ActivityAddEditSubject.EXTRA_SCOLOR, subjectTeacherRoom.subject.scolor)
-        startActivityForResult(intent, EDIT_SUBJECT_REQUEST)
+        openAddEditSubjectActivity.launch(intent)
 
     }
 
