@@ -9,16 +9,14 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ProgressBar
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
-import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
+import com.ebner.stundenplan.database.table.room.Room
 import com.ebner.stundenplan.database.table.room.RoomViewModel
+import com.ebner.stundenplan.database.table.teacher.Teacher
 import com.ebner.stundenplan.database.table.teacher.TeacherViewModel
 import com.github.dhaval2404.colorpicker.ColorPickerDialog
 import com.github.dhaval2404.colorpicker.model.ColorShape
@@ -48,20 +46,22 @@ class ActivityAddEditSubject : AppCompatActivity() {
         const val EXTRA_SINACTIVE = "com.ebner.stundenplan.fragments.manage.EXTRA_SINACTIVE"
     }
 
-    var selectedTID: Int = -1
-    var selectedRID: Int = -1
+    private var selectedTID: Int = -1
+    private var selectedRID: Int = -1
     private var selectedColor: Int = 0
 
     private lateinit var tietSname: TextInputEditText
     private lateinit var tilSname: TextInputLayout
+    private lateinit var dropdownRid: AutoCompleteTextView
+    private lateinit var tilRid: TextInputLayout
+    private lateinit var dropdownTid: AutoCompleteTextView
+    private lateinit var tilTid: TextInputLayout
+    private lateinit var btnScolor: Button
+    private lateinit var swInactive: SwitchMaterial
     private lateinit var tietSnmaeshort: TextInputEditText
     private lateinit var tilSnameshort: TextInputLayout
     private lateinit var tietSnote: TextInputEditText
     private lateinit var tilSnote: TextInputLayout
-    private lateinit var spTid: MaterialSpinner
-    private lateinit var spRid: MaterialSpinner
-    private lateinit var btnScolor: Button
-    private lateinit var swInactive: SwitchMaterial
     private lateinit var pbSubject: ProgressBar
 
 
@@ -81,14 +81,16 @@ class ActivityAddEditSubject : AppCompatActivity() {
         /*---------------------Link items to Layout--------------------------*/
         tietSname = findViewById(R.id.tiet_subject_sname)
         tilSname = findViewById(R.id.til_subject_sname)
+        dropdownRid = findViewById(R.id.actv_dropdown_subject_rid)
+        tilRid = findViewById(R.id.til_dropdown_subject_rid)
+        dropdownTid = findViewById(R.id.actv_dropdown_subject_tid)
+        tilTid = findViewById(R.id.til_dropdown_subject_tid)
+        btnScolor = findViewById(R.id.btn_subject_color)
+        swInactive = findViewById(R.id.sw_subject_inaktiv)
         tietSnmaeshort = findViewById(R.id.tiet_subject_snameshort)
         tilSnameshort = findViewById(R.id.til_subject_snameshort)
         tietSnote = findViewById(R.id.tiet_subject_note)
         tilSnote = findViewById(R.id.til_subject_note)
-        spRid = findViewById(R.id.sp_subject_rid)
-        spTid = findViewById(R.id.sp_subject_tid)
-        btnScolor = findViewById(R.id.btn_subject_color)
-        swInactive = findViewById(R.id.sw_subject_inaktiv)
         pbSubject = findViewById(R.id.pb_subject)
 
 
@@ -111,11 +113,8 @@ class ActivityAddEditSubject : AppCompatActivity() {
             selectedColor = scolor
             swInactive.isChecked = sinactive
 
-            //Fetch teacher and room list, and pass values to set in spinner
-            CoroutineScope(IO).launch {
-                fetchFromDatabase(sRid, sTid)
-            }
-
+            selectedRID = sRid
+            selectedTID = sTid
 
         } else {
             title = "Neues " + getString(R.string.fragment_subject)
@@ -125,10 +124,11 @@ class ActivityAddEditSubject : AppCompatActivity() {
             selectedColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
             btnScolor.setBackgroundColor(selectedColor)
 
-            //Fetch teacher and room list, and pass values to set in spinner
-            CoroutineScope(IO).launch {
-                fetchFromDatabase(1, 1)
-            }
+        }
+
+        //Fetch teacher and room list
+        CoroutineScope(IO).launch {
+            fetchFromDatabase()
         }
 
         //Color Picker
@@ -164,91 +164,53 @@ class ActivityAddEditSubject : AppCompatActivity() {
     }
 
     /*---------------------Fetch Rooms and Teachers in another "thread" and set them to the spinner--------------------------*/
-    private suspend fun fetchFromDatabase(rid: Int, tid: Int) {
+    private suspend fun fetchFromDatabase() {
         /*---------------------get access to room and teacher table --------------------------*/
         val roomViewModel = ViewModelProvider(this).get(RoomViewModel::class.java)
         val teacherViewModel = ViewModelProvider(this).get(TeacherViewModel::class.java)
 
-        /** ---------------------Create some simple Arrayadapters, to add each item...--------------------------
-         * 2 Adapters for each Foreignkey, one for the Name to display, and one for the ID
-         * For setting the item to the spinner:
-         *  1. the *_*id Adapter is compared with the given id, and returns the position where the id is located
-         *  2. this position is set to the spinner, so i get the correct name
-         * For getting the selected id, it is vice versa
-         */
-        val roomRname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val roomRid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-        val teacherTname = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item)
-        val teacherTid = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-
-
         /*---------------------get the list with all items in room and teacher--------------------------*/
-        val roomAll = roomViewModel.allRoomList()
-        val teacherAll = teacherViewModel.allTeacherList()
+        val roomList = roomViewModel.allRoomList()
+        val teacheList = teacherViewModel.allTeacherList()
 
-        /*---------------------add each item to the Arrayadapters--------------------------*/
-        roomAll.forEach {
-            roomRid.add(it.rid)
-            roomRname.add(it.rname)
-        }
-
-        teacherAll.forEach {
-            teacherTid.add(it.tid)
-            teacherTname.add("${if (it.tgender == 0) "Hr." else "Fr."} ${it.tname}")
-        }
+        val dropDownAdapterRoom = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, roomList)
+        val dropDownAdapterTeacher = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, teacheList)
 
         /*---------------------Set list of all rooms / teachers to spinner (back in the Main thread)--------------------------*/
         withContext(Main) {
 
-            //First Define some Properties
-            spRid.setLabel("Raum")
-            spTid.setLabel("Lehrer")
+            //Add the ArrayAdapter to the Dropdown menu
+            dropdownRid.setAdapter(dropDownAdapterRoom)
+            dropdownTid.setAdapter(dropDownAdapterTeacher)
 
-            // Set layout to use when the list of choices appear
-            roomRname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            teacherTname.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            //Preselect Dropdown menu
+            if (selectedRID != -1) {
+                val selectedRoom = roomList.first { it.rid == selectedRID }
+                dropdownRid.setText(selectedRoom.toString(), false)
 
-            // Set Adapter to Spinner
-            spRid.setAdapter(roomRname)
-            spTid.setAdapter(teacherTname)
+            }
+            if (selectedTID != -1) {
+                val selectedTeacher = teacheList.first { it.tid == selectedTID }
+                dropdownTid.setText(selectedTeacher.toString(), false)
+            }
 
-            //Set gived id's to spinner
-            //How this works is explained a few lines above
-            val selectedRoomPos = roomRid.getPosition(rid)
-            selectedRoomPos.let { spRid.getSpinner().setSelection(it) }
-
-            val selectedTeacherPos = teacherTid.getPosition(tid)
-            selectedTeacherPos.let { spTid.getSpinner().setSelection(it) }
 
             //After 0,5s disable the progressbar
             delay(500)
             pbSubject.visibility = View.INVISIBLE
 
-            //Save current selected ID, because when nothing changed, id == -1, as declared on top
-            selectedRID = rid
-            selectedTID = tid
-
-            //save new ID, when other item is choosen
-            spRid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on room_rid
-                    selectedRID = roomRid.getItem(position)!!
-                }
+            //save new ID, when other item is chosen
+            dropdownRid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                selectedRID = (parent.adapter.getItem(position) as Room).rid
+                tilRid.error = ""
             }
 
-            spTid.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    //Get position, and with this run query on teacher_tid
-                    selectedTID = teacherTid.getItem(position)!!
-                }
+            dropdownTid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
+                selectedTID = (parent.adapter.getItem(position) as Teacher).tid
+                tilTid.error = ""
             }
-
-
         }
     }
-
 
     /*---------------------Save current entries, and return to Fragment--------------------------*/
     private fun saveSubject() {
@@ -256,6 +218,14 @@ class ActivityAddEditSubject : AppCompatActivity() {
         /*---------------------If EditText is empty return error--------------------------*/
         if (TextUtils.isEmpty(tietSname.text.toString())) {
             tilSname.error = "Gib einen Namen ein!"
+            error = true
+        }
+        if (selectedRID == -1) {
+            tilRid.error = "Bitte wähle einen Raum"
+            error = true
+        }
+        if (selectedTID == -1) {
+            tilTid.error = "Bitte wähle einen Lehrer"
             error = true
         }
         if (TextUtils.isEmpty(tietSnmaeshort.text.toString())) {

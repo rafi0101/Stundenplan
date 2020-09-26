@@ -19,4 +19,8 @@ data class Room(
         @ColumnInfo(name = "rid")
         var rid: Int = 0
 
-)
+) {
+        override fun toString(): String {
+                return rname
+        }
+}

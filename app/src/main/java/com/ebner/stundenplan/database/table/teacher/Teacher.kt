@@ -26,4 +26,8 @@ data class Teacher(
         @ColumnInfo(name = "tid")
         var tid: Int = 0
 
-)
+) {
+        override fun toString(): String {
+                return tname
+        }
+}

@@ -42,53 +42,75 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="10">
-
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
+                android:layout_weight="1"
+                android:paddingEnd="4dp"
                 android:orientation="vertical">
 
-
-                <com.dev.materialspinner.MaterialSpinner
-                    android:id="@+id/sp_subject_rid"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_dropdown_subject_rid"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingRight="8dp"
-                    android:tooltipText="Room" />
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp"
+                    app:errorEnabled="true">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actv_dropdown_subject_rid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:hint="Raum" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/sw_subject_inaktiv"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="8dp"
                     android:text="Fach inaktiv" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
+                android:layout_weight="1"
+                android:paddingStart="4dp"
                 android:orientation="vertical">
 
-                <com.dev.materialspinner.MaterialSpinner
-                    android:id="@+id/sp_subject_tid"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_dropdown_subject_tid"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:tooltipText="Teacher">
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp"
+                    app:errorEnabled="true">
 
-                    <Button
-                        android:id="@+id/btn_subject_color"
+                    <AutoCompleteTextView
+                        android:id="@+id/actv_dropdown_subject_tid"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:layout_margin="8dp"
-                        android:text="Set Color" />
-                </com.dev.materialspinner.MaterialSpinner>
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:hint="Lehrer" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btn_subject_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_margin="8dp"
+                    android:layout_gravity="center"
+                    android:text="Set Color" />
 
 
             </LinearLayout>
