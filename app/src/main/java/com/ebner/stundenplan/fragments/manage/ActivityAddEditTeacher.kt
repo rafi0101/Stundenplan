@@ -4,15 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import com.dev.materialspinner.MaterialSpinner
 import com.ebner.stundenplan.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -25,14 +23,14 @@ class ActivityAddEditTeacher : AppCompatActivity() {
         const val EXTRA_TGENDER = "com.ebner.stundenplan.fragments.manage.EXTRA_TGENDER"
     }
 
-    private val TAG = "debug_ActivityAddEditTeacher"
+    private var listOfGenders = arrayOf("Herr", "Frau")
+    private var selectedGender = -1
 
-    var listOfGenders = arrayOf("Herr", "Frau")
-    var selectedGender = -1
-
+    private lateinit var dropdownGender: AutoCompleteTextView
+    private lateinit var tilGender: TextInputLayout
     private lateinit var tietTname: TextInputEditText
     private lateinit var tilTname: TextInputLayout
-    private lateinit var spTeacherTgender: MaterialSpinner
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,15 +45,14 @@ class ActivityAddEditTeacher : AppCompatActivity() {
         }
 
         /*---------------------Link items to Layout--------------------------*/
+        dropdownGender = findViewById(R.id.actv_dropdown_teacher_gender)
+        tilGender = findViewById(R.id.til_dropdown_teacher_gender)
         tietTname = findViewById(R.id.tiet_teacher_tname)
         tilTname = findViewById(R.id.til_teacher_tname)
-        spTeacherTgender = findViewById(R.id.sp_teacher_tgender)
 
         /*---------------------Initialize Spinner--------------------------*/
-        spTeacherTgender.setLabel("Geschlecht")
-        val teacherGenderList = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOfGenders)
-        teacherGenderList.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spTeacherTgender.setAdapter(teacherGenderList)
+        val dropDownAdapterGender = ArrayAdapter(this, R.layout.dropdown_menu_popup_item, listOfGenders)
+        dropdownGender.setAdapter(dropDownAdapterGender)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
@@ -63,7 +60,8 @@ class ActivityAddEditTeacher : AppCompatActivity() {
             title = getString(R.string.fragment_teacher) + " bearbeiten"
             tietTname.setText(intent.getStringExtra(EXTRA_TNAME))
             selectedGender = intent.getIntExtra(EXTRA_TGENDER, -1)
-            spTeacherTgender.getSpinner().setSelection(selectedGender)
+            dropdownGender.setText(listOfGenders[selectedGender], false)
+
         } else {
             title = "Neuer " + getString(R.string.fragment_teacher)
         }
@@ -73,13 +71,10 @@ class ActivityAddEditTeacher : AppCompatActivity() {
             tilTname.error = ""
         }
 
-        spTeacherTgender.getSpinner().onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-                selectedGender = position
-                Log.d(TAG, "position Gender: $position");
-            }
+        //save new ID, when other item is chosen
+        dropdownGender.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+            selectedGender = position
+            tilGender.error = ""
         }
 
     }
@@ -87,11 +82,17 @@ class ActivityAddEditTeacher : AppCompatActivity() {
     /*---------------------Save current entrys, and return to Fragment--------------------------*/
     private fun saveTeacher() {
 
+        var error = false
         /*---------------------If EditText is empty--------------------------*/
         if (TextUtils.isEmpty(tietTname.text.toString()) || TextUtils.getTrimmedLength(tietTname.text.toString()) == 0) {
             tilTname.error = "Gib einen Namen ein!"
-            return
+            error = true
         }
+        if (selectedGender == -1) {
+            tilGender.error = "Bitte wähle ein Geschlecht"
+            error = true
+        }
+        if (error) return
 
         val tname = tietTname.text.toString()
 
