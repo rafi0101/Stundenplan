@@ -36,15 +36,15 @@ class ActivityAddEditExam : AppCompatActivity() {
 
     }
 
-    var selectedSID: Int = -1
-    var selectedETID: Int = -1
+    private var selectedSID: Int = -1
+    private var selectedETID: Int = -1
 
     private var selectedYear: Int = -1
     private var selectedMonth: Int = -1
     private var selectedDay: Int = -1
+
     private lateinit var examtypeViewModel: ExamtypeViewModel
     private lateinit var subjectViewModel: SubjectViewModel
-
     private lateinit var dropdownSid: AutoCompleteTextView
     private lateinit var tilSid: TextInputLayout
     private lateinit var dropdownEtid: AutoCompleteTextView

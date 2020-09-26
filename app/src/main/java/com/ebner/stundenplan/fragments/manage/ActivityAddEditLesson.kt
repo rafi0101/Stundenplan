@@ -28,8 +28,8 @@ class ActivityAddEditLesson : AppCompatActivity() {
         const val EXTRA_L_SID = "com.ebner.stundenplan.fragments.manage.EXTRA_L_SID"
     }
 
-    var selectedSLID: Int = -1
-    var selectedSID: Int = -1
+    private var selectedSLID: Int = -1
+    private var selectedSID: Int = -1
 
     private lateinit var mdp: MaterialDayPicker
     private lateinit var dropdownSid: AutoCompleteTextView
@@ -130,12 +130,12 @@ class ActivityAddEditLesson : AppCompatActivity() {
 
 
             //save new ID, when other item is chosen
-            dropdownSid.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            dropdownSid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
                 selectedSID = (parent.adapter.getItem(position) as Subject).sid
                 tilSid.error = ""
             }
 
-            dropdownSlid.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            dropdownSlid.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
                 selectedSLID = (parent.adapter.getItem(position) as SchoolLesson).slid
                 tilSlid.error = ""
             }

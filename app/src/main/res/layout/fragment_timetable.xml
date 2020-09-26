@@ -61,7 +61,7 @@
         app:timeColumnPadding="8dp"
         app:timeColumnSeparatorColor="@color/grey_500"
         app:timeColumnSeparatorStrokeWidth="1dp"
-        app:timeColumnTextColor="@color/hint_text_color"
+        app:timeColumnTextColor="@color/light_bg_dark_hint_text"
         app:timeColumnTextSize="12sp"
         app:todayHeaderTextColor="@color/blue_600" />
 
