@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -41,12 +42,6 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
     private lateinit var clLesson: CoordinatorLayout
 
     private var activeYearID: Int = -1
-
-    companion object {
-        private const val ADD_LESSON_REQUEST = 1
-        private const val EDIT_LESSON_REQUEST = 2
-    }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -92,7 +87,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditLesson::class.java)
-            startActivityForResult(intent, ADD_LESSON_REQUEST)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -167,46 +162,41 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
     }
 
     /*---------------------when returning from |ActivityAddEditLesson| do something--------------------------*/
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
-            val lday = data!!.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
+            val data = result.data!!
+            val lday = data.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
             val lslid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SLID, -1)
             val lsid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SID, -1)
 
             val lesson = Lesson(lday, lslid, lsid, activeYearID)
 
-            /*---------------------If the Request was a ADD subject request--------------------------*/
-            if (requestCode == ADD_LESSON_REQUEST) {
-
-                if (lslid == -1 || lsid == -1 || activeYearID == -1) {
-                    val snackbar = Snackbar
-                            .make(clLesson, "Failed to add Lesson", Snackbar.LENGTH_LONG)
-                    snackbar.show()
-                    return
-                }
-
-
-                lessonViewModel.insert(lesson)
-
-
-                /*---------------------If the Request was a EDIT teacher request--------------------------*/
-            } else if (requestCode == EDIT_LESSON_REQUEST) {
+            /*---------------------If the Request was a EDIT lesson request--------------------------*/
+            if (data.hasExtra(ActivityAddEditLesson.EXTRA_LID)) {
                 val id = data.getIntExtra(ActivityAddEditLesson.EXTRA_LID, -1)
 
                 if (lslid == -1 || lsid == -1 || activeYearID == -1 || id == -1) {
                     val snackbar = Snackbar
                             .make(clLesson, "Failed to update Lesson!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
 
                 lesson.lid = id
                 lessonViewModel.update(lesson)
 
 
+            } else {
+                /*---------------------Else the request was a ADD lesson request--------------------------*/
+                if (lslid == -1 || lsid == -1 || activeYearID == -1) {
+                    val snackbar = Snackbar
+                            .make(clLesson, "Failed to add Lesson", Snackbar.LENGTH_LONG)
+                    snackbar.show()
+                    return@registerForActivityResult
+                }
+                lessonViewModel.insert(lesson)
             }
         }
     }
@@ -218,7 +208,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditLesson.EXTRA_LDAY, lessonSubjectSchoollessonYear.lesson.lday)
         intent.putExtra(ActivityAddEditLesson.EXTRA_L_SLID, lessonSubjectSchoollessonYear.lesson.lslid)
         intent.putExtra(ActivityAddEditLesson.EXTRA_L_SID, lessonSubjectSchoollessonYear.lesson.lsid)
-        startActivityForResult(intent, EDIT_LESSON_REQUEST)
+        openAddEditActivity.launch(intent)
 
     }
 

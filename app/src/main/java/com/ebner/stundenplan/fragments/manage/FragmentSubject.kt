@@ -79,7 +79,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditSubject::class.java)
-            openAddEditSubjectActivity.launch(intent)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -163,7 +163,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
     }
 
     /*---------------------callback from |ActivityAddEditSubject| do something--------------------------*/
-    private val openAddEditSubjectActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
@@ -192,8 +192,8 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
                 subject.sid = id
                 subjectViewModel.update(subject)
 
-                /*---------------------Else the request was a ADD teacher request--------------------------*/
             } else {
+                /*---------------------Else the request was a ADD subject request--------------------------*/
                 if (rid == -1 || tid == -1) {
                     val snackbar = Snackbar
                             .make(clSubject, "Failed to add Subject", Snackbar.LENGTH_LONG)
@@ -217,7 +217,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditSubject.EXTRA_SINACTIVE, subjectTeacherRoom.subject.sinactive)
         intent.putExtra(ActivityAddEditSubject.EXTRA_SNOTE, subjectTeacherRoom.subject.snote)
         intent.putExtra(ActivityAddEditSubject.EXTRA_SCOLOR, subjectTeacherRoom.subject.scolor)
-        openAddEditSubjectActivity.launch(intent)
+        openAddEditActivity.launch(intent)
 
     }
 
