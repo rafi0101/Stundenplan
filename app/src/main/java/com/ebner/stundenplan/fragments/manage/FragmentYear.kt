@@ -1,6 +1,5 @@
 package com.ebner.stundenplan.fragments.manage
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -14,6 +13,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -45,12 +45,6 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
     private lateinit var clYear: CoordinatorLayout
     private lateinit var dropdownYid: AutoCompleteTextView
     private var activeYearID: Int = -1
-
-    companion object {
-        private const val ADD_YEAR_REQUEST = 1
-        private const val EDIT_YEAR_REQUEST = 2
-    }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -92,11 +86,10 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
             }
         })
 
-
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditYear::class.java)
-            startActivityForResult(intent, ADD_YEAR_REQUEST)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -217,35 +210,29 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
     }
 
     /*---------------------when returning from |ActivityAddEditYear| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    @SuppressLint("ResourceAsColor")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK) {
             //Save extras to vars
-            val yname = data!!.getStringExtra(ActivityAddEditYear.EXTRA_YNAME)
+            val data = result.data!!
+            val yname = data.getStringExtra(ActivityAddEditYear.EXTRA_YNAME)!!
             val year = Year(yname)
 
-            /*---------------------If the Request was a ADD year request--------------------------*/
-            if (requestCode == ADD_YEAR_REQUEST) {
-
-                yearViewModel.insert(year)
-
-                /*---------------------If the Request was a EDIT year request--------------------------*/
-            } else if (requestCode == EDIT_YEAR_REQUEST) {
+            /*---------------------If the Request was a edit year request--------------------------*/
+            if (data.hasExtra(ActivityAddEditYear.EXTRA_YID)) {
                 val id = data.getIntExtra(ActivityAddEditYear.EXTRA_YID, -1)
-
                 if (id == -1) {
                     val snackbar = Snackbar
                             .make(clYear, "Failed to update Klasse!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
-
                 year.yid = id
                 yearViewModel.update(year)
 
+                /*---------------------If the Request was a add year request--------------------------*/
+            } else {
+                yearViewModel.insert(year)
             }
         }
     }
@@ -255,7 +242,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
         val intent = Intent(context, ActivityAddEditYear::class.java)
         intent.putExtra(ActivityAddEditYear.EXTRA_YID, year.yid)
         intent.putExtra(ActivityAddEditYear.EXTRA_YNAME, year.yname)
-        startActivityForResult(intent, EDIT_YEAR_REQUEST)
+        openAddEditActivity.launch(intent)
 
     }
 
