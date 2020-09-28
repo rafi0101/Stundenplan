@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -35,12 +36,6 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
 
     private lateinit var roomViewModel: RoomViewModel
     private lateinit var clRoom: CoordinatorLayout
-
-
-    companion object {
-        private const val ADD_ROOM_REQUEST = 1
-        private const val EDIT_ROOM_REQUEST = 2
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -70,15 +65,14 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
         roomViewModel = ViewModelProvider(this).get(RoomViewModel::class.java)
         //Automatic update the recyclerlayout
         roomViewModel.allRoom.observe(viewLifecycleOwner, Observer { rooms ->
-            rooms.let { adapter.submitList(it) }
+            adapter.submitList(rooms)
 
         })
-
 
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditRoom::class.java)
-            startActivityForResult(intent, ADD_ROOM_REQUEST)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -146,34 +140,32 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
     }
 
     /*---------------------when returning from |ActivityAddEditRoom| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
         /*---------------------If the Request was successful--------------------------*/
-        if (resultCode == RESULT_OK) {
-            val rname = data!!.getStringExtra(ActivityAddEditRoom.EXTRA_RNAME)
+        if (result.resultCode == RESULT_OK && result.data != null) {
+            //Save extras to vars
+            val data = result.data!!
+            val rname = data.getStringExtra(ActivityAddEditRoom.EXTRA_RNAME)!!
             val room = Room(rname)
 
             /*---------------------If the Request was a ADD room request--------------------------*/
-            if (requestCode == ADD_ROOM_REQUEST && resultCode == RESULT_OK) {
-
-                roomViewModel.insert(room)
-
-                /*---------------------If the Request was a EDIT room request--------------------------*/
-            } else if (requestCode == EDIT_ROOM_REQUEST && resultCode == RESULT_OK) {
+            if (data.hasExtra(ActivityAddEditRoom.EXTRA_RID)) {
                 val id = data.getIntExtra(ActivityAddEditRoom.EXTRA_RID, -1)
 
                 if (id == -1) {
                     val snackbar = Snackbar
                             .make(clRoom, "Failed to update Room!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
 
                 room.rid = id
                 roomViewModel.update(room)
 
+                /*---------------------If the Request was a EDIT room request--------------------------*/
+            } else {
+                roomViewModel.insert(room)
             }
         }
     }
@@ -183,8 +175,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
         val intent = Intent(context, ActivityAddEditRoom::class.java)
         intent.putExtra(ActivityAddEditRoom.EXTRA_RID, room.rid)
         intent.putExtra(ActivityAddEditRoom.EXTRA_RNAME, room.rname)
-        startActivityForResult(intent, EDIT_ROOM_REQUEST)
-
+        openAddEditActivity.launch(intent)
     }
 
 
