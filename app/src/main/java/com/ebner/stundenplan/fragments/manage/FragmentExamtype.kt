@@ -1,6 +1,5 @@
 package com.ebner.stundenplan.fragments.manage
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,11 +36,6 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
 
     private lateinit var examtypeViewModel: ExamtypeViewModel
     private lateinit var clExamtype: CoordinatorLayout
-
-    companion object {
-        private const val ADD_EXAMTYPE_REQUEST = 1
-        private const val EDIT_EXAMTYPE_REQUEST = 2
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -78,7 +73,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditExamtype::class.java)
-            startActivityForResult(intent, ADD_EXAMTYPE_REQUEST)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -146,35 +141,33 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
     }
 
     /*---------------------when returning from |ActivityAddEditExamtype| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    @SuppressLint("ResourceAsColor")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
         /*---------------------If the Request was successful--------------------------*/
-        if (resultCode == Activity.RESULT_OK) {
-            val etname = data!!.getStringExtra(ActivityAddEditExamtype.EXTRA_ETNAME)
+
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            //Save extras to vars
+            val data = result.data!!
+            val etname = data.getStringExtra(ActivityAddEditExamtype.EXTRA_ETNAME)!!
             val etweight = data.getDoubleExtra(ActivityAddEditExamtype.EXTRA_ETWEIGHT, -1.0)
             val examtype = Examtype(etname, etweight)
 
-            /*---------------------If the Request was a ADD Examtype request--------------------------*/
-            if (requestCode == ADD_EXAMTYPE_REQUEST && resultCode == Activity.RESULT_OK) {
-
-                examtypeViewModel.insert(examtype)
-
-                /*---------------------If the Request was a EDIT Examtype request--------------------------*/
-            } else if (requestCode == EDIT_EXAMTYPE_REQUEST && resultCode == Activity.RESULT_OK) {
+            /*---------------------If the Request was a edit Examtype request--------------------------*/
+            if (data.hasExtra(ActivityAddEditExamtype.EXTRA_ETID)) {
                 val id = data.getIntExtra(ActivityAddEditExamtype.EXTRA_ETID, -1)
 
                 if (id == -1) {
                     val snackbar = Snackbar
                             .make(clExamtype, "Failed to update Examtype!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
-
                 examtype.etid = id
                 examtypeViewModel.update(examtype)
+
+                /*---------------------If the Request was a add Examtype request--------------------------*/
+            } else {
+                examtypeViewModel.insert(examtype)
             }
         }
     }
@@ -186,8 +179,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditExamtype.EXTRA_ETID, examtype.etid)
         intent.putExtra(ActivityAddEditExamtype.EXTRA_ETNAME, examtype.etname)
         intent.putExtra(ActivityAddEditExamtype.EXTRA_ETWEIGHT, examtype.etweight)
-        startActivityForResult(intent, EDIT_EXAMTYPE_REQUEST)
-
+        openAddEditActivity.launch(intent)
     }
 
 
