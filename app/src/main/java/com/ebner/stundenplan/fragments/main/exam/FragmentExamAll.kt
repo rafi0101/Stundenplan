@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -40,7 +41,6 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
      *  0: ShowAllExams
      *  1: ShowExamswithoutGrade
      */
-    private val TAG = "debug_FragmentExamAll"
 
     private lateinit var examViewModel: ExamViewModel
     private lateinit var subjectViewModel: SubjectViewModel
@@ -49,15 +49,9 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
     private lateinit var adapter: ExamListAdapter
     private lateinit var recyclerView: RecyclerView
 
-
     private var activeYearID: Int = -1
     private var selectedSubject: Int = -1 //subject ID
     private var selectedOrder: Int = -1 //0 = Fach, 1 = Prüfungs Art, (2 = Note)
-
-    companion object {
-        private const val ADD_EXAM_REQUEST = 1
-        private const val EDIT_EXAM_REQUEST = 2
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -105,17 +99,17 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
         val dropDownAdapterSortOrder = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, sortOrders)
         dropdownSort.setAdapter(dropDownAdapterSortOrder)
 
-        dropdownSubject.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        dropdownSubject.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
             val selectedSubjectSubject = parent.adapter.getItem(position) as Subject
             selectedSubject = selectedSubjectSubject.sid
 
-            if (selectedSubjectSubject.sname == "Auswählen" && selectedSubjectSubject.scolor == -1 && selectedSubjectSubject.sinactive == true) {
+            if (selectedSubjectSubject.sname == "Auswählen" && selectedSubjectSubject.scolor == -1 && selectedSubjectSubject.sinactive) {
                 selectedSubject = -1
             }
 
             updateRecyclerView()
         }
-        dropdownSort.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        dropdownSort.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
             selectedOrder = position
             if (parent.adapter.getItem(position).toString() == "Auswählen") {
                 selectedOrder = -1
@@ -123,13 +117,11 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
             updateRecyclerView()
         }
 
-
         /*---------------------FAB Add Button--------------------------*/
         fab?.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditExam::class.java)
-            startActivityForResult(intent, ADD_EXAM_REQUEST)
+            openAddEditActivity.launch(intent)
         }
-
 
         //Return the inflated layout
         return root
@@ -171,16 +163,15 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
     }
 
 
-    /*---------------------when returning from |ActivityAddEditSubject| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    /*---------------------when returning from |ActivityAddEditExam| do something--------------------------*/
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        if (activeYearID == -1) return
+        if (activeYearID == -1) return@registerForActivityResult
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
-            val sid = data!!.getIntExtra(ActivityAddEditExam.EXTRA_E_SID, -1)
+            val data = result.data!!
+            val sid = data.getIntExtra(ActivityAddEditExam.EXTRA_E_SID, -1)
             val etid = data.getIntExtra(ActivityAddEditExam.EXTRA_E_ETID, -1)
             val egrade = data.getIntExtra(ActivityAddEditExam.EXTRA_GRADE, -1)
             val edateyear = data.getIntExtra(ActivityAddEditExam.EXTRA_DATEYEAR, -1)
@@ -188,35 +179,28 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
             val edateday = data.getIntExtra(ActivityAddEditExam.EXTRA_DATEDAY, -1)
             val exam = Exam(sid, etid, activeYearID, egrade, edateyear, edatemonth, edateday)
 
-            /*---------------------If the Request was a ADD subject request--------------------------*/
-            if (requestCode == ADD_EXAM_REQUEST) {
-
-                if (sid == -1 || etid == -1) {
-                    val snackbar = Snackbar
-                            .make(clExam, "Failed to add Exam", Snackbar.LENGTH_LONG)
-                    snackbar.show()
-                    return
-                }
-
-
-                examViewModel.insert(exam)
-
-
-                /*---------------------If the Request was a EDIT teacher request--------------------------*/
-            } else if (requestCode == EDIT_EXAM_REQUEST) {
+            /*---------------------If the Request was a edit exam request--------------------------*/
+            if (data.hasExtra(ActivityAddEditExam.EXTRA_EID)) {
                 val id = data.getIntExtra(ActivityAddEditExam.EXTRA_EID, -1)
 
                 if (sid == -1 || etid == -1 || id == -1) {
                     val snackbar = Snackbar
                             .make(clExam, "Failed to update Exam!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
-
                 exam.eid = id
                 examViewModel.update(exam)
 
-
+            } else {
+                /*---------------------If the Request was a add exam request--------------------------*/
+                if (sid == -1 || etid == -1) {
+                    val snackbar = Snackbar
+                            .make(clExam, "Failed to add Exam", Snackbar.LENGTH_LONG)
+                    snackbar.show()
+                    return@registerForActivityResult
+                }
+                examViewModel.insert(exam)
             }
         }
     }
@@ -232,13 +216,12 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
         intent.putExtra(ActivityAddEditExam.EXTRA_DATEYEAR, examSubjectYearExamtype.exam.edateyear)
         intent.putExtra(ActivityAddEditExam.EXTRA_DATEMONTH, examSubjectYearExamtype.exam.edatemonth)
         intent.putExtra(ActivityAddEditExam.EXTRA_DATEDAY, examSubjectYearExamtype.exam.edateday)
-        startActivityForResult(intent, EDIT_EXAM_REQUEST)
+        openAddEditActivity.launch(intent)
 
     }
 
     override fun onItemLongClicked(examSubjectYearExamtype: ExamSubjectYearExamtype) {
         /*---------------------Confirm Delete Dialog--------------------------*/
-
         val exam = Exam(examSubjectYearExamtype.exam.esid, examSubjectYearExamtype.exam.eetid, examSubjectYearExamtype.exam.eyid, examSubjectYearExamtype.exam.egrade, examSubjectYearExamtype.exam.edateyear, examSubjectYearExamtype.exam.edatemonth, examSubjectYearExamtype.exam.edateday)
         exam.eid = examSubjectYearExamtype.exam.eid
 
