@@ -1,6 +1,5 @@
 package com.ebner.stundenplan.fragments.manage
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -35,11 +35,6 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
 
     private lateinit var teacherViewModel: TeacherViewModel
     private lateinit var clTeacher: CoordinatorLayout
-
-    companion object {
-        private const val ADD_TEACHER_REQUEST = 1
-        private const val EDIT_TEACHER_REQUEST = 2
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -77,7 +72,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditTeacher::class.java)
-            startActivityForResult(intent, ADD_TEACHER_REQUEST)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -145,35 +140,32 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
     }
 
     /*---------------------when returning from |ActivityAddEditTeacher| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    @SuppressLint("ResourceAsColor")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
         /*---------------------If the Request was successful--------------------------*/
-        if (resultCode == Activity.RESULT_OK) {
-            val tname = data!!.getStringExtra(ActivityAddEditTeacher.EXTRA_TNAME)
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            //Save extras to vars
+            val data = result.data!!
+            val tname = data.getStringExtra(ActivityAddEditTeacher.EXTRA_TNAME)!!
             val tgender = data.getIntExtra(ActivityAddEditTeacher.EXTRA_TGENDER, -1)
             val teacher = Teacher(tname, tgender)
 
-            /*---------------------If the Request was a ADD teacher request--------------------------*/
-            if (requestCode == ADD_TEACHER_REQUEST && resultCode == Activity.RESULT_OK) {
-
-                teacherViewModel.insert(teacher)
-
-                /*---------------------If the Request was a EDIT teacher request--------------------------*/
-            } else if (requestCode == EDIT_TEACHER_REQUEST && resultCode == Activity.RESULT_OK) {
+            /*---------------------If the Request was a EDIT teacher request--------------------------*/
+            if (data.hasExtra(ActivityAddEditTeacher.EXTRA_TID)) {
                 val id = data.getIntExtra(ActivityAddEditTeacher.EXTRA_TID, -1)
-
                 if (id == -1) {
                     val snackbar = Snackbar
                             .make(clTeacher, "Failed to update Teacher!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
 
                 teacher.tid = id
                 teacherViewModel.update(teacher)
+
+                /*---------------------If the Request was a ADD teacher request--------------------------*/
+            } else {
+                teacherViewModel.insert(teacher)
             }
         }
     }
@@ -184,7 +176,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
         intent.putExtra(ActivityAddEditTeacher.EXTRA_TID, teacher.tid)
         intent.putExtra(ActivityAddEditTeacher.EXTRA_TNAME, teacher.tname)
         intent.putExtra(ActivityAddEditTeacher.EXTRA_TGENDER, teacher.tgender)
-        startActivityForResult(intent, EDIT_TEACHER_REQUEST)
+        openAddEditActivity.launch(intent)
     }
 
 
