@@ -8,10 +8,13 @@ import android.graphics.Canvas
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -47,14 +50,11 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var dropdownFinished: AutoCompleteTextView
 
-
     private var activeYearID: Int = -1
     private var selectedSubject: Int = -1
     private var selectedFinished: Int = -1
 
     companion object {
-        private const val ADD_TASK_REQUEST = 1
-        private const val EDIT_TASK_REQUEST = 2
         const val TASK_DEFAULT_SORT_ORDER = "taskdefaultsortorderint"
     }
 
@@ -78,7 +78,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
 
         /*---------------------Link items to Layout--------------------------*/
         clTask = root.findViewById(R.id.cl_task)
-        recyclerView = root.findViewById<RecyclerView>(R.id.rv_task)
+        recyclerView = root.findViewById(R.id.rv_task)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_task_addTask)
         val dropdownSubject: AutoCompleteTextView = root.findViewById(R.id.actv_dropdown_subject)
         dropdownFinished = root.findViewById(R.id.actv_dropdown_finished)
@@ -107,7 +107,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         dropdownFinished.setAdapter(dropDownAdapterFinished)
 
 
-        dropdownSubject.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        dropdownSubject.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
             val selectedSubjectSubject = parent.adapter.getItem(position) as Subject
             selectedSubject = selectedSubjectSubject.sid
 
@@ -117,7 +117,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
 
             updateRecyclerView()
         }
-        dropdownFinished.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        dropdownFinished.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
             selectedFinished = position
             if (parent.adapter.getItem(position).toString() == "Alle") {
                 selectedFinished = -1
@@ -127,8 +127,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
 
 
         //Set predefined sort order
-        val selectedDefaultOrderMenuId = sharedPreferences.getInt(TASK_DEFAULT_SORT_ORDER, -1)
-        when (selectedDefaultOrderMenuId) {
+        when (sharedPreferences.getInt(TASK_DEFAULT_SORT_ORDER, -1)) {
             R.id.tasks_finished_all -> {
                 selectedFinished = -1
                 dropdownFinished.setText(dropDownAdapterFinished.getItem(0).toString(), false)
@@ -155,7 +154,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditTask::class.java)
-            startActivityForResult(intent, ADD_TASK_REQUEST)
+            openAddEditActivity.launch(intent)
         }
 
         /*---------------------Swiping on a row--------------------------*/
@@ -260,14 +259,13 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
 
 
     /*---------------------when returning from |ActivityAddEditSubject| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
-            val tkname: String = data!!.getStringExtra(ActivityAddEditTask.EXTRA_TKNAME)
-            val tknote = data.getStringExtra(ActivityAddEditTask.EXTRA_TKNOTE)
+            val data = result.data!!
+            val tkname: String = data.getStringExtra(ActivityAddEditTask.EXTRA_TKNAME)!!
+            val tknote = data.getStringExtra(ActivityAddEditTask.EXTRA_TKNOTE)!!
             val tkdateday = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEDAY, -1)
             val tkdatemonth = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEMONTH, -1)
             val tkdateyear = data.getIntExtra(ActivityAddEditTask.EXTRA_TKDATEYEAR, -1)
@@ -276,35 +274,28 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
 
             val task = Task(tkname, tknote, tkdateday, tkdatemonth, tkdateyear, tkfinished, tklid, activeYearID)
 
-            /*---------------------If the Request was a ADD subject request--------------------------*/
-            if (requestCode == ADD_TASK_REQUEST) {
-
-                if (tklid == -1) {
-                    val snackbar = Snackbar
-                            .make(clTask, "Failed to add Task", Snackbar.LENGTH_LONG)
-                    snackbar.show()
-                    return
-                }
-
-
-                taskViewModel.insert(task)
-
-
-                /*---------------------If the Request was a EDIT teacher request--------------------------*/
-            } else if (requestCode == EDIT_TASK_REQUEST) {
+            /*---------------------If the Request was a edit task request--------------------------*/
+            if (data.hasExtra(ActivityAddEditTask.EXTRA_TKID)) {
                 val id = data.getIntExtra(ActivityAddEditTask.EXTRA_TKID, -1)
 
                 if (tklid == -1 || id == -1) {
                     val snackbar = Snackbar
                             .make(clTask, "Failed to update Task!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
-
                 task.tkid = id
                 taskViewModel.update(task)
 
-
+            } else {
+                /*---------------------If the Request was a add task request--------------------------*/
+                if (tklid == -1) {
+                    val snackbar = Snackbar
+                            .make(clTask, "Failed to add Task", Snackbar.LENGTH_LONG)
+                    snackbar.show()
+                    return@registerForActivityResult
+                }
+                taskViewModel.insert(task)
             }
         }
     }
@@ -320,8 +311,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         intent.putExtra(ActivityAddEditTask.EXTRA_TKDATEYEAR, taskLesson.task.tkdateyear)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKFINISHED, taskLesson.task.tkfinished)
         intent.putExtra(ActivityAddEditTask.EXTRA_TKLID, taskLesson.task.tklid)
-        startActivityForResult(intent, EDIT_TASK_REQUEST)
-
+        openAddEditActivity.launch(intent)
     }
 
     /*---------------------Change finished state for Task--------------------------*/
@@ -364,9 +354,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         val editor = sharedPreferences.edit()
         editor.putInt(TASK_DEFAULT_SORT_ORDER, id)
         editor.apply()
-        
     }
-
 
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
