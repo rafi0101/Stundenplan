@@ -177,7 +177,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
             val tid = data.getIntExtra(ActivityAddEditSubject.EXTRA_S_TID, -1)
             val subject = Subject(sname, snameshort, scolor, snote, sinactive, tid, rid)
 
-            /*---------------------If the request was a EDIT subject request--------------------------*/
+            /*---------------------if the request was a edit subject request--------------------------*/
             if (data.hasExtra(ActivityAddEditSubject.EXTRA_SID)) {
 
                 val id = data.getIntExtra(ActivityAddEditSubject.EXTRA_SID, -1)
@@ -193,7 +193,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
                 subjectViewModel.update(subject)
 
             } else {
-                /*---------------------Else the request was a ADD subject request--------------------------*/
+                /*---------------------Else the request was a add subject request--------------------------*/
                 if (rid == -1 || tid == -1) {
                     val snackbar = Snackbar
                             .make(clSubject, "Failed to add Subject", Snackbar.LENGTH_LONG)

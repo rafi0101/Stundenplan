@@ -277,7 +277,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
 
             val lesson = Lesson(lday, lslid, lsid, activeYearID)
 
-            /*---------------------If the Request was a EDIT lesson request--------------------------*/
+            /*---------------------if the request was a edit lesson request--------------------------*/
             if (data.hasExtra(ActivityAddEditLesson.EXTRA_LID)) {
                 val id = data.getIntExtra(ActivityAddEditLesson.EXTRA_LID, -1)
 
@@ -293,7 +293,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
 
 
             } else {
-                /*---------------------Else the request was a ADD lesson request--------------------------*/
+                /*---------------------else the request was a ADD lesson request--------------------------*/
                 if (lslid == -1 || lsid == -1 || activeYearID == -1) {
                     val snackbar = Snackbar
                             .make(clTimetable, "Failed to add Lesson", Snackbar.LENGTH_LONG)

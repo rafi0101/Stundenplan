@@ -152,7 +152,7 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
 
             val schoolLesson = SchoolLesson(slnumber, slstarthour, slstartminute, slendhour, slendminute)
 
-            /*---------------------If the request was a edit SchoolLesson request--------------------------*/
+            /*---------------------if the request was a edit schoollesson request--------------------------*/
             if (data.hasExtra(ActivityAddEditSchoolLesson.EXTRA_SLID)) {
                 val id = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLID, -1)
 
@@ -166,7 +166,7 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
                 schoolLesson.slid = id
                 schoolLessonViewModel.update(schoolLesson)
 
-                /*---------------------If the request was a add SchoolLesson request--------------------------*/
+                /*---------------------else the request was a add schoollesson request--------------------------*/
             } else {
                 schoolLessonViewModel.insert(schoolLesson)
             }

@@ -143,7 +143,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
     /*---------------------when returning from |ActivityAddEditExamtype| do something--------------------------*/
     private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        /*---------------------If the Request was successful--------------------------*/
+        /*---------------------If the request was successful--------------------------*/
 
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
@@ -152,7 +152,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
             val etweight = data.getDoubleExtra(ActivityAddEditExamtype.EXTRA_ETWEIGHT, -1.0)
             val examtype = Examtype(etname, etweight)
 
-            /*---------------------If the Request was a edit Examtype request--------------------------*/
+            /*---------------------if the request was a edit examtype request--------------------------*/
             if (data.hasExtra(ActivityAddEditExamtype.EXTRA_ETID)) {
                 val id = data.getIntExtra(ActivityAddEditExamtype.EXTRA_ETID, -1)
 
@@ -165,7 +165,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
                 examtype.etid = id
                 examtypeViewModel.update(examtype)
 
-                /*---------------------If the Request was a add Examtype request--------------------------*/
+                /*---------------------else the request was a add examtype request--------------------------*/
             } else {
                 examtypeViewModel.insert(examtype)
             }

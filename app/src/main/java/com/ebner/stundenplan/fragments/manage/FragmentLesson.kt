@@ -173,7 +173,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
 
             val lesson = Lesson(lday, lslid, lsid, activeYearID)
 
-            /*---------------------If the Request was a EDIT lesson request--------------------------*/
+            /*---------------------if the request was a edit lesson request--------------------------*/
             if (data.hasExtra(ActivityAddEditLesson.EXTRA_LID)) {
                 val id = data.getIntExtra(ActivityAddEditLesson.EXTRA_LID, -1)
 
@@ -189,7 +189,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
 
 
             } else {
-                /*---------------------Else the request was a ADD lesson request--------------------------*/
+                /*---------------------else the request was a add lesson request--------------------------*/
                 if (lslid == -1 || lsid == -1 || activeYearID == -1) {
                     val snackbar = Snackbar
                             .make(clLesson, "Failed to add Lesson", Snackbar.LENGTH_LONG)

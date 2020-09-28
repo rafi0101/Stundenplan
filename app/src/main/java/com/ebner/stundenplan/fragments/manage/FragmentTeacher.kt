@@ -142,7 +142,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
     /*---------------------when returning from |ActivityAddEditTeacher| do something--------------------------*/
     private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        /*---------------------If the Request was successful--------------------------*/
+        /*---------------------If the request was successful--------------------------*/
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
             val data = result.data!!
@@ -150,7 +150,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
             val tgender = data.getIntExtra(ActivityAddEditTeacher.EXTRA_TGENDER, -1)
             val teacher = Teacher(tname, tgender)
 
-            /*---------------------If the Request was a EDIT teacher request--------------------------*/
+            /*---------------------if the request was a edit teacher request--------------------------*/
             if (data.hasExtra(ActivityAddEditTeacher.EXTRA_TID)) {
                 val id = data.getIntExtra(ActivityAddEditTeacher.EXTRA_TID, -1)
                 if (id == -1) {
@@ -163,7 +163,7 @@ class FragmentTeacher : Fragment(), TeacherListAdapter.OnItemClickListener {
                 teacher.tid = id
                 teacherViewModel.update(teacher)
 
-                /*---------------------If the Request was a ADD teacher request--------------------------*/
+                /*---------------------else the request was a add teacher request--------------------------*/
             } else {
                 teacherViewModel.insert(teacher)
             }

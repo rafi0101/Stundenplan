@@ -274,7 +274,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
 
             val task = Task(tkname, tknote, tkdateday, tkdatemonth, tkdateyear, tkfinished, tklid, activeYearID)
 
-            /*---------------------If the Request was a edit task request--------------------------*/
+            /*---------------------if the request was a edit task request--------------------------*/
             if (data.hasExtra(ActivityAddEditTask.EXTRA_TKID)) {
                 val id = data.getIntExtra(ActivityAddEditTask.EXTRA_TKID, -1)
 
@@ -288,7 +288,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
                 taskViewModel.update(task)
 
             } else {
-                /*---------------------If the Request was a add task request--------------------------*/
+                /*---------------------else the request was a add task request--------------------------*/
                 if (tklid == -1) {
                     val snackbar = Snackbar
                             .make(clTask, "Failed to add Task", Snackbar.LENGTH_LONG)

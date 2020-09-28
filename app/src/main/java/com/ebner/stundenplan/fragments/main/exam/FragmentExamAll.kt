@@ -179,7 +179,7 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
             val edateday = data.getIntExtra(ActivityAddEditExam.EXTRA_DATEDAY, -1)
             val exam = Exam(sid, etid, activeYearID, egrade, edateyear, edatemonth, edateday)
 
-            /*---------------------If the Request was a edit exam request--------------------------*/
+            /*---------------------if the request was a edit exam request--------------------------*/
             if (data.hasExtra(ActivityAddEditExam.EXTRA_EID)) {
                 val id = data.getIntExtra(ActivityAddEditExam.EXTRA_EID, -1)
 
@@ -193,7 +193,7 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
                 examViewModel.update(exam)
 
             } else {
-                /*---------------------If the Request was a add exam request--------------------------*/
+                /*---------------------else the request was a add exam request--------------------------*/
                 if (sid == -1 || etid == -1) {
                     val snackbar = Snackbar
                             .make(clExam, "Failed to add Exam", Snackbar.LENGTH_LONG)

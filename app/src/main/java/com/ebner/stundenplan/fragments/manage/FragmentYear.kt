@@ -212,13 +212,13 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
     /*---------------------when returning from |ActivityAddEditYear| do something--------------------------*/
     private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK  && result.data != null) {
             //Save extras to vars
             val data = result.data!!
             val yname = data.getStringExtra(ActivityAddEditYear.EXTRA_YNAME)!!
             val year = Year(yname)
 
-            /*---------------------If the Request was a edit year request--------------------------*/
+            /*---------------------if the request was a edit year request--------------------------*/
             if (data.hasExtra(ActivityAddEditYear.EXTRA_YID)) {
                 val id = data.getIntExtra(ActivityAddEditYear.EXTRA_YID, -1)
                 if (id == -1) {
@@ -230,7 +230,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
                 year.yid = id
                 yearViewModel.update(year)
 
-                /*---------------------If the Request was a add year request--------------------------*/
+                /*---------------------else the request was a add year request--------------------------*/
             } else {
                 yearViewModel.insert(year)
             }
