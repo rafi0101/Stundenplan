@@ -1,6 +1,5 @@
 package com.ebner.stundenplan.fragments.manage
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -34,14 +34,8 @@ import kotlin.math.roundToInt
  */
 class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickListener {
 
-
     private lateinit var schoolLessonViewModel: SchoolLessonViewModel
     private lateinit var clSchoollesson: CoordinatorLayout
-
-    companion object {
-        private const val ADD_SCHOOLLESSON_REQUEST = 1
-        private const val EDIT_SCHOOLLESSON_REQUEST = 2
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -49,7 +43,6 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
         val root = inflater.inflate(R.layout.fragment_school_lesson, container, false)
 
         activity?.title = getString(R.string.fragment_schoollessons)
-
 
         /*---------------------Set correct layout margin to main FrameLaout--------------------------*/
         val all: Int = convertDpToPixel(16F, root.context).roundToInt()
@@ -78,9 +71,10 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
         /*---------------------FAB Add Button--------------------------*/
         fab.setOnClickListener {
             val intent = Intent(root.context, ActivityAddEditSchoolLesson::class.java)
-            startActivityForResult(intent, ADD_SCHOOLLESSON_REQUEST)
+            openAddEditActivity.launch(intent)
         }
-/*---------------------Swiping on a row--------------------------*/
+
+        /*---------------------Swiping on a row--------------------------*/
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
@@ -144,38 +138,37 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
     }
 
     /*---------------------when returning from |ActivityAddEditSchoolLesson| do something--------------------------*/
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    @SuppressLint("ResourceAsColor")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private val openAddEditActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
-        /*---------------------If the Request was successful--------------------------*/
-        if (resultCode == Activity.RESULT_OK) {
-            val slnumber = data!!.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLNUMBER, -1)
+        /*---------------------If the request was successful--------------------------*/
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            //Save extras to vars
+            val data = result.data!!
+            val slnumber = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLNUMBER, -1)
             val slstarthour = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLSTARTHOUR, -1)
             val slstartminute = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLSTARTMINUTE, -1)
             val slendhour = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLENDHOUR, -1)
             val slendminute = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLENDMINUTE, -1)
+
             val schoolLesson = SchoolLesson(slnumber, slstarthour, slstartminute, slendhour, slendminute)
 
-            /*---------------------If the Request was a ADD SchoolLesson request--------------------------*/
-            if (requestCode == ADD_SCHOOLLESSON_REQUEST && resultCode == Activity.RESULT_OK) {
-
-                schoolLessonViewModel.insert(schoolLesson)
-
-                /*---------------------If the Request was a EDIT SchoolLesson request--------------------------*/
-            } else if (requestCode == EDIT_SCHOOLLESSON_REQUEST && resultCode == Activity.RESULT_OK) {
+            /*---------------------If the request was a edit SchoolLesson request--------------------------*/
+            if (data.hasExtra(ActivityAddEditSchoolLesson.EXTRA_SLID)) {
                 val id = data.getIntExtra(ActivityAddEditSchoolLesson.EXTRA_SLID, -1)
 
                 if (id == -1) {
                     val snackbar = Snackbar
                             .make(clSchoollesson, "Failed to update SchoolLesson!", Snackbar.LENGTH_LONG)
                     snackbar.show()
-                    return
+                    return@registerForActivityResult
                 }
 
                 schoolLesson.slid = id
                 schoolLessonViewModel.update(schoolLesson)
+
+                /*---------------------If the request was a add SchoolLesson request--------------------------*/
+            } else {
+                schoolLessonViewModel.insert(schoolLesson)
             }
         }
     }
@@ -189,7 +182,7 @@ class FragmentSchoolLesson : Fragment(), SchoolLessonListAdapter.OnItemClickList
         intent.putExtra(ActivityAddEditSchoolLesson.EXTRA_SLSTARTMINUTE, schoolLesson.slstartminute)
         intent.putExtra(ActivityAddEditSchoolLesson.EXTRA_SLENDHOUR, schoolLesson.slendhour)
         intent.putExtra(ActivityAddEditSchoolLesson.EXTRA_SLENDMINUTE, schoolLesson.slendminute)
-        startActivityForResult(intent, EDIT_SCHOOLLESSON_REQUEST)
+        openAddEditActivity.launch(intent)
     }
 
 
