@@ -12,7 +12,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ebner.roomdatabasebackup.core.RoomBackup
 import com.ebner.stundenplan.database.main.StundenplanDatabase
@@ -88,7 +87,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         /*---------------------Create the Database, if not already exist--------------------------*/
         val subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
-        subjectViewModel.allSubject.observe(this, Observer {
+        subjectViewModel.allSubject.observe(this, {
             //Nothing to do here, because just for initializing
         })
 

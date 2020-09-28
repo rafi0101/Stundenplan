@@ -4,8 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardBackgroundColor="@color/grey_200"
-    android:layout_margin="1dp"
-    android:id="@+id/cd_subjectexams_exams">
+    android:layout_margin="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"

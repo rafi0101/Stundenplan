@@ -27,7 +27,7 @@ data class LessonEvent(
                 .build()
 
         // Build the WeekViewEvent via the Builder
-        return WeekViewEvent.Builder<LessonEvent>(this)
+        return WeekViewEvent.Builder(this)
                 .setId(id)
                 .setTitle(title)
                 .setStartTime(startTime)

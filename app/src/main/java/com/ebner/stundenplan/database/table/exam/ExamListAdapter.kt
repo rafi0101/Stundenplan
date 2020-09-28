@@ -32,9 +32,9 @@ class ExamListAdapter(private val itemClickListener: OnItemClickListener, privat
     }
 
     /*---------------------Transform Exam infos to position number--------------------------*/
-    fun getExamAt(position: Int): ExamSubjectYearExamtype? {
+/*    fun getExamAt(position: Int): ExamSubjectYearExamtype? {
         return getItem(position)
-    }
+    }*/
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/

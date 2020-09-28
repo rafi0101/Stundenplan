@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -65,7 +64,7 @@ class FragmentExamtype : Fragment(), ExamtypeListAdapter.OnItemClickListener {
 
         examtypeViewModel = ViewModelProvider(this).get(ExamtypeViewModel::class.java)
         //Automatic update the recyclerlayout
-        examtypeViewModel.allExamtype.observe(viewLifecycleOwner, Observer { examtypes ->
+        examtypeViewModel.allExamtype.observe(viewLifecycleOwner, { examtypes ->
             examtypes.let { adapter.submitList(it) }
         })
 

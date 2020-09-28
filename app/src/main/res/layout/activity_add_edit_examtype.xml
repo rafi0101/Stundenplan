@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:padding="16dp"
     android:weightSum="10"
-    tools:context=".fragments.manage.ActivityAddEditExamtype">
+    tools:context=".fragments.manage.ActivityAddEditExamtype"
+    android:baselineAligned="false">
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -15,6 +15,8 @@
         app:errorEnabled="true"
         android:layout_weight="4"
         android:paddingEnd="8dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -31,6 +33,8 @@
         app:errorEnabled="true"
         android:layout_weight="6"
         android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

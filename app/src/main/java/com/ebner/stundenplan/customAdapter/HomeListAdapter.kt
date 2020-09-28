@@ -33,9 +33,9 @@ class HomeListAdapter(private val itemClickListener: OnItemClickListener) : List
     }
 
     /*---------------------Transform HomeField infos to position number--------------------------*/
-    fun getHomeFieldAt(position: Int): HomeField? {
+/*    fun getHomeFieldAt(position: Int): HomeField? {
         return getItem(position)
-    }
+    }*/
 
 
     /*---------------------Creates an onClickListener (when you press on a item, you get the ID, and can do what ever you want--------------------------*/

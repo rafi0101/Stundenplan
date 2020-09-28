@@ -21,6 +21,4 @@ interface SubjectDao : BaseDao<Subject> {
     @Query("SELECT * FROM subject WHERE sinactive = 0 ORDER BY sname ASC")
     suspend fun getAllSubjectList(): List<Subject>
 
-    @Query("SELECT * FROM subject WHERE sid=:sid")
-    suspend fun getSubjectByID(sid: Int): Subject
 }

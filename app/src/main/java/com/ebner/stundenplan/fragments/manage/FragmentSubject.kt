@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -72,7 +71,7 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
 
         subjectViewModel = ViewModelProvider(this).get(SubjectViewModel::class.java)
         //Automatic update the recyclerlayout
-        subjectViewModel.allSubject.observe(viewLifecycleOwner, Observer { subjects ->
+        subjectViewModel.allSubject.observe(viewLifecycleOwner, { subjects ->
             subjects.let { adapter.submitList(it) }
         })
 
@@ -168,10 +167,10 @@ class FragmentSubject : Fragment(), SubjectListAdapter.OnItemClickListener {
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             //Save extras to vars
             val data = result.data!!
-            val sname = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNAME)
-            val snameshort = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNAMESHORT)
+            val sname = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNAME)!!
+            val snameshort = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNAMESHORT)!!
             val scolor = data.getIntExtra(ActivityAddEditSubject.EXTRA_SCOLOR, 0)
-            val snote = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNOTE)
+            val snote = data.getStringExtra(ActivityAddEditSubject.EXTRA_SNOTE)!!
             val sinactive = data.getBooleanExtra(ActivityAddEditSubject.EXTRA_SINACTIVE, false)
             val rid = data.getIntExtra(ActivityAddEditSubject.EXTRA_S_RID, -1)
             val tid = data.getIntExtra(ActivityAddEditSubject.EXTRA_S_TID, -1)

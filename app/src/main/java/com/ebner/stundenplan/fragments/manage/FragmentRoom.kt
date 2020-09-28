@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,7 +63,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
 
         roomViewModel = ViewModelProvider(this).get(RoomViewModel::class.java)
         //Automatic update the recyclerlayout
-        roomViewModel.allRoom.observe(viewLifecycleOwner, Observer { rooms ->
+        roomViewModel.allRoom.observe(viewLifecycleOwner, { rooms ->
             adapter.submitList(rooms)
 
         })

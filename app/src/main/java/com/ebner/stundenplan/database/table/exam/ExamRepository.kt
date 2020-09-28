@@ -39,10 +39,8 @@ class ExamRepository(
                 else -> examDao.getAllExamBySubject(yid, sid)
             }
 
-
-    fun getPendingExams(yid: Int): LiveData<List<ExamSubjectYearExamtype>> = examDao.getPendingExams(yid)
     fun getSubjectExams(yid: Int, sid: Int): LiveData<List<ExamSubjectYearExamtype>> = examDao.getSubjectExams(yid, sid)
 
     suspend fun getSubjectExamsSuspend(yid: Int, sid: Int): List<ExamSubjectYearExamtype> = examDao.getSubjectExamsSuspend(yid, sid)
-    suspend fun getAllExamSuspend(yid: Int): List<ExamSubjectYearExamtype> = examDao.getAllExamSuspend(yid)
+    fun getAllExamSuspend(yid: Int): List<ExamSubjectYearExamtype> = examDao.getAllExamSuspend(yid)
 }

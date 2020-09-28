@@ -8,7 +8,6 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -75,14 +74,14 @@ class SubjectExamsActivity : AppCompatActivity() {
             //Automatic update the recyclerlayout
 
             //Get current activeYearID
-            settingsViewModel.allSettings.observe(this, Observer { setting ->
+            settingsViewModel.allSettings.observe(this, { setting ->
                 activeYearID = setting.settings.setyid
 
-                tasksViewModel.subjectTasks(activeYearID, sid).observe(this, Observer {
+                tasksViewModel.subjectTasks(activeYearID, sid).observe(this, {
                     tasksListAdapter.submitList(it)
                 })
 
-                examViewModel.subjectExams(activeYearID, sid).observe(this, Observer {
+                examViewModel.subjectExams(activeYearID, sid).observe(this, {
                     examsListAdapter.submitList(it)
                 })
 

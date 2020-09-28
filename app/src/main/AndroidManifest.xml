@@ -8,8 +8,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_stundenplan2_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".fragments.main.ActivityAddEditTask"></activity>
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -33,12 +33,11 @@
         <activity android:name=".fragments.manage.ActivityAddEditSchoolLesson" />
         <activity android:name=".fragments.main.ActivityAddEditExam" />
         <activity android:name=".fragments.manage.ActivityAddEditLesson" />
+        <activity android:name=".fragments.main.ActivityAddEditTask" />
         <activity android:name=".SubjectExamsActivity" />
         <activity
             android:name=".fragments.settings.SettingsActivity"
             android:label="SettingsActivity" />
     </application>
-
-    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>

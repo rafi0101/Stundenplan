@@ -18,5 +18,4 @@ class ExamtypeRepository(
     val getAllExamtype: LiveData<List<Examtype>> = examtypeDao.getAllExamtype()
 
     suspend fun getAllExamtypeList(): List<Examtype> = examtypeDao.getAllExamtypeList()
-    suspend fun getExamtypeByID(etid: Int): Examtype = examtypeDao.getExamtypeByID(etid)
 }

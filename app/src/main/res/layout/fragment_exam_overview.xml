@@ -11,7 +11,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,7 +41,8 @@
                     android:layout_weight="1"
                     android:layout_gravity="end"
                     android:text="Arithmetisch:"
-                    style="@style/TextAppearance.MaterialComponents.Body2" />
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    tools:ignore="NestedWeights" />
 
                 <TextView
                     android:id="@+id/tv_examoverview_grade_weighted"

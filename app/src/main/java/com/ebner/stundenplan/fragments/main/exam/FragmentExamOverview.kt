@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -58,7 +57,7 @@ class FragmentExamOverview : Fragment(), ExamOverviewListAdapter.OnItemClickList
         //Automatic update the recyclerlayout
 
         //Get current activeYearID
-        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+        settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
             activeYearID = setting.settings.setyid
 
             fetchAndSupplySubjectsWithGrades()

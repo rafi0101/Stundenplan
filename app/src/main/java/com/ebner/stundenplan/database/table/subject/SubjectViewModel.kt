@@ -45,7 +45,4 @@ class SubjectViewModel(application: Application) : AndroidViewModel(application)
         return subjectRepository.getAllSubjectList()
     }
 
-    suspend fun subjectByID(sid: Int): Subject = subjectRepository.getSubjectByID(sid)
-
-
 }

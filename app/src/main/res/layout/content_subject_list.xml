@@ -37,7 +37,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/tv_subject_teacher"
                 android:text="Subject_Room"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
 
@@ -47,7 +46,6 @@
             android:id="@+id/tv_subject_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/tv_subject_room"
             android:text="Subject_note" />
 
     </LinearLayout>

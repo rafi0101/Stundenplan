@@ -16,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -144,7 +143,7 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
         updateRecyclerView()
 
         //Get current activeYearID
-        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+        settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
             activeYearID = setting.settings.setyid
 
             updateRecyclerView()
@@ -231,24 +230,24 @@ class FragmentTask : Fragment(), TaskListAdapter.OnItemClickListener, TaskListAd
     private fun updateRecyclerView() {
 
         if (selectedSubject == -1 && selectedFinished == -1) {
-            taskViewModel.allTask(activeYearID).observe(viewLifecycleOwner, Observer { tasks ->
+            taskViewModel.allTask(activeYearID).observe(viewLifecycleOwner, { tasks ->
                 adapter.submitList(tasks)
             })
         } else if (selectedSubject != -1 && selectedFinished == -1) {
-            taskViewModel.allTaskBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, Observer { tasks ->
+            taskViewModel.allTaskBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, { tasks ->
                 adapter.submitList(tasks)
             })
         } else if (selectedSubject == -1 && selectedFinished != -1) {
             //If selectedFinished == 1, then true, else (if == 2) = false
             val calculatedFinished = selectedFinished == 1
-            taskViewModel.allTaskByFinished(activeYearID, calculatedFinished).observe(viewLifecycleOwner, Observer { tasks ->
+            taskViewModel.allTaskByFinished(activeYearID, calculatedFinished).observe(viewLifecycleOwner, { tasks ->
                 adapter.submitList(tasks)
             })
 
         } else if (selectedSubject != -1 && selectedFinished != -1) {
             //If selectedFinished == 1, then true, else (if == 2) = false
             val calculatedFinished = selectedFinished == 1
-            taskViewModel.allTaskBySubjectFinished(activeYearID, selectedSubject, calculatedFinished).observe(viewLifecycleOwner, Observer { tasks ->
+            taskViewModel.allTaskBySubjectFinished(activeYearID, selectedSubject, calculatedFinished).observe(viewLifecycleOwner, { tasks ->
                 adapter.submitList(tasks)
             })
 

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.ebner.stundenplan.fragments.settings
 
 import android.content.Context
@@ -20,17 +22,12 @@ private const val TITLE_TAG = "settingsActivityTitle"
 private lateinit var sharedPreferences: SharedPreferences
 private lateinit var pbSettings: ProgressBar
 
-private val TAG = "debug_SettingsActivity"
-
 class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
-
 
     companion object {
         const val SHARED_PREFS = "sharedPrefs"
         const val BACKUP_AUTOBACKUP = "backupautobackup"
-
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

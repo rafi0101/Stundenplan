@@ -3,14 +3,16 @@
     <item
         android:title="Standard anzeige:"
         android:enabled="false"/>
-    <group android:id="@+id/group"
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
 
-        <item android:id="@+id/tasks_finished_all"
-            android:title="Alle"/>
-        <item android:id="@+id/tasks_finished_yes"
-            android:title="Ja"/>
-        <item android:id="@+id/tasks_finished_no"
-            android:title="Nein"/>
+        <item
+            android:id="@+id/tasks_finished_all"
+            android:title="Alle" />
+        <item
+            android:id="@+id/tasks_finished_yes"
+            android:title="Ja" />
+        <item
+            android:id="@+id/tasks_finished_no"
+            android:title="Nein" />
     </group>
 </menu>

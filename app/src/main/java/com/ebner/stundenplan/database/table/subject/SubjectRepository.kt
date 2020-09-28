@@ -19,5 +19,4 @@ class SubjectRepository(
     val getAllSubject: LiveData<List<SubjectTeacherRoom>> = subjectDao.getAllSubject()
 
     suspend fun getAllSubjectList(): List<Subject> = subjectDao.getAllSubjectList()
-    suspend fun getSubjectByID(sid: Int): Subject = subjectDao.getSubjectByID(sid)
 }

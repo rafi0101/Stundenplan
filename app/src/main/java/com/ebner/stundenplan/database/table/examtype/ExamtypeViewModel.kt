@@ -42,6 +42,4 @@ class ExamtypeViewModel(application: Application) : AndroidViewModel(application
     suspend fun allExamtypeList(): List<Examtype> {
         return examtypeRepository.getAllExamtypeList()
     }
-
-    suspend fun examtypeByID(etid: Int): Examtype = examtypeRepository.getExamtypeByID(etid)
 }

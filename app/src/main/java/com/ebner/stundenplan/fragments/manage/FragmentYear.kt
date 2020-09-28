@@ -17,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -78,7 +77,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
         recyclerView.layoutManager = LinearLayoutManager(root.context)
 
         //Automatic update the recyclerlayout
-        yearViewModel.allYear.observe(viewLifecycleOwner, Observer { years ->
+        yearViewModel.allYear.observe(viewLifecycleOwner, { years ->
             adapter.submitList(years)
             //This is within observer, because when you update a year, you should have immediately the dropdown menu up to date
             CoroutineScope(Dispatchers.IO).launch {
@@ -183,7 +182,7 @@ class FragmentYear : Fragment(), YearListAdapter.OnItemClickListener {
         withContext(Main) {
 
             //Get current activeYearID
-            settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+            settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
                 activeYearID = setting.settings.setyid
             })
             //Thats probably not the best way to do, but now wait 100ms that the task above has finished

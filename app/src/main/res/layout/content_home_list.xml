@@ -23,7 +23,8 @@
             android:padding="8dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_info"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:contentDescription="" />
 
         <TextView
             android:id="@+id/tv_cardview_title"

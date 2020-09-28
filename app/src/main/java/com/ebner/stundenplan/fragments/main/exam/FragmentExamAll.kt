@@ -12,7 +12,6 @@ import android.widget.AutoCompleteTextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -79,7 +78,7 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
         //Automatic update the recyclerlayout
 
         //Get current activeYearID
-        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+        settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
             activeYearID = setting.settings.setyid
 
             updateRecyclerView()
@@ -132,29 +131,29 @@ class FragmentExamAll(private val fragType: Int) : Fragment(), ExamListAdapter.O
 
         if (fragType == 1) {
             if (selectedSubject == -1) {
-                examViewModel.allExamPending(activeYearID).observe(viewLifecycleOwner, Observer { exams ->
+                examViewModel.allExamPending(activeYearID).observe(viewLifecycleOwner, { exams ->
                     exams.let { adapter.submitList(it) }
                 })
             } else {
-                examViewModel.allExamPendingBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, Observer { exams ->
+                examViewModel.allExamPendingBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, { exams ->
                     exams.let { adapter.submitList(it) }
                 })
             }
         } else {
             if (selectedSubject == -1 && selectedOrder == -1) {
-                examViewModel.allExam(activeYearID).observe(viewLifecycleOwner, Observer { exams ->
+                examViewModel.allExam(activeYearID).observe(viewLifecycleOwner, { exams ->
                     exams.let { adapter.submitList(it) }
                 })
             } else if (selectedSubject != -1 && selectedOrder == -1) {
-                examViewModel.allExamBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, Observer { exams ->
+                examViewModel.allExamBySubject(activeYearID, selectedSubject).observe(viewLifecycleOwner, { exams ->
                     exams.let { adapter.submitList(it) }
                 })
             } else if (selectedSubject == -1 && selectedOrder != -1) {
-                examViewModel.allExamByOrder(activeYearID, selectedOrder).observe(viewLifecycleOwner, Observer { exams ->
+                examViewModel.allExamByOrder(activeYearID, selectedOrder).observe(viewLifecycleOwner, { exams ->
                     exams.let { adapter.submitList(it) }
                 })
             } else if (selectedSubject != -1 && selectedOrder != -1) {
-                examViewModel.allExamBySubjectOrder(activeYearID, selectedSubject, selectedOrder).observe(viewLifecycleOwner, Observer { exams ->
+                examViewModel.allExamBySubjectOrder(activeYearID, selectedSubject, selectedOrder).observe(viewLifecycleOwner, { exams ->
                     exams.let { adapter.submitList(it) }
                 })
             }

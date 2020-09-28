@@ -34,8 +34,4 @@ interface TaskDao : BaseDao<Task> {
     @Query("SELECT * FROM task INNER JOIN lesson ON lesson.lid = task.tk_lid INNER JOIN subject ON subject.sid = lesson.l_sid WHERE tk_yid=:yid AND subject.sid=:sid ORDER BY tkdateyear ASC, tkdatemonth ASC, tkdateday ASC")
     fun getSubjectTasks(yid: Int, sid: Int): LiveData<List<Task>>
 
-
-    @Query("SELECT * FROM task WHERE task.tk_yid=:yid ORDER BY tkname ASC")
-    suspend fun getAllTaskList(yid: Int): List<Task>
-
 }

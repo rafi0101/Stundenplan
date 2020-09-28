@@ -17,7 +17,6 @@ import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.alamkanak.weekview.OnEventClickListener
 import com.alamkanak.weekview.OnEventLongClickListener
@@ -57,7 +56,7 @@ import kotlin.math.roundToInt
  */
 class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEventLongClickListener<LessonEvent> {
 
-    private val weekView: WeekView<LessonEvent> by lazy { requireActivity().findViewById<WeekView<LessonEvent>>(R.id.weekView) }
+    private val weekView: WeekView<LessonEvent> by lazy { requireActivity().findViewById(R.id.weekView) }
 
     private lateinit var pbTimetable: ProgressBar
     private lateinit var clTimetable: CoordinatorLayout
@@ -89,11 +88,11 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
 
-        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+        settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
             activeYearID = setting.settings.setyid
 
 
-            lessonViewModel.allLesson(activeYearID).observe(viewLifecycleOwner, Observer { lessons ->
+            lessonViewModel.allLesson(activeYearID).observe(viewLifecycleOwner, { lessons ->
 
                 val lessonEvent = mutableListOf<WeekViewDisplayable<LessonEvent>>()
                 var lastEventTime = 15

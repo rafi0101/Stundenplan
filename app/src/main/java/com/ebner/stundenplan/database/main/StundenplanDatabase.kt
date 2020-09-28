@@ -59,7 +59,7 @@ abstract class StundenplanDatabase : RoomDatabase() {
 
     companion object {
 
-        const val DATABASE_NAME = "stundenplandb"
+        private const val DATABASE_NAME = "stundenplandb"
 
         @Volatile
         private var INSTANCE: StundenplanDatabase? = null

@@ -45,7 +45,6 @@
                     android:layout_height="wrap_content"
                     android:text="Task_Teacher"
                     android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@+id/tv_task_subject"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
 
 

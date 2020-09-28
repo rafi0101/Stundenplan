@@ -84,7 +84,7 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
 
         //On Button click opens a TimePickerDialog, to select easy lesson time
         btnStart.setOnClickListener {
-            val tpd = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+            val tpd = TimePickerDialog(this, { _, hourOfDay, minute ->
                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 cal.set(Calendar.MINUTE, minute)
 
@@ -125,7 +125,7 @@ class ActivityAddEditSchoolLesson : AppCompatActivity() {
 
         //On Button click opens a TimePickerDialog, to select easy lesson time
         btnEnd.setOnClickListener {
-            val tpd = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+            val tpd = TimePickerDialog(this, { _, hourOfDay, minute ->
                 cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 cal.set(Calendar.MINUTE, minute)
 

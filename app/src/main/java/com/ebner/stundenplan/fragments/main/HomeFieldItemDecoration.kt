@@ -2,6 +2,7 @@ package com.ebner.stundenplan.fragments.main
 
 import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 /**
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  * Stundenplan Created in com.ebner.stundenplan.fragments.main
  */
 /**
- * Custom item decoration for a vertical [ProductGridFragment] [RecyclerView]. Adds a
+ * Custom item decoration for a vertical [RecyclerView] with [GridLayoutManager]. Adds a
  * small amount of padding to the left of grid items, and a large amount of padding to the right.
  */
 class HomeFieldItemDecoration(private val largePadding: Int, private val smallPadding: Int) : RecyclerView.ItemDecoration() {

@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -73,11 +72,11 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
 
         //Automatic update the recyclerlayout
-        settingsViewModel.allSettings.observe(viewLifecycleOwner, Observer { setting ->
+        settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
             activeYearID = setting.year.yid
 
 
-            lessonViewModel.allLesson(activeYearID).observe(viewLifecycleOwner, Observer {
+            lessonViewModel.allLesson(activeYearID).observe(viewLifecycleOwner, {
                 adapter.submitList(it)
             })
 
