@@ -149,7 +149,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
             val rname = data.getStringExtra(ActivityAddEditRoom.EXTRA_RNAME)!!
             val room = Room(rname)
 
-            /*---------------------If the Request was a ADD room request--------------------------*/
+            /*---------------------If the Request was a edit room request--------------------------*/
             if (data.hasExtra(ActivityAddEditRoom.EXTRA_RID)) {
                 val id = data.getIntExtra(ActivityAddEditRoom.EXTRA_RID, -1)
 
@@ -163,7 +163,7 @@ class FragmentRoom : Fragment(), RoomListAdapter.OnItemClickListener {
                 room.rid = id
                 roomViewModel.update(room)
 
-                /*---------------------If the Request was a EDIT room request--------------------------*/
+                /*---------------------If the Request was a add room request--------------------------*/
             } else {
                 roomViewModel.insert(room)
             }
