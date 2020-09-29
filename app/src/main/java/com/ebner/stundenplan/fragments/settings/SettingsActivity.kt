@@ -83,14 +83,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
         // Instantiate the new Fragment
-        val args = pref.extras
-        val fragment = supportFragmentManager.fragmentFactory.instantiate(
-                classLoader,
-                pref.fragment
-        ).apply {
-            arguments = args
-            setTargetFragment(caller, 0)
-        }
+        val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, pref.fragment)
         // Replace the existing Fragment with the new Fragment
         supportFragmentManager.beginTransaction()
                 .replace(R.id.settings, fragment)
