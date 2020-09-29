@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
@@ -27,6 +28,8 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
     companion object {
         const val SHARED_PREFS = "sharedPrefs"
         const val BACKUP_AUTOBACKUP = "backupautobackup"
+        const val TIMETABLESETTIGNS_ABCYCLE = "timetablesettingsabcycle"
+        const val TIMETABLESETTIGNS_ACYCLE = "timetablesettingsacycle"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,10 +106,45 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
     }
 
-    class GenearlFragment : PreferenceFragmentCompat() {
+    class TimetableSettingsFragment : PreferenceFragmentCompat() {
+
+        private lateinit var cbpAbCycle: CheckBoxPreference
+        private lateinit var spAcycle: SwitchPreference
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.preferences_general, rootKey)
+            setPreferencesFromResource(R.xml.preferences_timetablesettings, rootKey)
+
+            cbpAbCycle = findPreference(getString(R.string.cbp_timetablesettings_abcycle))!!
+            spAcycle = findPreference(getString(R.string.sp_timetablesettings_acycle))!!
+
+            loadApplyPreference()
+
+            cbpAbCycle.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                val editor = sharedPreferences.edit()
+                editor.putBoolean(TIMETABLESETTIGNS_ABCYCLE, newValue.toString().toBoolean())
+                editor.apply()
+
+                //true to update the view
+                true
+            }
+
+            spAcycle.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                val editor = sharedPreferences.edit()
+                editor.putBoolean(TIMETABLESETTIGNS_ACYCLE, newValue.toString().toBoolean())
+                editor.apply()
+
+                //true to update the view
+                true
+            }
+
         }
+
+        private fun loadApplyPreference() {
+            cbpAbCycle.isChecked = sharedPreferences.getBoolean(TIMETABLESETTIGNS_ABCYCLE, false)
+            spAcycle.isChecked = sharedPreferences.getBoolean(TIMETABLESETTIGNS_ACYCLE, false)
+
+        }
+
     }
 
     class BackupFragment : PreferenceFragmentCompat() {

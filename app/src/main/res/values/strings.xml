@@ -36,5 +36,8 @@
     <string name="spc_backup_autoBackup">spc_backup_autoBackup</string>
     <string name="p_back_restore">p_back_restore</string>
 
+    <string name="cbp_timetablesettings_abcycle">cbp_timetablesettings_abcycle</string>
+    <string name="sp_timetablesettings_acycle">sp_timetablesettings_acycle</string>
+
 
 </resources>

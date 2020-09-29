@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <CheckBoxPreference
+        app:defaultValue="false"
+        app:key="@string/cbp_timetablesettings_abcycle"
+        app:title="A/B Wochenzyklus verwenden" />
+
+    <SwitchPreference
+        app:key="@string/sp_timetablesettings_acycle"
+        app:title="Die A Woche ist gerade oder ungerade?"
+        app:dependency="@string/cbp_timetablesettings_abcycle"
+        android:summaryOff="Gerade"
+        android:summaryOn="Ungerade" />
+
+</PreferenceScreen>

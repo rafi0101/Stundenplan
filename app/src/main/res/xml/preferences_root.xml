@@ -1,15 +1,27 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$GenearlFragment"
-        app:icon="@drawable/ic_room"
-        app:key="messages_header"
-        app:title="messages (not working)" />
+    <PreferenceCategory app:title="Allgemein">
 
-    <Preference
-        app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$BackupFragment"
-        app:icon="@drawable/ic_backup"
-        app:key="Backup_header"
-        app:title="Backup" />
+
+        <Preference
+            app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$TimetableSettingsFragment"
+            app:icon="@drawable/ic_schedule"
+            app:key="Personalize_header"
+            app:title="Stundenplan (WIP)" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Extra Funktionen">
+
+
+        <Preference
+            app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$BackupFragment"
+            app:icon="@drawable/ic_backup"
+            app:key="Backup_header"
+            app:title="Backup" />
+
+    </PreferenceCategory>
+
 
 </PreferenceScreen>

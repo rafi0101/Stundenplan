@@ -1,8 +1,0 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <EditTextPreference
-        app:key="signature"
-        app:title="signature"
-        app:useSimpleSummaryProvider="true" />
-
-</PreferenceScreen>
