@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.ebner.stundenplan">
 
     <application
@@ -21,10 +22,12 @@
         </activity>
         <activity
             android:name=".fragments.manage.FragmentTeacher"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            tools:ignore="Instantiatable" />
         <activity
             android:name=".fragments.manage.FragmentRoom"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            tools:ignore="Instantiatable" />
         <activity android:name=".fragments.manage.ActivityAddEditRoom" />
         <activity android:name=".fragments.manage.ActivityAddEditTeacher" />
         <activity android:name=".fragments.manage.ActivityAddEditSubject" />
