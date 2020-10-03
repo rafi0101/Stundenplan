@@ -63,15 +63,24 @@ class LessonListAdapter(private val itemClickListener: OnItemClickListener) : Li
 
             tvLessonTime.text = "${item.schoolLesson.slstarthour}:$returnStartMinute - ${item.schoolLesson.slendhour}:$returnEndMinute"
 
-            when (item.lesson.lday) {
-                1 -> tvLessonDay.text = "Montag"
-                2 -> tvLessonDay.text = "Dienstag"
-                3 -> tvLessonDay.text = "Mittwoch"
-                4 -> tvLessonDay.text = "Donnerstag"
-                5 -> tvLessonDay.text = "Freitag"
-                6 -> tvLessonDay.text = "Samstag"
-                7 -> tvLessonDay.text = "Sonntag"
+            val day = when (item.lesson.lday) {
+                1 -> "Montag"
+                2 -> "Dienstag"
+                3 -> "Mittwoch"
+                4 -> "Donnerstag"
+                5 -> "Freitag"
+                6 -> "Samstag"
+                7 -> "Sonntag"
+                else -> ""
             }
+
+            val cycle = when (item.lesson.lcycle) {
+                1 -> "(A)"
+                2 -> "(B)"
+                else -> ""
+            }
+
+            tvLessonDay.text = "$day $cycle"
 
             itemView.setOnClickListener {
                 itemclickListener.onItemClicked(item)
@@ -90,6 +99,7 @@ class TaskDiffCallback : DiffUtil.ItemCallback<LessonSubjectSchoollessonYear>() 
     override fun areContentsTheSame(oldItem: LessonSubjectSchoollessonYear, newItem: LessonSubjectSchoollessonYear): Boolean {
         //Compare all items, so if there is a new field, add it with &&
         return oldItem.lesson.lday == newItem.lesson.lday &&
+                oldItem.lesson.lcycle == newItem.lesson.lcycle &&
                 oldItem.lesson.lsid == newItem.lesson.lsid &&
                 oldItem.lesson.lslid == newItem.lesson.lslid &&
                 oldItem.lesson.lyid == newItem.lesson.lyid

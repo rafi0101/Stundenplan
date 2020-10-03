@@ -7,7 +7,7 @@
             app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$TimetableSettingsFragment"
             app:icon="@drawable/ic_schedule"
             app:key="Personalize_header"
-            app:title="Stundenplan (WIP)" />
+            app:title="Stundenplan" />
 
 
     </PreferenceCategory>

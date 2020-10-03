@@ -29,7 +29,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         const val SHARED_PREFS = "sharedPrefs"
         const val BACKUP_AUTOBACKUP = "backupautobackup"
         const val TIMETABLESETTIGNS_ABCYCLE = "timetablesettingsabcycle"
-        const val TIMETABLESETTIGNS_ACYCLE = "timetablesettingsacycle"
+        const val TIMETABLESETTIGNS_ACYCLE = "timetablesettingsacycle" //False = "gerade" / True = "ungerade" Woche
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

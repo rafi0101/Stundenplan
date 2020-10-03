@@ -22,15 +22,26 @@
             android:visibility="visible"
             tools:visibility="visible" />
 
+        <TextView
+            android:id="@+id/tv_current_cycle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:text="KW: XX, Aktuelle Woche: A/B"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
 
-    <com.alamkanak.weekview.WeekView
-        android:id="@+id/weekView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:adaptiveEventTextSize="true"
-        app:allDayEventTextSize="13sp"
-        app:columnGap="1dp"
-        app:eventCornerRadius="4dp"
+
+        <com.alamkanak.weekview.WeekView
+            android:id="@+id/weekView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:adaptiveEventTextSize="true"
+            app:allDayEventTextSize="13sp"
+            app:columnGap="1dp"
+            app:eventCornerRadius="4dp"
         app:eventPaddingHorizontal="6dp"
         app:eventPaddingVertical="2dp"
         app:eventTextColor="@android:color/white"

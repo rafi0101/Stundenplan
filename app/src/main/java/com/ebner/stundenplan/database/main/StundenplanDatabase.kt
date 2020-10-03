@@ -41,7 +41,7 @@ import java.util.concurrent.Executors
     Lesson::class,
     SchoolLesson::class,
     Task::class
-], version = 1, exportSchema = false)
+], version = 2, exportSchema = false)
 abstract class StundenplanDatabase : RoomDatabase() {
 
     //Define each Tables DAO (Data Access Object)
@@ -122,12 +122,12 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                     getInstance(context).schoolLessonDao().insert(SchoolLesson(1, 8, 15, 9, 0))
                                     getInstance(context).schoolLessonDao().insert(SchoolLesson(2, 9, 0, 9, 45))
                                     getInstance(context).schoolLessonDao().insert(SchoolLesson(3, 9, 45, 10, 30))
-                                    getInstance(context).lessonDao().insert(Lesson(1, 1, 1, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(1, 2, 4, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(1, 3, 5, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(2, 1, 6, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(2, 2, 2, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(3, 3, 3, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(1, -1, 1, 1, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(1, 1, 2, 4, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(1, 2, 3, 5, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(2, -1, 1, 6, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(2, 1, 2, 2, 1))
+                                    getInstance(context).lessonDao().insert(Lesson(3, 2, 3, 3, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 10, 2020, false, 1, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 2, 10, 2020, false, 2, 1))
                                     getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 3, 10, 2020, false, 3, 1))

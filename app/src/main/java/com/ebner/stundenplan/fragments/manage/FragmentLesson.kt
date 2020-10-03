@@ -104,7 +104,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
                 val lessonItem = adapter.getLessonAt(position)!!
 
 
-                val lesson = Lesson(lessonItem.lesson.lday, lessonItem.lesson.lslid, lessonItem.lesson.lsid, lessonItem.lesson.lyid)
+                val lesson = lessonItem.lesson
                 lesson.lid = lessonItem.lesson.lid
 
                 /*---------------------Confirm Delete Dialog--------------------------*/
@@ -167,10 +167,11 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
             //Save extras to vars
             val data = result.data!!
             val lday = data.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
+            val lcycle = data.getIntExtra(ActivityAddEditLesson.EXTRA_LCYCLE, -1)
             val lslid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SLID, -1)
             val lsid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SID, -1)
 
-            val lesson = Lesson(lday, lslid, lsid, activeYearID)
+            val lesson = Lesson(lday, lcycle, lslid, lsid, activeYearID)
 
             /*---------------------if the request was a edit lesson request--------------------------*/
             if (data.hasExtra(ActivityAddEditLesson.EXTRA_LID)) {
@@ -205,6 +206,7 @@ class FragmentLesson : Fragment(), LessonListAdapter.OnItemClickListener {
         val intent = Intent(context, ActivityAddEditLesson::class.java)
         intent.putExtra(ActivityAddEditLesson.EXTRA_LID, lessonSubjectSchoollessonYear.lesson.lid)
         intent.putExtra(ActivityAddEditLesson.EXTRA_LDAY, lessonSubjectSchoollessonYear.lesson.lday)
+        intent.putExtra(ActivityAddEditLesson.EXTRA_LCYCLE, lessonSubjectSchoollessonYear.lesson.lcycle)
         intent.putExtra(ActivityAddEditLesson.EXTRA_L_SLID, lessonSubjectSchoollessonYear.lesson.lslid)
         intent.putExtra(ActivityAddEditLesson.EXTRA_L_SID, lessonSubjectSchoollessonYear.lesson.lsid)
         openAddEditActivity.launch(intent)

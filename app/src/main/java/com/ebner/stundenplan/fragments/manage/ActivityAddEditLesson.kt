@@ -1,6 +1,7 @@
 package com.ebner.stundenplan.fragments.manage
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -15,6 +16,7 @@ import com.ebner.stundenplan.database.table.schoolLesson.SchoolLesson
 import com.ebner.stundenplan.database.table.schoolLesson.SchoolLessonViewModel
 import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.database.table.subject.SubjectViewModel
+import com.ebner.stundenplan.fragments.settings.SettingsActivity
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.*
 
@@ -23,6 +25,7 @@ class ActivityAddEditLesson : AppCompatActivity() {
 
     companion object {
         const val EXTRA_LID = "com.ebner.stundenplan.fragments.manage.EXTRA_LID"
+        const val EXTRA_LCYCLE = "com.ebner.stundenplan.fragments.manage.EXTRA_LCYCLE"
         const val EXTRA_LDAY = "com.ebner.stundenplan.fragments.manage.EXTRA_LDAY"
         const val EXTRA_L_SLID = "com.ebner.stundenplan.fragments.manage.EXTRA_L_SLID"
         const val EXTRA_L_SID = "com.ebner.stundenplan.fragments.manage.EXTRA_L_SID"
@@ -37,6 +40,9 @@ class ActivityAddEditLesson : AppCompatActivity() {
     private lateinit var dropdownSlid: AutoCompleteTextView
     private lateinit var tilSlid: TextInputLayout
     private lateinit var pbLesson: ProgressBar
+    private lateinit var llCycle: LinearLayout
+    private lateinit var cbA: CheckBox
+    private lateinit var cbB: CheckBox
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +63,13 @@ class ActivityAddEditLesson : AppCompatActivity() {
         dropdownSlid = findViewById(R.id.actv_dropdown_lesson_slid)
         tilSlid = findViewById(R.id.til_dropdown_lesson_slid)
         pbLesson = findViewById(R.id.pb_lesson)
+        llCycle = findViewById(R.id.ll_lesson_cycle)
+        cbA = findViewById(R.id.cb_lesson_a)
+        cbB = findViewById(R.id.cb_lesson_b)
+
+        /*---------------------getSharedPreferences--------------------------*/
+        val sharedPreferences = getSharedPreferences(SettingsActivity.SHARED_PREFS, Context.MODE_PRIVATE)
+        val cycleEnabled = sharedPreferences.getBoolean(SettingsActivity.TIMETABLESETTIGNS_ABCYCLE, false)
 
 
         /*---------------------when calling this Activity, are some extras passed?--------------------------*/
@@ -64,6 +77,7 @@ class ActivityAddEditLesson : AppCompatActivity() {
             title = getString(R.string.fragment_lesson) + " bearbeiten"
             //Save extras to vars
             val lday = intent.getIntExtra(EXTRA_LDAY, -1)
+            val lcycle = intent.getIntExtra(EXTRA_LCYCLE, -1)
             val lslid = intent.getIntExtra(EXTRA_L_SLID, -1)
             val lsid = intent.getIntExtra(EXTRA_L_SID, -1)
 
@@ -80,9 +94,30 @@ class ActivityAddEditLesson : AppCompatActivity() {
             selectedSID = lsid
             selectedSLID = lslid
 
+            //Show only if enabled
+            if (cycleEnabled) {
+                llCycle.visibility = View.VISIBLE
+                when (lcycle) {
+                    -1 -> {
+                        cbA.isChecked = true
+                        cbB.isChecked = true
+                    }
+                    1 -> {
+                        cbA.isChecked = true
+                        cbB.isChecked = false
+                    }
+                    2 -> {
+                        cbA.isChecked = false
+                        cbB.isChecked = true
+                    }
+                }
+            }
+
 
         } else {
             title = "Neue " + getString(R.string.fragment_lesson)
+
+            if (cycleEnabled) llCycle.visibility = View.VISIBLE
         }
 
         //Fetch Lesson and SchoolLesson list
@@ -149,9 +184,7 @@ class ActivityAddEditLesson : AppCompatActivity() {
 
         val selectedDay = mdp.selectedDays.singleOrNull()
 
-        val selctedDayInt: Int
-
-        selctedDayInt = when (selectedDay) {
+        val selctedDayInt = when (selectedDay) {
             MaterialDayPicker.Weekday.MONDAY -> 1
             MaterialDayPicker.Weekday.TUESDAY -> 2
             MaterialDayPicker.Weekday.WEDNESDAY -> 3
@@ -175,10 +208,20 @@ class ActivityAddEditLesson : AppCompatActivity() {
             tilSlid.error = "Bitte wähle eine Schulstunde"
             error = true
         }
+        if (!cbA.isChecked && !cbB.isChecked) {
+            Toast.makeText(this, "Bitte wähle mindestens \"A\" oder \"B\" aus", Toast.LENGTH_LONG).show();
+            error = true
+        }
         if (error) return
+
+        var selectedLcycle = -1
+        if (cbA.isChecked) selectedLcycle = 1
+        if (cbB.isChecked) selectedLcycle = 2
+        if (cbA.isChecked && cbB.isChecked) selectedLcycle = -1
 
         val data = Intent()
         data.putExtra(EXTRA_LDAY, selctedDayInt)
+        data.putExtra(EXTRA_LCYCLE, selectedLcycle)
         data.putExtra(EXTRA_L_SID, selectedSID)
         data.putExtra(EXTRA_L_SLID, selectedSLID)
 

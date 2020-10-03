@@ -39,6 +39,7 @@ class LessonViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun allLesson(yid: Int): LiveData<List<LessonSubjectSchoollessonYear>> = lessonRepository.getAllLesson(yid)
+    fun lessonByCycle(yid: Int, cycle: Int): LiveData<List<LessonSubjectSchoollessonYear>> = lessonRepository.getLessonByCycle(yid, cycle)
 
     suspend fun singleLesson(lid: Int): LessonSubjectSchoollessonYear = lessonRepository.getLesson(lid)
 

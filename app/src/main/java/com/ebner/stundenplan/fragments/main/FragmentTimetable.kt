@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
@@ -32,6 +33,7 @@ import com.ebner.stundenplan.database.table.schoolLesson.SchoolLesson
 import com.ebner.stundenplan.database.table.settings.SettingsViewModel
 import com.ebner.stundenplan.database.table.subject.Subject
 import com.ebner.stundenplan.fragments.manage.ActivityAddEditLesson
+import com.ebner.stundenplan.fragments.settings.SettingsActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -60,12 +62,13 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
 
     private lateinit var pbTimetable: ProgressBar
     private lateinit var clTimetable: CoordinatorLayout
+    private lateinit var tvCurrentCycle: TextView
     private lateinit var lessonViewModel: LessonViewModel
     private lateinit var settingsViewModel: SettingsViewModel
 
     private var activeYearID: Int = -1
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_timetable, container, false)
@@ -83,7 +86,28 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         /*---------------------Link items to Layout--------------------------*/
         pbTimetable = root.findViewById(R.id.pb_timetable)
         clTimetable = root.findViewById(R.id.cl_timetable)
+        tvCurrentCycle = root.findViewById(R.id.tv_current_cycle)
         val fab = root.findViewById<FloatingActionButton>(R.id.btn_timetable_addLesson)
+
+        /*---------------------getSharedPreferences--------------------------*/
+        val sharedPreferences = requireContext().getSharedPreferences(SettingsActivity.SHARED_PREFS, Context.MODE_PRIVATE)
+        val cycleEnabled = sharedPreferences.getBoolean(SettingsActivity.TIMETABLESETTIGNS_ABCYCLE, false)
+        val acycle = sharedPreferences.getBoolean(SettingsActivity.TIMETABLESETTIGNS_ACYCLE, false)  //False = "gerade" / True = "ungerade" Woche
+        val isNowACycle: Boolean
+        val woy = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)
+
+        isNowACycle = if (woy % 2 == 0) {
+            //Gerade
+            !acycle
+        } else {
+            //Ungerade
+            acycle
+        }
+
+        if (cycleEnabled) {
+            tvCurrentCycle.visibility = View.VISIBLE
+            tvCurrentCycle.text = "KW: $woy, Aktueller Zyklus: ${if (isNowACycle) "A" else "B"}"
+        }
 
         lessonViewModel = ViewModelProvider(this).get(LessonViewModel::class.java)
         settingsViewModel = ViewModelProvider(this).get(SettingsViewModel::class.java)
@@ -91,68 +115,17 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
         settingsViewModel.allSettings.observe(viewLifecycleOwner, { setting ->
             activeYearID = setting.settings.setyid
 
-
-            lessonViewModel.allLesson(activeYearID).observe(viewLifecycleOwner, { lessons ->
-
-                val lessonEvent = mutableListOf<WeekViewDisplayable<LessonEvent>>()
-                var lastEventTime = 15
-
-                //runBlocking: wait with weekView.submit until all lessons are added to the list
-                runBlocking {
-
-                    //Add Each lesson to the list
-                    lessons.forEach {
-
-                        //save current Year and Month
-                        val calendar = Calendar.getInstance()
-                        val currentYear = calendar.get(Calendar.YEAR)
-                        val currentMonth = calendar.get(Calendar.MONTH)
-
-                        val id = it.lesson.lid.toLong()
-                        val title = it.subject.sname
-                        //Transform lesson starthour, minute and day to a calendar item
-                        val startTime = Calendar.getInstance().apply {
-                            set(Calendar.YEAR, currentYear)
-                            set(Calendar.MONTH, currentMonth)
-                            set(Calendar.DAY_OF_WEEK, it.lesson.lday + 1)
-                            set(Calendar.HOUR_OF_DAY, it.schoolLesson.slstarthour)
-                            set(Calendar.MINUTE, it.schoolLesson.slstartminute)
-                            set(Calendar.SECOND, 0)
-                            set(Calendar.MILLISECOND, 0)
-                        }
-                        //Transform lesson endhour, minute and day to a calendar item
-                        val endTime = Calendar.getInstance().apply {
-                            set(Calendar.YEAR, currentYear)
-                            set(Calendar.MONTH, currentMonth)
-                            set(Calendar.DAY_OF_WEEK, it.lesson.lday + 1)
-                            set(Calendar.HOUR_OF_DAY, it.schoolLesson.slendhour)
-                            set(Calendar.MINUTE, it.schoolLesson.slendminute)
-                            set(Calendar.SECOND, 0)
-                            set(Calendar.MILLISECOND, 0)
-                        }
-                        //location: room number/name and teacher in the next line
-                        val location = "\nOrt: ${it.room.rname}\nLehrer: ${it.teacher.tname}"
-                        val color = it.subject.scolor
-
-                        val isCanceled = false
-
-                        //IF last lesson is greater then lastEventTime, expand the view
-                        if (it.schoolLesson.slendhour >= lastEventTime) {
-                            lastEventTime = it.schoolLesson.slendhour + 2
-                        }
-
-
-                        lessonEvent.add(LessonEvent(id, title, startTime, endTime, location, color, false, isCanceled))
-
-                    }
-                }
-
-                weekView.maxHour = lastEventTime
-                weekView.submit(lessonEvent)
-                pbTimetable.visibility = View.INVISIBLE
-
-
-            })
+            // A/B Cycle is enabled, fetch all lesson applied to both weeks, and the lessons only for week A or week B
+            if (cycleEnabled) {
+                lessonViewModel.lessonByCycle(activeYearID, if (isNowACycle) 1 else 2).observe(viewLifecycleOwner, { lessons ->
+                    applyWeekView(lessons)
+                })
+            } else {
+                //if A/B disabled fetch all lessons
+                lessonViewModel.allLesson(activeYearID).observe(viewLifecycleOwner, { lessons ->
+                    applyWeekView(lessons)
+                })
+            }
             weekView.onEventClickListener = this
             weekView.onEventLongClickListener = this
 
@@ -166,6 +139,67 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
 
 
         return root
+    }
+
+    private fun applyWeekView(lessons: List<LessonSubjectSchoollessonYear>) {
+        val lessonEvent = mutableListOf<WeekViewDisplayable<LessonEvent>>()
+        var lastEventTime = 15
+
+        //runBlocking: wait with weekView.submit until all lessons are added to the list
+        runBlocking {
+
+            //Add Each lesson to the list
+            lessons.forEach {
+
+                //save current Year and Month
+                val calendar = Calendar.getInstance()
+                val currentYear = calendar.get(Calendar.YEAR)
+                val currentMonth = calendar.get(Calendar.MONTH)
+
+                val id = it.lesson.lid.toLong()
+                val title = it.subject.sname
+                //Transform lesson starthour, minute and day to a calendar item
+                val startTime = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, currentYear)
+                    set(Calendar.MONTH, currentMonth)
+                    set(Calendar.DAY_OF_WEEK, it.lesson.lday + 1)
+                    set(Calendar.HOUR_OF_DAY, it.schoolLesson.slstarthour)
+                    set(Calendar.MINUTE, it.schoolLesson.slstartminute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                //Transform lesson endhour, minute and day to a calendar item
+                val endTime = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, currentYear)
+                    set(Calendar.MONTH, currentMonth)
+                    set(Calendar.DAY_OF_WEEK, it.lesson.lday + 1)
+                    set(Calendar.HOUR_OF_DAY, it.schoolLesson.slendhour)
+                    set(Calendar.MINUTE, it.schoolLesson.slendminute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                //location: room number/name and teacher in the next line
+                val location = "\nOrt: ${it.room.rname}\nLehrer: ${it.teacher.tname}"
+                val color = it.subject.scolor
+
+                val isCanceled = false
+
+                //IF last lesson is greater then lastEventTime, expand the view
+                if (it.schoolLesson.slendhour >= lastEventTime) {
+                    lastEventTime = it.schoolLesson.slendhour + 2
+                }
+
+
+                lessonEvent.add(LessonEvent(id, title, startTime, endTime, location, color, false, isCanceled))
+
+            }
+        }
+
+        weekView.maxHour = lastEventTime
+        weekView.submit(lessonEvent)
+        pbTimetable.visibility = View.INVISIBLE
+
+
     }
 
     /*---------------------Normal Click on Item, to get overview about Subject--------------------------*/
@@ -249,6 +283,7 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
                             val intent = Intent(context, ActivityAddEditLesson::class.java)
                             intent.putExtra(ActivityAddEditLesson.EXTRA_LID, lessonSubjectSchoollessonYear.lesson.lid)
                             intent.putExtra(ActivityAddEditLesson.EXTRA_LDAY, lessonSubjectSchoollessonYear.lesson.lday)
+                            intent.putExtra(ActivityAddEditLesson.EXTRA_LCYCLE, lessonSubjectSchoollessonYear.lesson.lcycle)
                             intent.putExtra(ActivityAddEditLesson.EXTRA_L_SLID, lessonSubjectSchoollessonYear.lesson.lslid)
                             intent.putExtra(ActivityAddEditLesson.EXTRA_L_SID, lessonSubjectSchoollessonYear.lesson.lsid)
                             openAddEditActivity.launch(intent)
@@ -271,10 +306,11 @@ class FragmentTimetable : Fragment(), OnEventClickListener<LessonEvent>, OnEvent
             //Save extras to vars
             val data = result.data!!
             val lday = data.getIntExtra(ActivityAddEditLesson.EXTRA_LDAY, -1)
+            val lcycle = data.getIntExtra(ActivityAddEditLesson.EXTRA_LCYCLE, -1)
             val lslid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SLID, -1)
             val lsid = data.getIntExtra(ActivityAddEditLesson.EXTRA_L_SID, -1)
 
-            val lesson = Lesson(lday, lslid, lsid, activeYearID)
+            val lesson = Lesson(lday, lcycle, lslid, lsid, activeYearID)
 
             /*---------------------if the request was a edit lesson request--------------------------*/
             if (data.hasExtra(ActivityAddEditLesson.EXTRA_LID)) {

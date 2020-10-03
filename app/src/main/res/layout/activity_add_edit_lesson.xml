@@ -76,6 +76,34 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_lesson_cycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <CheckBox
+                android:id="@+id/cb_lesson_a"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="A"
+                android:checked="true"
+                android:layout_marginEnd="8dp" />
+
+            <CheckBox
+                android:id="@+id/cb_lesson_b"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="B"
+                android:checked="true"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

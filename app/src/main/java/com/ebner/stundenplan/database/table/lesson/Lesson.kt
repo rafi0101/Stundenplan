@@ -27,6 +27,14 @@ data class Lesson(
         @ColumnInfo(name = "lday")
         var lday: Int,
 
+        @ColumnInfo(name = "lcycle")
+        var lcycle: Int,
+        /**
+         * -1 = Disabled / Both
+         * 1 = A Only
+         * 2 = B Only
+         */
+
         @ColumnInfo(name = "l_slid")
         var lslid: Int,
 
