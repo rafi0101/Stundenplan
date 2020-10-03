@@ -182,9 +182,7 @@ class ActivityAddEditLesson : AppCompatActivity() {
     /*---------------------Save current entries, and return to Fragment--------------------------*/
     private fun saveLesson() {
 
-        val selectedDay = mdp.selectedDays.singleOrNull()
-
-        val selctedDayInt = when (selectedDay) {
+        val selctedDayInt = when (mdp.selectedDays.singleOrNull()) {
             MaterialDayPicker.Weekday.MONDAY -> 1
             MaterialDayPicker.Weekday.TUESDAY -> 2
             MaterialDayPicker.Weekday.WEDNESDAY -> 3
@@ -209,7 +207,7 @@ class ActivityAddEditLesson : AppCompatActivity() {
             error = true
         }
         if (!cbA.isChecked && !cbB.isChecked) {
-            Toast.makeText(this, "Bitte wähle mindestens \"A\" oder \"B\" aus", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Bitte wähle mindestens \"A\" oder \"B\" aus", Toast.LENGTH_LONG).show()
             error = true
         }
         if (error) return
