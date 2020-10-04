@@ -6,9 +6,15 @@
         <Preference
             app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$TimetableSettingsFragment"
             app:icon="@drawable/ic_schedule"
-            app:key="Personalize_header"
+            app:key="Default_header"
             app:title="Stundenplan" />
 
+
+        <Preference
+            app:fragment="com.ebner.stundenplan.fragments.settings.SettingsActivity$PersonalizeFragment"
+            app:icon="@drawable/ic_settings"
+            app:key="Personalize_header"
+            app:title="Personalisieren" />
 
     </PreferenceCategory>
 

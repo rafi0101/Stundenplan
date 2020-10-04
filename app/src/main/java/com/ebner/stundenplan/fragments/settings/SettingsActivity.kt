@@ -10,10 +10,8 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.CheckBoxPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.*
 import com.ebner.roomdatabasebackup.core.RoomBackup
 import com.ebner.stundenplan.MainActivity
 import com.ebner.stundenplan.R
@@ -30,7 +28,10 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
         const val BACKUP_AUTOBACKUP = "backupautobackup"
         const val TIMETABLESETTIGNS_ABCYCLE = "timetablesettingsabcycle"
         const val TIMETABLESETTIGNS_ACYCLE = "timetablesettingsacycle" //False = "gerade" / True = "ungerade" Woche
+        const val PERSONALIZE_DARKTHEME_VALUE = "personalizedarkthememode" // AppCompatDelegate.MODE_NIGHT_***
+        private const val TAG = "debug_SettingsActivity"
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,6 +144,36 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
             cbpAbCycle.isChecked = sharedPreferences.getBoolean(TIMETABLESETTIGNS_ABCYCLE, false)
             spAcycle.isChecked = sharedPreferences.getBoolean(TIMETABLESETTIGNS_ACYCLE, false)
 
+        }
+
+    }
+
+    class PersonalizeFragment : PreferenceFragmentCompat() {
+        private lateinit var lpDesign: ListPreference
+
+
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.preferences_personalize, rootKey)
+            lpDesign = findPreference(getString(R.string.lp_personalize_design))!!
+
+            lpDesign.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                val editor = sharedPreferences.edit()
+                editor.putInt(PERSONALIZE_DARKTHEME_VALUE, newValue.toString().toInt())
+                editor.apply()
+
+                when (newValue.toString().toInt()) {
+                    1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    3 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+
+                //true to update the view
+                true
+            }
+
+        }
+
+        private fun loadApplyPreference() {
         }
 
     }

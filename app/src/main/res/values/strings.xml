@@ -38,6 +38,7 @@
 
     <string name="cbp_timetablesettings_abcycle">cbp_timetablesettings_abcycle</string>
     <string name="sp_timetablesettings_acycle">sp_timetablesettings_acycle</string>
+    <string name="lp_personalize_design">lp_personalize_design</string>
 
 
 </resources>
