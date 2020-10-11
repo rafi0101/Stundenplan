@@ -30,7 +30,7 @@ Content
 
 # Screenshots
 
-![Overview](/screenshots/app_overview.gif?raw=true "Overview")
+![Overview|1440x3120, 40%](/screenshots/app_overview.gif?raw=true "Overview")
 
 # Developed By
 
