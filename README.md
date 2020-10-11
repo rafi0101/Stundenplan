@@ -18,6 +18,7 @@ Features
 * Darkmode available
 * Material design
 * Written in Kotlin
+* Language is German
 
 Hint: If you don`t want to add each room, teacher etc. Just add one room / teacher with a whitespace and use this for each subject...
 
