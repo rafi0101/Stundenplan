@@ -1,5 +1,36 @@
-# stundenplan
-Stundenplan manager for Android
+# Stundenplan
+
+![Android CI](https://github.com/rafi0101/Stundenplan/workflows/Android%20CI/badge.svg)
+[![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
+![Language](https://img.shields.io/badge/language-Kotlin-orange.svg)
+[![PRWelcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/rafi0101/Android-Room-Database-Backup/pulls)
+
+<div align="center">
+  <sub>Built with ❤︎ by
+  <a href="https://github.com/rafi0101">Raphael Ebner</a>
+</div>
+<br/>
+
+Features
+---------
+* Manage your timetable, tasks and exams
+* Backups are available
+* Darkmode available
+* Material design
+* Written in Kotlin
+
+Hint: If you don`t want to add each room, teacher etc. Just add one room / teacher with a whitespace and use this for each subject...
+
+Content
+-----------
+* [Features](#Features)
+* [Screenshots](#Screenshots)
+* [Developed by](#Developed-by)
+* [License](#License)
+
+# Screenshots
+
+![Overview](/screenshots/app_overview.gif?raw=true "Overview")
 
 # Developed By
 
