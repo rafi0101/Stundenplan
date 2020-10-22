@@ -35,13 +35,14 @@ import java.util.concurrent.Executors
     com.ebner.stundenplan.database.table.room.Room::class,
     Teacher::class,
     Subject::class,
-    Year::class, Examtype::class,
+    Year::class,
+    Examtype::class,
     Settings::class,
     Exam::class,
     Lesson::class,
     SchoolLesson::class,
     Task::class
-], version = 2, exportSchema = false)
+], version = 1, exportSchema = false)
 abstract class StundenplanDatabase : RoomDatabase() {
 
     //Define each Tables DAO (Data Access Object)
@@ -82,65 +83,10 @@ abstract class StundenplanDatabase : RoomDatabase() {
                                 super.onCreate(db)
                                 // insert the data on the IO Thread
                                 ioThread {
-                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("123"))
-                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("456"))
-                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("789"))
-                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("147"))
-                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("Sporthalle"))
-                                    getInstance(context).roomDao().insert(com.ebner.stundenplan.database.table.room.Room("348"))
-                                    getInstance(context).teacherDao().insert(Teacher("Huaba", 0))
-                                    getInstance(context).teacherDao().insert(Teacher("Sepp", 0))
-                                    getInstance(context).teacherDao().insert(Teacher("Bäda", 0))
-                                    getInstance(context).teacherDao().insert(Teacher("Johanna", 1))
-                                    getInstance(context).subjectDao().insert(Subject("Mathe", "M", -1052396, "", false, 1, 1))
-                                    getInstance(context).subjectDao().insert(Subject("Deutsch", "D", -12833281, "Deutschnotiz", false, 2, 2))
-                                    getInstance(context).subjectDao().insert(Subject("Englisch", "E", -62976, "", false, 3, 3))
-                                    getInstance(context).subjectDao().insert(Subject("Religion", "Reli", -176385, "", false, 1, 4))
-                                    getInstance(context).subjectDao().insert(Subject("Sport", "Sp", -11473188, "Sportnotiz", false, 2, 5))
-                                    getInstance(context).subjectDao().insert(Subject("Sozialkunde", "SK", -11095553, "", false, 3, 6))
-                                    getInstance(context).subjectDao().insert(Subject("Testfach", "T", -82976, "", true, 3, 6))
                                     //Is needed for productive
-                                    getInstance(context).yearDao().insert(Year("10A"))
-                                    getInstance(context).yearDao().insert(Year("9A"))
-                                    getInstance(context).examtypeDao().insert(Examtype("Schulaufgabe", 2.0))
-                                    getInstance(context).examtypeDao().insert(Examtype("Ex", 1.0))
-                                    getInstance(context).examtypeDao().insert(Examtype("Referat", 1.0))
+                                    getInstance(context).yearDao().insert(Year("2020"))
                                     //Is needed for productive
                                     getInstance(context).settingsDao().insert(Settings(1))
-                                    getInstance(context).examDao().insert(Exam(1, 1, 1, 1, 2020, 0, 7))
-                                    getInstance(context).examDao().insert(Exam(2, 2, 1, -1, 2020, 1, 8))
-                                    getInstance(context).examDao().insert(Exam(3, 3, 1, 2, 2020, 2, 9))
-                                    getInstance(context).examDao().insert(Exam(4, 1, 1, -1, 2020, 3, 17))
-                                    getInstance(context).examDao().insert(Exam(5, 2, 1, 3, 2020, 4, 27))
-                                    getInstance(context).examDao().insert(Exam(6, 3, 1, -1, 2020, 5, 12))
-                                    getInstance(context).examDao().insert(Exam(1, 1, 1, 4, 2020, 6, 14))
-                                    getInstance(context).examDao().insert(Exam(2, 2, 1, 5, 2020, 7, 15))
-                                    getInstance(context).examDao().insert(Exam(3, 3, 1, 6, 2020, 8, 19))
-                                    getInstance(context).examDao().insert(Exam(4, 1, 1, 4, 2020, 9, 25))
-                                    getInstance(context).examDao().insert(Exam(5, 2, 2, 2, 2020, 10, 24))
-                                    getInstance(context).examDao().insert(Exam(6, 3, 2, -1, 2020, 11, 21))
-                                    getInstance(context).schoolLessonDao().insert(SchoolLesson(1, 8, 15, 9, 0))
-                                    getInstance(context).schoolLessonDao().insert(SchoolLesson(2, 9, 0, 9, 45))
-                                    getInstance(context).schoolLessonDao().insert(SchoolLesson(3, 9, 45, 10, 30))
-                                    getInstance(context).lessonDao().insert(Lesson(1, -1, 1, 1, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(1, 1, 2, 4, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(1, 2, 3, 5, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(2, -1, 1, 6, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(2, 1, 2, 2, 1))
-                                    getInstance(context).lessonDao().insert(Lesson(3, 2, 3, 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe1", "niceNotiz1", 1, 10, 2020, false, 1, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe2", "niceNotiz2", 2, 10, 2020, false, 2, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe3", "niceNotiz3", 3, 10, 2020, false, 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe4", "", 4, 10, 2020, false, 4, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe5", "", 5, 10, 2020, false, 5, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe6", "", 6, 10, 2020, false, 6, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe7", "niceNotiz2", 15, 10, 2020, true, 2, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe8", "niceNotiz3", 16, 10, 2020, true, 3, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe9", "", 17, 10, 2020, true, 4, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe10", "", 18, 10, 2020, true, 5, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe11", "", 19, 10, 2020, true, 6, 1))
-                                    getInstance(context).taskDao().insert(Task("Aufgabe12", "", 20, 10, 2020, true, 6, 1))
-
 
                                 }
                             }

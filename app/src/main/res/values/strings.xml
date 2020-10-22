@@ -39,6 +39,10 @@
     <string name="cbp_timetablesettings_abcycle">cbp_timetablesettings_abcycle</string>
     <string name="sp_timetablesettings_acycle">sp_timetablesettings_acycle</string>
     <string name="lp_personalize_design">lp_personalize_design</string>
+    <string name="p_backup_manBackupExport">p_backup_manBackupExport</string>
+    <string name="p_backup_importRestore">p_backup_importRestore</string>
+    <string name="p_root_sample_data">p_root_sample_data</string>
+    <string name="p_root_clear_database">p_root_clear_database</string>
 
 
 </resources>
