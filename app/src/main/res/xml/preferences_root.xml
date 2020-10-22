@@ -44,5 +44,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="Projekt">
+
+        <Preference
+            app:icon="@mipmap/ic_launcher_stundenplan2_round"
+            app:key="@string/p_root_github"
+            app:title="Github Projekt" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

@@ -43,6 +43,7 @@
     <string name="p_backup_importRestore">p_backup_importRestore</string>
     <string name="p_root_sample_data">p_root_sample_data</string>
     <string name="p_root_clear_database">p_root_clear_database</string>
+    <string name="p_root_github">p_root_github</string>
 
 
 </resources>

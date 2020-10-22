@@ -5,6 +5,7 @@ package com.ebner.stundenplan.fragments.settings
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -126,6 +127,7 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
             val pClearDb: Preference = findPreference(getString(R.string.p_root_clear_database))!!
             val pSampleData: Preference = findPreference(getString(R.string.p_root_sample_data))!!
+            val pGithub: Preference = findPreference(getString(R.string.p_root_github))!!
 
             pClearDb.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 Toast.makeText(requireContext(), "ClearDB", Toast.LENGTH_SHORT).show()
@@ -147,7 +149,6 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
 
                 true
             }
-
 
             pSampleData.onPreferenceClickListener = Preference.OnPreferenceClickListener {
 
@@ -246,6 +247,14 @@ class SettingsActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefere
                         .setNegativeButton("Abbrechen", null)
                         .show()
 
+
+                true
+            }
+
+            pGithub.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                val openURL = Intent(android.content.Intent.ACTION_VIEW)
+                openURL.data = Uri.parse("https://github.com/rafi0101/Stundenplan/")
+                startActivity(openURL)
 
                 true
             }
