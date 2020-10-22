@@ -10,6 +10,10 @@
             app:key="@string/spc_backup_autoBackup"
             app:title="Automatische Sicherung" />
 
+        <Preference
+            app:key="@string/p_backup_manBackupExport"
+            app:title="Sichern und Exportieren (WIP)" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Wiederherstellen">
@@ -18,6 +22,9 @@
             app:key="@string/p_back_restore"
             app:title="Wiederherstellen" />
 
+        <Preference
+            app:key="@string/p_backup_importRestore"
+            app:title="Externe Sicherung Wiederherstellen (WIP)" />
 
     </PreferenceCategory>
 
