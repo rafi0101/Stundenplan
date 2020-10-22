@@ -22,6 +22,8 @@ Features
 
 Hint: If you don`t want to add each room, teacher etc. Just add one room / teacher with a whitespace and use this for each subject...
 
+If you want to try this Stundenplan app [contact](https://twitter.com/rafi01010) me
+
 Content
 -----------
 * [Features](#Features)
